@@ -1,0 +1,12 @@
+target
+bin
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings
+.vagrant
+.idea
+checkstylecachefile
+vagrant/modules/altinnmock/files/altinnMockService.jar

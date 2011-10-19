@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+      http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
+	default-autowire="no">
+
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location" value="application.properties" />
+	</bean>
+
+	<import resource="classpath:datasource.xml" />
+
+	<bean id="texts" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="properties">
+			<props>
+				<prop key="frontPageTemplate"> f1.{AVSENDER_NAVN}&#10;{AVSENDER_ADRESSE1}&#10;{AVSENDER_ADRESSE2} {AVSENDER_ADRESSE3}&#10;{AVSENDER_POSTNR} {AVSENDER_POSTSTED}&#10; &#10;&#10;f2. &#10; &#10; &#10; &#10; &#10;{NAVN}&#10;{ADRESSE1}&#10;{ADRESSE2} {ADRESSE3}&#10;{POSTNR} {POSTSTED}&#10;{LAND}&#10;&#10; &#10;&#10; &#10;&#10; &#10;&#10; &#10;&#10; &#10;&#10;h1.{TITTEL}&#10;&#10; &#10;&#10;{MELDING}&#10;&#10; &#10;&#10; Vedlagt følger dokument fra Bergen kommune. Kommunen gir privatpersoner nå mulighet til å motta dokumenter elektronisk.  Tjenesten aktiviserer du på https://www.bergen.kommune.no/dinside og følg instruksjonen for "SMS/e-postvarsling".  Du vil da motta varsel om nye dokumenter via SMS og/eller epost. Dersom du ikke leser dokumentet elektronisk vil du om noen dager motta dokumentet i posten.  Se https://www.bergen.kommune.no/dinside, her får du som innbygger oversikt over forhold som gjelder deg og Bergen kommune.  &#10;&#10; For bedrifter, lag og organisasjoner med organisasjonsnummer i Enhetsregisteret vil tilsvarende tjeneste bli tilgjengelig via Altinn i løpet av 2011.  </prop>				
+				<prop key="subjectTemplate">$TITTEL</prop>
+				<prop key="bodyTemplate">Dokumentet ligger under «Vedlegg». For å åpne dokumentet må du ha en ”pdf-leser” . Siste versjon finner du her: http//get.adobe.com/no/reader/</prop>
+				<prop key="bodyTemplateNoAttachment">$MELDING</prop>
+				<prop key="pdfTemplate"> {TITTEL}&#10;&#10;{MELDING}&#10;  &#10;&#10;b1.Bekreftelse på at dokumentet er mottatt elektronisk. &#10;&#10;&#10;Klikk {Link} for å åpne. Du bekrefter dermed at du har mottatt dokumentet. Dersom du ikke åpner dokumentet vil det bli sendt som ordinær post.  &#10;&#10;Klikk {Help-Link} dersom du ikke klarer å åpne dokumentet. &#10;&#10;Se bergen.kommune.no/dinside, her får du som innbygger oversikt over forhold som gjelder deg og Bergen kommune. </prop>				
+				<prop key="pdfLinkText">her</prop>
+				<prop key="readerDownloadLinkText">her</prop>
+				<prop key="helpLinkText">her</prop>
+				<prop key="subjectTemplateAltinn">$TITTEL</prop>
+				<prop key="bodyTemplateAltinn">${altinn.bodyTemplateAltinn}</prop>
+			</props>
+		</property>
+		<property name="placeholderPrefix" value="$texts{" />
+	</bean>
+
+	<bean id="contextSourceMinside" class="org.springframework.ldap.core.support.LdapContextSource">
+		<property name="url" value="${ldap.url.minside}" />
+		<property name="base" value="${ldap.baseDn.minside}" />
+		<property name="userDn" value="${ldap.userName.minside}" />
+		<property name="password" value="${ldap.password.minside}" />
+	</bean>
+
+	<bean id="velocityEngineFactoryBean" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+		<property name="velocityPropertiesMap">
+			<map>
+				<entry key="input.encoding" value="UTF-8" />
+				<entry key="resource.loader" value="my" />
+				<entry key="my.resource.loader.class" value="no.kommune.bergen.soa.common.util.MyResourceLoader" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="${smtp.host}" />
+	</bean>
+
+	<bean id="printServiceProvider" class="no.kommune.bergen.soa.svarut.PrintServiceProviderImpl">
+	</bean>
+
+    <bean id="rateConfig" class="no.kommune.bergen.soa.svarut.DispatchRateConfig">
+        <constructor-arg index="0" value="${dispatchrate.altinn}" />
+        <constructor-arg index="1" value="${dispatchrate.norgedotno}" />
+        <constructor-arg index="2" value="${dispatchrate.epost}" />
+        <constructor-arg index="3" value="${dispatchrate.post}" />
+    </bean>
+
+    <bean id="altinnDispatchWindow" class="no.kommune.bergen.soa.svarut.util.DispatchWindow">
+        <constructor-arg index="0" value="${dispatchwindow.altinn.starthour}" type="int"/>
+        <constructor-arg index="1" value="${dispatchwindow.altinn.startminute}" type="int"/>
+        <constructor-arg index="2" value="${dispatchwindow.altinn.stophour}" type="int"/>
+        <constructor-arg index="3" value="${dispatchwindow.altinn.stopminute}" type="int"/>
+    </bean>
+
+    <bean id="norgeNoDispatchWindow" class="no.kommune.bergen.soa.svarut.util.DispatchWindow">
+        <constructor-arg index="0" value="${dispatchwindow.norgeno.starthour}" type="int"/>
+        <constructor-arg index="1" value="${dispatchwindow.norgeno.startminute}" type="int"/>
+        <constructor-arg index="2" value="${dispatchwindow.norgeno.stophour}" type="int"/>
+        <constructor-arg index="3" value="${dispatchwindow.norgeno.stopminute}" type="int"/>
+    </bean>
+
+    <bean id="emailDispatchWindow" class="no.kommune.bergen.soa.svarut.util.DispatchWindow">
+        <constructor-arg index="0" value="${dispatchwindow.email.starthour}" type="int"/>
+        <constructor-arg index="1" value="${dispatchwindow.email.startminute}" type="int"/>
+        <constructor-arg index="2" value="${dispatchwindow.email.stophour}" type="int"/>
+        <constructor-arg index="3" value="${dispatchwindow.email.stopminute}" type="int"/>
+    </bean>
+
+    <bean id="printDispatchWindow" class="no.kommune.bergen.soa.svarut.util.DispatchWindow">
+        <constructor-arg index="0" value="${dispatchwindow.print.starthour}" type="int"/>
+        <constructor-arg index="1" value="${dispatchwindow.print.startminute}" type="int"/>
+        <constructor-arg index="2" value="${dispatchwindow.print.stophour}" type="int"/>
+        <constructor-arg index="3" value="${dispatchwindow.print.stopminute}" type="int"/>
+    </bean>
+
+	<bean id="altinnContext" class="no.kommune.bergen.soa.svarut.context.AltinnContext">
+		<property name="correspondenceSettings">
+			<bean class="no.kommune.bergen.soa.svarut.altin.CorrespondenceSettings">
+				<property name="notificationType" value="${altinn.notificationType}" />
+				<property name="fromAddress" value="${altinn.fromAddress}" />
+				<property name="languageCode" value="1044" />
+				<property name="serviceCode" value="${altinn.serviceCode}" />
+				<property name="endpoint" value="${altinn.endpoint}" />
+				<property name="systemUserName" value="${altinn.systemUserName}" />
+				<property name="systemPassword" value="${altinn.systemPassword}" />
+				<property name="systemUserCode" value="${altinn.systemUserCode}" />
+				<property name="serviceEdition" value="1" />
+			</bean>
+		</property>
+		<property name="leadTimeApost" value="2"/>
+		<property name="leadTimeBpost" value="2"/>
+		<property name="leadTimeRekommandert" value="1"/>
+		<property name="messageTemplateAssembly">
+			<bean class="no.kommune.bergen.soa.svarut.context.MessageTemplateAssembly">
+				<property name="subjectTemplate" value="$texts{subjectTemplate}" />
+				<property name="bodyTemplate" value="$texts{bodyTemplate}" />
+			</bean>
+		</property>
+        <property name="dispatchWindow" ref="altinnDispatchWindow"/>
+	</bean>
+
+	<bean id="norgeDotNoContext" class="no.kommune.bergen.soa.svarut.context.NorgeDotNoContext">
+		<property name="ldapContextSource" ref="contextSourceMinside" />
+		<property name="javaMailSender" ref="mailSender" />
+		<property name="leadTimeApost" value="2"/>
+		<property name="leadTimeBpost" value="2"/>
+		<property name="leadTimeRekommandert" value="1"/>
+		<property name="ldapFilterTemplate" value="${ldap.filter.template.minside}" />
+		<property name="messageTemplateAssembly">
+			<bean class="no.kommune.bergen.soa.svarut.context.MessageTemplateAssembly">
+				<property name="subjectTemplate" value="$texts{subjectTemplate}" />
+				<property name="bodyTemplate" value="$texts{bodyTemplate}" />
+				<property name="bodyTemplateNoAttachment" value="$texts{bodyTemplateNoAttachment}" />
+				<property name="replyTo" value="info.avd@bergen.kommune.no" />
+				<property name="toTemplate" value="%s@innbygger.norge.no" />
+				<property name="pdfTemplate" value="$texts{pdfTemplate}" />
+			</bean>
+		</property>
+        <property name="dispatchWindow" ref="norgeNoDispatchWindow"/>
+	</bean>
+
+	<bean id="emailContext" class="no.kommune.bergen.soa.svarut.context.EmailContext">
+		<property name="javaMailSender" ref="mailSender" />
+		<property name="leadTimeApost" value="2"/>
+		<property name="leadTimeBpost" value="2"/>
+		<property name="leadTimeRekommandert" value="1"/>
+		<property name="messageTemplateAssembly">
+			<bean class="no.kommune.bergen.soa.svarut.context.MessageTemplateAssembly">
+				<property name="subjectTemplate" value="$texts{subjectTemplate}" />
+				<property name="bodyTemplate" value="$texts{bodyTemplate}" />
+				<property name="bodyTemplateNoAttachment" value="$texts{bodyTemplateNoAttachment}" />
+				<property name="replyTo" value="info.avd@bergen.kommune.no" />
+				<property name="pdfTemplate" value="$texts{pdfTemplate}" />
+			</bean>
+		</property>
+        <property name="dispatchWindow" ref="emailDispatchWindow"/>
+	</bean>   
+
+	<bean id="printContext" class="no.kommune.bergen.soa.svarut.context.PrintContext">
+		<property name="printServiceProvider" ref="printServiceProvider" />
+		<property name="frontPageTemplate" value="$texts>frontPageTemplate" />
+		<property name="failedToPrintAlertWindowStartDay" value="${failedToPrint.AlertWindow.StartDay}" />
+		<property name="failedToPrintAlertWindowEndDay" value="${failedToPrint.AlertWindow.EndDay}" />
+		<property name="printWindowAgeIndays" value="30" />
+        <property name="dispatchWindow" ref="printDispatchWindow"/>
+	</bean>
+
+	<bean id="downloadContext" class="no.kommune.bergen.soa.svarut.context.DownloadContext">
+		<property name="servletPathTemplate" value="${download.url.template}" />
+		<property name="helpLink" value="${help.url.template}" />
+		<property name="readerDownloadLink" value="http://get.adobe.com/no/reader/" />
+		<property name="pdfLinkText" value="$texts{pdfLinkText}" />
+		<property name="helpLinkText" value="$texts{helpLinkText}" />
+		<property name="readerDownloadLinkText" value="$texts{readerDownloadLinkText}" />
+	</bean>   
+
+	<bean id="archiveContext" class="no.kommune.bergen.soa.svarut.context.ArchiveContext">
+		<property name="retirementAgeIndays" value="3650" />
+		<property name="tempDir" value="/tmp" />
+		<property name="fileStorePath" value="${pdf.file.store.path}" />
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="serviceContext" class="no.kommune.bergen.soa.svarut.ServiceContext">
+		<constructor-arg index="0" ref="velocityEngineFactoryBean" />
+		<constructor-arg index="1" ref="norgeDotNoContext" /> 
+		<constructor-arg index="2" ref="altinnContext" />
+		<constructor-arg index="3" ref="emailContext" />
+		<constructor-arg index="4" ref="printContext" />
+		<constructor-arg index="5" ref="downloadContext" />
+        <constructor-arg index="6" ref="archiveContext" />
+	</bean>
+
+	<bean id="serviceDelegate" class="no.kommune.bergen.soa.svarut.util.JmxMonitorProxy">
+		<constructor-arg>
+			<bean class="no.kommune.bergen.soa.svarut.ServiceDelegateImpl">
+                <constructor-arg index="0" ref="serviceContext" />
+                <constructor-arg index="1" ref="rateConfig" />
+			</bean>
+		</constructor-arg>
+	</bean>
+
+</beans>
+

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-3.0.xsd http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+
+    <jdbc:embedded-database type="H2" id="dataSource">
+        <jdbc:script location="classpath:FORSENDELSESARKIV.sql"/>
+    </jdbc:embedded-database>
+
+	<bean id="dataSourceFellesdata" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
+		<property name="url" value="jdbc:hsqldb:mem:mindatabase" />
+		<property name="username" value="sa" />
+		<property name="password" value="" />
+	</bean>
+
+<!--	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">-->
+<!--		<property name="driverClassName" value="oracle.jdbc.OracleDriver" />-->
+<!--		<property name="url" value="jdbc:oracle:thin:@192.168.99.40:1521:repprod" />-->
+<!--		<property name="username" value="soa" />-->
+<!--		<property name="password" value="soa1234" />-->
+<!--	</bean>-->
+
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="jdbcTemplateBksak" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+</beans>

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:constretto="http://constretto.org/schema/constretto"
+	   xmlns:task="http://www.springframework.org/schema/task"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-3.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+         http://constretto.org/schema/constretto http://constretto.org/schema/constretto/constretto-1.2.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+
+
+    <import resource="classpath:datasource.xml" />
+	<import resource="classpath:svarutlib.xml" />
+
+	<constretto:configuration>
+		<constretto:stores>
+			<constretto:properties-store>
+				<constretto:resource location="classpath:application.properties" />
+				<constretto:resource location="classpath:override.properties"/>
+			</constretto:properties-store>
+		</constretto:stores>
+	</constretto:configuration>
+
+    <context:annotation-config/>
+    <context:component-scan base-package="no.kommune"/>
+	<context:component-scan base-package="org.svarut"/>
+	<task:annotation-driven/>
+
+
+	<bean id="javaMailSenderLocal" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="${smtp.host}" />
+		<property name="port" value="${smtp.port}" />
+		<property name="protocol" value="smtp" />
+		<property name="username" value="" />
+		<property name="password" value="" />
+		<property name="defaultEncoding" value="utf-8" />
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.debug">false</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="javaMailSenderImplMinside" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="protocol" value="smtps" />
+		<property name="username" value="${smtp.authId.minside}" />
+		<property name="password" value="${smtp.authPw.minside}" />
+		<property name="defaultEncoding" value="utf-8" />
+		<property name="port" value="${smtp.port}" />
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtps.host">${smtp.host.minside}</prop>
+				<prop key="mail.smtp.starttls.enable">true</prop>
+				<prop key="mail.smtp.auth">true</prop>
+				<prop key="mail.smtps.auth">true</prop>
+				<prop key="mail.smtp.socketFactory.port">465</prop>
+				<prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory"</prop>
+				<prop key="mail.smtp.socketFactory.fallback">false</prop>
+				<prop key="mail.debug">false</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="${smtp.host}" />
+		<property name="port" value="${smtp.port}" />
+	</bean>
+
+	<bean id="emailContext" class="no.kommune.bergen.soa.svarut.context.EmailContext">
+		<property name="javaMailSender" ref="mailSender" />
+		<property name="leadTimeApost" value="2"/>
+		<property name="leadTimeBpost" value="2"/>
+		<property name="leadTimeRekommandert" value="1"/>
+		<property name="messageTemplateAssembly">
+			<bean class="no.kommune.bergen.soa.svarut.context.MessageTemplateAssembly">
+				<property name="subjectTemplate" value="${subjectTemplate}" />
+				<property name="bodyTemplate" value="${bodyTemplate}" />
+				<property name="bodyTemplateNoAttachment" value="${bodyTemplateNoAttachment}" />
+				<property name="replyTo" value="info.avd@bergen.kommune.no" />
+				<property name="pdfTemplate" value="${pdfTemplate}" />
+			</bean>
+		</property>
+        <property name="dispatchWindow" ref="emailDispatchWindow"/>
+	</bean>   
+
+	<bean id="printContext" class="no.kommune.bergen.soa.svarut.context.PrintContext">
+		<property name="printServiceProvider" ref="myPrintServiceProvider" />
+		<property name="frontPageTemplate" value="${frontPageTemplate}" />
+		<property name="failedToPrintAlertWindowStartDay" value="${failedToPrint.AlertWindow.StartDay}" />
+		<property name="failedToPrintAlertWindowEndDay" value="${failedToPrint.AlertWindow.EndDay}" />
+		<property name="printWindowAgeIndays" value="30" />
+        <property name="dispatchWindow" ref="printDispatchWindow"/>
+	</bean>
+
+	<bean id="downloadContext" class="no.kommune.bergen.soa.svarut.context.DownloadContext">
+		<property name="servletPathTemplate" value="${download.url.template}" />
+		<property name="helpLink" value="${help.url.template}" />
+		<property name="readerDownloadLink" value="http://get.adobe.com/no/reader/" />
+		<property name="pdfLinkText" value="${pdfLinkText}" />
+		<property name="helpLinkText" value="${helpLinkText}" />
+		<property name="readerDownloadLinkText" value="${readerDownloadLinkText}" />
+	</bean>   
+
+	<bean id="archiveContext" class="no.kommune.bergen.soa.svarut.context.ArchiveContext">
+		<property name="retirementAgeIndays" value="3650" />
+		<property name="tempDir" value="/tmp" />
+		<property name="fileStorePath" value="${pdf.file.store.path}" />
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+
+		<bean id="altinnContext" class="no.kommune.bergen.soa.svarut.context.AltinnContext">
+			<property name="correspondenceSettings">
+				<bean class="no.kommune.bergen.soa.svarut.altin.CorrespondenceSettings">
+					<property name="notificationType" value="${altinn.notificationType}" />
+					<property name="fromAddress" value="${altinn.fromAddress}" />
+					<property name="languageCode" value="1044" />
+					<property name="serviceCode" value="${altinn.serviceCode}" />
+					<property name="endpoint" value="${altinn.endpoint}" />
+					<property name="systemUserName" value="${altinn.systemUserName}" />
+					<property name="systemPassword" value="${altinn.systemPassword}" />
+					<property name="systemUserCode" value="${altinn.systemUserCode}" />
+					<property name="serviceEdition" value="1" />
+				</bean>
+			</property>
+			<property name="leadTimeApost" value="2"/>
+			<property name="leadTimeBpost" value="2"/>
+			<property name="leadTimeRekommandert" value="1"/>
+			<property name="messageTemplateAssembly">
+				<bean class="no.kommune.bergen.soa.svarut.context.MessageTemplateAssembly">
+					<property name="subjectTemplate" value="${subjectTemplate}" />
+					<property name="bodyTemplate" value="${bodyTemplate}" />
+				</bean>
+			</property>
+			<property name="dispatchWindow" ref="altinnDispatchWindow"/>
+		</bean>
+
+		<bean id="norgeDotNoContext" class="no.kommune.bergen.soa.svarut.context.NorgeDotNoContext">
+			<property name="ldapContextSource" ref="contextSourceMinside" />
+			<property name="javaMailSender" ref="${java.mail.ref}" />
+			<property name="leadTimeApost" value="2"/>
+			<property name="leadTimeBpost" value="2"/>
+			<property name="leadTimeRekommandert" value="1"/>
+			<property name="ldapFilterTemplate" value="${ldap.filter.template.minside}" />
+			<property name="messageTemplateAssembly">
+				<bean class="no.kommune.bergen.soa.svarut.context.MessageTemplateAssembly">
+					<property name="subjectTemplate" value="${subjectTemplate}" />
+					<property name="bodyTemplate" value="${bodyTemplate}" />
+					<property name="bodyTemplateNoAttachment" value="${bodyTemplateNoAttachment}" />
+					<property name="replyTo" value="info.avd@bergen.kommune.no" />
+					<property name="toTemplate" value="%s@innbygger.norge.no" />
+					<property name="pdfTemplate" value="${pdfTemplate}" />
+				</bean>
+			</property>
+			<property name="dispatchWindow" ref="norgeNoDispatchWindow"/>
+		</bean>
+
+	<import resource="classpath:jmx.xml" />
+
+</beans>
+

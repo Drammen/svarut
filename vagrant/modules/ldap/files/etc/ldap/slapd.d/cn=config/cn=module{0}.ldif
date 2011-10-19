@@ -1,0 +1,11 @@
+dn: cn=module{0}
+objectClass: olcModuleList
+cn: module{0}
+olcModuleLoad: {0}back_bdb.la
+structuralObjectClass: olcModuleList
+entryUUID: 58b45c2a-5c96-102e-8813-f96f463b8390
+creatorsName: cn=localroot,cn=config
+createTimestamp: 20091103072920Z
+entryCSN: 20091103072920.675497Z#000000#000#000000
+modifiersName: cn=localroot,cn=config
+modifyTimestamp: 20091103072920Z

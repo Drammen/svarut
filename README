@@ -1,0 +1,48 @@
+
+Copyright (C) 2011 Bergen Kommune
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+
+SVAR UT
+
+Prosjekter:
+Util - utilities
+commonslib - common classes
+svarutlib - svarut applikasjonen
+svarutSample - Web applikasjon for SvarUt
+svarutSampleItest - integrasjonstester mot svarutSample web applikasjon
+jetty-pkg - lager jar fil med SvarutSample og Jetty web server
+altinnMockService - mock for testing mot altinn
+altinnMock-pkg - lager jar fil med altinnMockService og Jetty web server (legges automatisk ut på vagrant-boksen)
+
+Bygging:
+mvn install
+
+Kjøring:
+Alternativ 1.
+ - Start SvarUtSample war fil på en java applikasjonsserver
+
+Alternativ 2.
+ - Kjør "java -DCONSTRETTO_TAGS=ITEST -jar jetty-pkg/target/svarut.jar"
+
+Alternativ 3.
+ - Kjør klassen org.svarut.sample.server.Run sin main metode. Vil starte jetty med svarutSample webapplikasjonen.
+
+Kjøre itester:
+Start svarutSample på port 8080, f.eks Alternativ2 under kjøring.
+installer Vagrant og start vagrant boxen: cd vagrant && vagrant up
+For mer informasjon om vagrant se http://vagrantup.com
+

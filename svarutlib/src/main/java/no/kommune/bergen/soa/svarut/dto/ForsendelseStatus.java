@@ -1,0 +1,260 @@
+package no.kommune.bergen.soa.svarut.dto;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.datatype.XMLGregorianCalendar;
+
+
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "ForsendelseStatus", propOrder = {
+		"id",
+		"forsendelse",
+		"lestElektronisk",
+		"forsendelsesdato",
+		"sendtBrevpost",
+		"sendtNorgedotno",
+		"printId",
+		"tidspunktPostlagt",
+		"antallSider",
+    	"antallSiderPostlagt",
+    	"sendtAltinn"
+})
+public class ForsendelseStatus {
+
+	@XmlElement(required = true)
+	protected String id;
+	protected Forsendelse forsendelse;
+	@XmlElement(name = "lest-elektronisk")
+	@XmlSchemaType(name = "dateTime")
+	protected XMLGregorianCalendar lestElektronisk;
+	@XmlSchemaType(name = "dateTime")
+	protected XMLGregorianCalendar forsendelsesdato;
+	@XmlElement(name = "sendt-brevpost")
+	@XmlSchemaType(name = "dateTime")
+	protected XMLGregorianCalendar sendtBrevpost;
+	@XmlElement(name = "sendt-norgedotno")
+	@XmlSchemaType(name = "dateTime")
+	protected XMLGregorianCalendar sendtNorgedotno;
+	protected String printId;
+	@XmlSchemaType(name = "dateTime")
+	protected XMLGregorianCalendar tidspunktPostlagt;
+	@XmlElement(name = "sendt-altinn")
+    @XmlSchemaType(name = "dateTime")
+    protected XMLGregorianCalendar sendtAltinn;
+	protected int antallSider;
+	protected int antallSiderPostlagt;
+
+	/**
+	 * Gets the value of the id property.
+	 *
+	 * @return possible object is
+	 *         {@link String }
+	 */
+	public String getId() {
+		return id;
+	}
+
+	/**
+	 * Sets the value of the id property.
+	 *
+	 * @param value allowed object is
+	 *              {@link String }
+	 */
+	public void setId(String value) {
+		this.id = value;
+	}
+
+	/**
+	 * Gets the value of the forsendelse property.
+	 *
+	 * @return possible object is
+	 *         {@link Forsendelse }
+	 */
+	public Forsendelse getForsendelse() {
+		return forsendelse;
+	}
+
+	/**
+	 * Sets the value of the forsendelse property.
+	 *
+	 * @param value allowed object is
+	 *              {@link Forsendelse }
+	 */
+	public void setForsendelse(Forsendelse value) {
+		this.forsendelse = value;
+	}
+
+	/**
+	 * Gets the value of the lestElektronisk property.
+	 *
+	 * @return possible object is
+	 *         {@link XMLGregorianCalendar }
+	 */
+	public XMLGregorianCalendar getLestElektronisk() {
+		return lestElektronisk;
+	}
+
+	/**
+	 * Sets the value of the lestElektronisk property.
+	 *
+	 * @param value allowed object is
+	 *              {@link XMLGregorianCalendar }
+	 */
+	public void setLestElektronisk(XMLGregorianCalendar value) {
+		this.lestElektronisk = value;
+	}
+
+	/**
+	 * Gets the value of the forsendelsesdato property.
+	 *
+	 * @return possible object is
+	 *         {@link XMLGregorianCalendar }
+	 */
+	public XMLGregorianCalendar getForsendelsesdato() {
+		return forsendelsesdato;
+	}
+
+	/**
+	 * Sets the value of the forsendelsesdato property.
+	 *
+	 * @param value allowed object is
+	 *              {@link XMLGregorianCalendar }
+	 */
+	public void setForsendelsesdato(XMLGregorianCalendar value) {
+		this.forsendelsesdato = value;
+	}
+
+	/**
+	 * Gets the value of the sendtBrevpost property.
+	 *
+	 * @return possible object is
+	 *         {@link XMLGregorianCalendar }
+	 */
+	public XMLGregorianCalendar getSendtBrevpost() {
+		return sendtBrevpost;
+	}
+
+	/**
+	 * Sets the value of the sendtBrevpost property.
+	 *
+	 * @param value allowed object is
+	 *              {@link XMLGregorianCalendar }
+	 */
+	public void setSendtBrevpost(XMLGregorianCalendar value) {
+		this.sendtBrevpost = value;
+	}
+
+	/**
+     * Gets the value of the sendtAlltinn property.
+     *
+     * @param value allowed object is
+     *     			{@link XMLGregorianCalendar }
+     *
+     */
+    public XMLGregorianCalendar getSendtAltinn() {
+        return sendtAltinn;
+    }
+
+    /**
+     * Sets the value of the sendtAlltinn property.
+     *
+     * @param value allowed object is
+     *     			{@link XMLGregorianCalendar }
+     *
+     */
+    public void setSendtAltinn(XMLGregorianCalendar value) {
+        this.sendtAltinn = value;
+    }
+
+	/**
+	 * Gets the value of the sendtNorgedotno property.
+	 *
+	 * @return possible object is
+	 *         {@link XMLGregorianCalendar }
+	 */
+	public XMLGregorianCalendar getSendtNorgedotno() {
+		return sendtNorgedotno;
+	}
+
+	/**
+	 * Sets the value of the sendtNorgedotno property.
+	 *
+	 * @param value allowed object is
+	 *              {@link XMLGregorianCalendar }
+	 */
+	public void setSendtNorgedotno(XMLGregorianCalendar value) {
+		this.sendtNorgedotno = value;
+	}
+
+	/**
+	 * Gets the value of the printId property.
+	 *
+	 * @return possible object is
+	 *         {@link String }
+	 */
+	public String getPrintId() {
+		return printId;
+	}
+
+	/**
+	 * Sets the value of the printId property.
+	 *
+	 * @param value allowed object is
+	 *              {@link String }
+	 */
+	public void setPrintId(String value) {
+		this.printId = value;
+	}
+
+	/**
+	 * Gets the value of the tidspunktPostlagt property.
+	 *
+	 * @return possible object is
+	 *         {@link XMLGregorianCalendar }
+	 */
+	public XMLGregorianCalendar getTidspunktPostlagt() {
+		return tidspunktPostlagt;
+	}
+
+	/**
+	 * Sets the value of the tidspunktPostlagt property.
+	 *
+	 * @param value allowed object is
+	 *              {@link XMLGregorianCalendar }
+	 */
+	public void setTidspunktPostlagt(XMLGregorianCalendar value) {
+		this.tidspunktPostlagt = value;
+	}
+
+	/**
+	 * Gets the value of the antallSider property.
+	 */
+	public int getAntallSider() {
+		return antallSider;
+	}
+
+	/**
+	 * Sets the value of the antallSider property.
+	 */
+	public void setAntallSider(int value) {
+		this.antallSider = value;
+	}
+
+	/**
+	 * Gets the value of the antallSiderPostlagt property.
+	 */
+	public int getAntallSiderPostlagt() {
+		return antallSiderPostlagt;
+	}
+
+	/**
+	 * Sets the value of the antallSiderPostlagt property.
+	 */
+	public void setAntallSiderPostlagt(int value) {
+		this.antallSiderPostlagt = value;
+	}
+
+}

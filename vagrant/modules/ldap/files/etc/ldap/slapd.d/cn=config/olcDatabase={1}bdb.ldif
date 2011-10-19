@@ -1,0 +1,22 @@
+dn: olcDatabase={1}bdb
+objectClass: olcDatabaseConfig
+objectClass: olcBdbConfig
+olcDatabase: {1}bdb
+olcDbDirectory: /var/lib/ldap
+olcSuffix: dc=home,dc=local
+olcAccess: {0}to attrs=userPassword by self write by anonymous auth by dn.base
+ ="cn=admin,dc=home,dc=local" write by * none
+olcAccess: {1}to * by self write by dn.base="cn=admin,dc=home,dc=local" write 
+ by * read
+olcRootDN: cn=admin,dc=home,dc=local
+olcRootPW:: YWRtaW4=
+olcDbIndex: uid pres,eq
+olcDbIndex: cn,sn,mail pres,eq,approx,sub
+olcDbIndex: objectClass eq
+structuralObjectClass: olcBdbConfig
+entryUUID: 58c2e236-5c96-102e-8814-f96f463b8390
+creatorsName: cn=localroot,cn=config
+createTimestamp: 20091103072920Z
+entryCSN: 20091103072920.770680Z#000000#000#000000
+modifiersName: cn=localroot,cn=config
+modifyTimestamp: 20091103072920Z

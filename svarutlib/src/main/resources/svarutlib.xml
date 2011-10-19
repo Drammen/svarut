@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+
+
+
+	<bean id="velocityEngineFactoryBean" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+		<property name="velocityPropertiesMap">
+			<map>
+				<entry key="input.encoding" value="UTF-8"/>
+				<entry key="resource.loader" value="my"/>
+				<entry key="my.resource.loader.class" value="no.kommune.bergen.soa.common.util.MyResourceLoader"/>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="dispatcherFactory" class="no.kommune.bergen.soa.svarut.DispatcherFactory">
+		<constructor-arg index="0" ref="serviceDelegate"/>
+		<constructor-arg index="1" ref="serviceContext"/>
+		<constructor-arg index="2" ref="rateConfig"/>
+	</bean>
+
+	<bean id="rateConfig" class="no.kommune.bergen.soa.svarut.DispatchRateConfig">
+		<constructor-arg index="0" value="${dispatchrate.altinn}"/>
+		<constructor-arg index="1" value="${dispatchrate.norgedotno}"/>
+		<constructor-arg index="2" value="${dispatchrate.epost}"/>
+		<constructor-arg index="3" value="${dispatchrate.post}"/>
+	</bean>
+
+	<bean id="altinnDispatchWindow" class="no.kommune.bergen.soa.svarut.util.DispatchWindow">
+		<constructor-arg index="0" value="${dispatchwindow.altinn.starthour}" type="int"/>
+		<constructor-arg index="1" value="${dispatchwindow.altinn.startminute}" type="int"/>
+		<constructor-arg index="2" value="${dispatchwindow.altinn.stophour}" type="int"/>
+		<constructor-arg index="3" value="${dispatchwindow.altinn.stopminute}" type="int"/>
+	</bean>
+
+	<bean id="norgeNoDispatchWindow" class="no.kommune.bergen.soa.svarut.util.DispatchWindow">
+		<constructor-arg index="0" value="${dispatchwindow.norgeno.starthour}" type="int"/>
+		<constructor-arg index="1" value="${dispatchwindow.norgeno.startminute}" type="int"/>
+		<constructor-arg index="2" value="${dispatchwindow.norgeno.stophour}" type="int"/>
+		<constructor-arg index="3" value="${dispatchwindow.norgeno.stopminute}" type="int"/>
+	</bean>
+
+	<bean id="emailDispatchWindow" class="no.kommune.bergen.soa.svarut.util.DispatchWindow">
+		<constructor-arg index="0" value="${dispatchwindow.email.starthour}" type="int"/>
+		<constructor-arg index="1" value="${dispatchwindow.email.startminute}" type="int"/>
+		<constructor-arg index="2" value="${dispatchwindow.email.stophour}" type="int"/>
+		<constructor-arg index="3" value="${dispatchwindow.email.stopminute}" type="int"/>
+	</bean>
+
+	<bean id="printDispatchWindow" class="no.kommune.bergen.soa.svarut.util.DispatchWindow">
+		<constructor-arg index="0" value="${dispatchwindow.print.starthour}" type="int"/>
+		<constructor-arg index="1" value="${dispatchwindow.print.startminute}" type="int"/>
+		<constructor-arg index="2" value="${dispatchwindow.print.stophour}" type="int"/>
+		<constructor-arg index="3" value="${dispatchwindow.print.stopminute}" type="int"/>
+	</bean>
+	<bean id="serviceDelegate" class="no.kommune.bergen.soa.svarut.util.JmxMonitorProxy">
+		<constructor-arg>
+			<bean class="no.kommune.bergen.soa.svarut.ServiceDelegateImpl">
+				<constructor-arg index="0" ref="serviceContext"/>
+				<constructor-arg index="1" ref="rateConfig"/>
+			</bean>
+		</constructor-arg>
+	</bean>
+	<bean id="serviceContext" class="no.kommune.bergen.soa.svarut.ServiceContext">
+		<constructor-arg index="0" ref="velocityEngineFactoryBean"/>
+		<constructor-arg index="1" ref="norgeDotNoContext"/>
+		<constructor-arg index="2" ref="altinnContext"/>
+		<constructor-arg index="3" ref="emailContext"/>
+		<constructor-arg index="4" ref="printContext"/>
+		<constructor-arg index="5" ref="downloadContext"/>
+		<constructor-arg index="6" ref="archiveContext"/>
+	</bean>
+
+
+	<bean id="contextSourceMinside" class="org.springframework.ldap.core.support.LdapContextSource">
+		<property name="url" value="${ldap.url.minside}"/>
+		<property name="base" value="${ldap.baseDn.minside}"/>
+		<property name="userDn" value="${ldap.userName.minside}"/>
+		<property name="password" value="${ldap.password.minside}"/>
+	</bean>
+
+	<bean id="cronTriggerScavenge"
+		  class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="jobDetailScavenge"/>
+		<property name="cronExpression" value="${scavenge.cronexpression}"/>
+	</bean>
+	<bean id="cronTriggerPrintUnread"
+		  class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="jobDetailPrintUnread"/>
+		<property name="cronExpression" value="${printunread.cronexpression}"/>
+	</bean>
+
+	<bean id="cronTriggerImportPrintStatements"
+		  class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="jobDetailImportPrintStatements"/>
+		<property name="cronExpression" value="${importPrintStatements.cronexpression}"/>
+	</bean>
+
+
+	<bean id="jobDetailScavenge"
+		  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="serviceDelegate"/>
+		<property name="targetMethod" value="removeOld"/>
+		<property name="concurrent" value="false"/>
+	</bean>
+
+
+
+	<bean id="jobDetailPrintUnread"
+		  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="serviceDelegate"/>
+		<property name="targetMethod" value="printUnread"/>
+		<property name="concurrent" value="false"/>
+	</bean>
+
+	<bean id="jobDetailImportPrintStatements"
+		  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="serviceDelegate"/>
+		<property name="targetMethod" value="importPrintStatements"/>
+		<property name="concurrent" value="false"/>
+	</bean>
+
+
+
+
+
+	<bean
+			class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="cronTriggerScavenge"/>
+				<ref bean="cronTriggerPrintUnread"/>
+			</list>
+		</property>
+	</bean>
+
+
+</beans>

@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# Starts, stops, and restarts jar
+SERVICE="altinnMockService.jar"
+JAR_DIR="/opt/altinnMock/"
+JAVA_OPTIONS="-jar altinnMockService.jar"
+JAVA="/usr/bin/java"
+EXITCD=0
+
+function do_start {
+    echo "Starting jar"
+    cd $JAR_DIR
+    nohup $JAVA $JAVA_OPTIONS > /dev/null 2>&1 &
+}
+
+function check_status {
+    if pgrep -f $SERVICE > /dev/null
+    then
+        echo "$SERVICE is running."
+        return 0
+    else
+        echo "$SERVICE is not running."
+        return 1
+    fi
+}
+
+function do_stop {
+    echo "Stopping jar "
+    PID=$(pgrep -f ${SERVICE})
+    kill $PID
+    sleep 2
+    SUCC=$(pgrep -f ${SERVICE} | wc -l)
+    if [ "1" == "$SUCC" ]; then
+        echo  "jar stopped"
+        return 0
+    else
+        echo  "failed to stop jar"
+        return 1
+    fi
+}
+
+function do_restart {
+    do_stop
+    do_start
+}
+
+case $1 in
+    start)
+        do_start
+        ;;
+    status)
+        check_status
+        ;;
+    stop)
+        do_stop
+        ;;
+    restart)
+        do_restart
+        ;;
+    *)
+        echo "Usage: $0 {start|status|stop|restart}" >&2
+        ;;
+esac

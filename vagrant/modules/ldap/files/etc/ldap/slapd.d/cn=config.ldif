@@ -1,0 +1,16 @@
+dn: cn=config
+objectClass: olcGlobal
+cn: config
+olcArgsFile: /var/run/slapd/slapd.args
+olcAuthzRegexp: {0}gidNumber=[[:digit:]]+\+uidNumber=0,cn=peercred,cn=external
+ ,cn=auth cn=localroot,cn=config
+olcLogLevel: none
+olcPidFile: /var/run/slapd/slapd.pid
+olcToolThreads: 1
+structuralObjectClass: olcGlobal
+entryUUID: 5634cf16-5c14-102e-9591-57016588a811
+creatorsName: cn=config
+createTimestamp: 20091102155841Z
+entryCSN: 20091102155841.909218Z#000000#000#000000
+modifiersName: cn=config
+modifyTimestamp: 20091102155841Z
