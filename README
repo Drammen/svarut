@@ -44,6 +44,7 @@ Alternativ 3.
 
 Kjøre itester:
 Start svarutSample på port 8080, f.eks Alternativ2 under kjøring.
-installer Vagrant og start vagrant boxen: cd vagrant && vagrant up
+installer Vagrant og virtualbox og start vagrant boxen: cd vagrant && vagrant up
+(vagrant up starten er virutell linux maskin med tjenester for å kjøre integrasjonstestene)
 For mer informasjon om vagrant se http://vagrantup.com
 
