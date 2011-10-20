@@ -1,12 +1,5 @@
 package no.kommune.bergen.soa.svarut;
 
-import no.kommune.bergen.soa.svarut.dispatchers.*;
-import no.kommune.bergen.soa.svarut.domain.Forsendelse;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +7,20 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import no.kommune.bergen.soa.svarut.dispatchers.AltinnOgPost;
+import no.kommune.bergen.soa.svarut.dispatchers.EmailOgPost;
+import no.kommune.bergen.soa.svarut.dispatchers.KunAltinn;
+import no.kommune.bergen.soa.svarut.dispatchers.KunEmail;
+import no.kommune.bergen.soa.svarut.dispatchers.KunNorgeDotNo;
+import no.kommune.bergen.soa.svarut.dispatchers.KunPost;
+import no.kommune.bergen.soa.svarut.dispatchers.NorgeDotNoOgPost;
+import no.kommune.bergen.soa.svarut.domain.Forsendelse;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 @Component
 public class JobController {
@@ -41,15 +48,15 @@ public class JobController {
 	@Autowired
 	private DispatcherFactory dispatcherFactory;
 
-	private static Map<Class, ThreadPoolExecutor> sendServices = createServices();
-	private static Map<Class, ThreadPoolExecutor> handleUnreadServices = createServices();
+	private static Map<Class<? extends Dispatcher>, ThreadPoolExecutor> sendServices = createServices();
+	private static Map<Class<? extends Dispatcher>, ThreadPoolExecutor> handleUnreadServices = createServices();
 
 	private List<Dispatcher> dispatchers;
-	private Map<Class, Dispatcher> dispatchMap = new HashMap<Class, Dispatcher>();
+	private final Map<Class<? extends Dispatcher>, Dispatcher> dispatchMap = new HashMap<Class<? extends Dispatcher>, Dispatcher>();
 
-	private static Map<Class, ThreadPoolExecutor> createServices() {
+	private static Map<Class<? extends Dispatcher>, ThreadPoolExecutor> createServices() {
 
-		Map<Class, ThreadPoolExecutor> serviceMap = new HashMap<Class, ThreadPoolExecutor>();
+		Map<Class<? extends Dispatcher>, ThreadPoolExecutor> serviceMap = new HashMap<Class<? extends Dispatcher>, ThreadPoolExecutor>();
 
 		serviceMap.put(AltinnOgPost.class, getNewExecutor());
 		serviceMap.put(EmailOgPost.class, getNewExecutor());
@@ -140,14 +147,14 @@ public class JobController {
 
 	public Future<Boolean> triggerSend(Forsendelse f) {
 		try {
-			return triggerSend(dispatcherFactory.getDispatcher(f).getClass());
+			return triggerSend(dispatcherFactory.getDispatcher( f ).getClass());
 		} catch (Exception e) {
 			log.info("Failed to trigger for " + f, e);
 		}
 		return null;
 	}
 
-	public Future<Boolean> triggerSend(Class clazz) {
+	public Future<Boolean> triggerSend( Class<? extends Dispatcher> clazz ) {
 		log.debug("Triggering send for dispatcher " + clazz.getName());
 		if (null == dispatchers) {
 			setupDispatchMap();
@@ -159,7 +166,7 @@ public class JobController {
 		return service.submit(new Job(dispatcher, true));
 	}
 
-	public Future<Boolean> triggerHandleUnread(Class clazz) {
+	public Future<Boolean> triggerHandleUnread(Class<? extends Dispatcher> clazz) {
 		if (null == dispatchers) {
 			setupDispatchMap();
 		}
@@ -167,15 +174,15 @@ public class JobController {
 		return service.submit(new Job(getDispatcher(clazz), false));
 	}
 
-	private Dispatcher getDispatcher(Class clazz) {
+	private Dispatcher getDispatcher(Class<? extends Dispatcher> clazz) {
 		return dispatchMap.get(clazz);
 	}
 
-	private ThreadPoolExecutor getHandleUnreadService(Class clazz) {
+	private ThreadPoolExecutor getHandleUnreadService(Class<? extends Dispatcher> clazz) {
 		return handleUnreadServices.get(clazz);
 	}
 
-	private ThreadPoolExecutor getHandleSendService(Class clazz) {
+	private ThreadPoolExecutor getHandleSendService(Class<? extends Dispatcher> clazz) {
 		return sendServices.get(clazz);
 	}
 
@@ -187,7 +194,7 @@ public class JobController {
 		}
 	}
 
-	public boolean isRunning(Class clazz) {
+	public boolean isRunning(Class<? extends Dispatcher> clazz) {
 		final ThreadPoolExecutor service = getHandleUnreadService(clazz);
 		return service.getActiveCount() > 0 && service.getQueue().size() == 0;
 	}
@@ -200,9 +207,10 @@ public class JobController {
 				total += executor.getQueue().size();
 				total += executor.getActiveCount();
 			}
-			if(total > 0) try {
+			if (total > 0) try {
 				Thread.sleep(200);
-			} catch (InterruptedException e) { }
+			} catch (InterruptedException e) {
+			}
 		}
 	}
 
