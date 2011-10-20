@@ -27,6 +27,7 @@ svarutSampleItest - integrasjonstester mot svarutSample web applikasjon
 jetty-pkg - lager jar fil med SvarutSample og Jetty web server
 altinnMockService - mock for testing mot altinn
 altinnMock-pkg - lager jar fil med altinnMockService og Jetty web server (legges automatisk ut på vagrant-boksen)
+vagrant - inneholder konfigurasjon for å starte en virtuell maskin med mock av altinn, minside osv. 
 
 Bygging:
 mvn install
