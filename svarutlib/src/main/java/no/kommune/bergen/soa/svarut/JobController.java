@@ -29,21 +29,8 @@ public class JobController {
 	private static int numWorkers = 1;
 	private static long timeoutSecs = 60 * 60 * 1; // 1 hour
 
-	private static final String everyMinute1 = "0 0/1 * * * * ";
-	private static final String everyMinute2 = "15 0/1 * * * * ";
-	private static final String everyMinute3 = "30 0/1 * * * * ";
-	private static final String everyMinute4 = "45 0/1 * * * * ";
+	private static final String everyHour = "0 0 * * * * ";
 
-	private static final String threeTimesADayMonToFri1 = "0 0 8,12,16 * * 1-5";
-	private static final String threeTimesADayMonToFri2 = "0 1 8,12,16 * * 1-5";
-	private static final String threeTimesADayMonToFri3 = "0 2 8,12,16 * * 1-5";
-	private static final String threeTimesADayMonToFri4 = "0 3 8,12,16 * * 1-5";
-	private static final String threeTimesADayMonToFri5 = "0 0 8,12,16 * * 1-5";
-	private static final String threeTimesADayMonToFri6 = "0 1 8,12,16 * * 1-5";
-	private static final String threeTimesADayMonToFri7 = "0 2 8,12,16 * * 1-5";
-	private static final String threeTimesADayMonToFri8 = "0 3 8,12,16 * * 1-5";
-	private static final String threeTimesADayMonToFri9 = "0 0 8,12,16 * * 1-5";
-	private static final String threeTimesADayMonToFri10 = "0 1 8,12,16 * * 1-5";
 
 	@Autowired
 	private DispatcherFactory dispatcherFactory;
@@ -75,74 +62,26 @@ public class JobController {
 				new LinkedBlockingQueue<Runnable>());
 	}
 
-	@Scheduled(cron = threeTimesADayMonToFri1)
-	public void triggerSendAltinnOgPost() {
-		triggerSend(AltinnOgPost.class);
+	/*
+	 * Sender alt som ikkje har blitt sendt når det ble motatt.
+	 */
+	@Scheduled(cron = everyHour)
+	public void triggerSends() {
+		List<Dispatcher> list = dispatcherFactory.getAllDispatchers();
+		for (Dispatcher dispatcher : list) {
+			triggerSend(dispatcher.getClass());
+		}
 	}
 
-	@Scheduled(cron = everyMinute1)
-	public void triggerSendEmailOgPost() {
-		triggerSend(EmailOgPost.class);
-	}
-
-	@Scheduled(cron = threeTimesADayMonToFri2)
-	public void triggerSendKunAltinn() {
-		triggerSend(KunAltinn.class);
-	}
-
-	@Scheduled(cron = everyMinute2)
-	public void triggerSendKunEmail() {
-		triggerSend(KunEmail.class);
-	}
-
-	@Scheduled(cron = threeTimesADayMonToFri3)
-	public void triggerSendKunNorgeDotNo() {
-		triggerSend(KunNorgeDotNo.class);
-	}
-
-	@Scheduled(cron = threeTimesADayMonToFri4)
-	public void triggerSendPost() {
-		triggerSend(KunPost.class);
-	}
-
-	@Scheduled(cron = threeTimesADayMonToFri5)
-	public void triggerSendNorgeDotNoOgPost() {
-		triggerSend(NorgeDotNoOgPost.class);
-	}
-
-	@Scheduled(cron = threeTimesADayMonToFri6)
-	public void triggerHandleUnreadPost() {
-		triggerHandleUnread(KunPost.class);
-	}
-
-	@Scheduled(cron = threeTimesADayMonToFri7)
-	public void triggerHandleUnreadNorgeDotNoOgPost() {
-		triggerHandleUnread(NorgeDotNoOgPost.class);
-	}
-
-	@Scheduled(cron = threeTimesADayMonToFri8)
-	public void triggerHandleUnreadAltinnOgPost() {
-		triggerHandleUnread(AltinnOgPost.class);
-	}
-
-	@Scheduled(cron = everyMinute3)
-	public void triggeHandleUnreadEmailOgPost() {
-		triggerHandleUnread(EmailOgPost.class);
-	}
-
-	@Scheduled(cron = threeTimesADayMonToFri9)
-	public void triggerHandleUnreadKunAltinn() {
-		triggerHandleUnread(KunAltinn.class);
-	}
-
-	@Scheduled(cron = everyMinute4)
-	public void triggerHanldeUnreadKunEmail() {
-		triggerHandleUnread(KunEmail.class);
-	}
-
-	@Scheduled(cron = threeTimesADayMonToFri10)
-	public void triggerHandleUnreadKunNorgeDotNo() {
-		triggerHandleUnread(KunNorgeDotNo.class);
+	/*
+	 * Sender alt som ikkje har blitt lest elektronisk og har ventet lenge nok.
+	 */
+	@Scheduled(cron = everyHour)
+	public void triggerHandleUnread() {
+		List<Dispatcher> list = dispatcherFactory.getAllDispatchers();
+		for (Dispatcher dispatcher : list) {
+			triggerHandleUnread(dispatcher.getClass());
+		}
 	}
 
 	public Future<Boolean> triggerSend(Forsendelse f) {
