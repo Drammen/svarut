@@ -29,6 +29,12 @@ altinnMockService - mock for testing mot altinn
 altinnMock-pkg - lager jar fil med altinnMockService og Jetty web server (legges automatisk ut på vagrant-boksen)
 vagrant - inneholder konfigurasjon for å starte en virtuell maskin med mock av altinn, minside osv. 
 
+
+Kloning:
+På Windows: Sjekk at filene ikke har fått DOS format etter kloning. 
+Dette vil medføre feil og gjøre at vagrant ikke klarer å starte boksen.
+Se isåfall på GIT instillingene for crlf (core.autocrlf).
+
 Bygging:
 mvn install
 
@@ -44,7 +50,7 @@ Alternativ 3.
 
 Kjøre itester:
 Start svarutSample på port 8080, f.eks Alternativ2 under kjøring.
-installer Vagrant og virtualbox og start vagrant boxen: cd vagrant && vagrant up
+installer Vagrant og virtualbox og start vagrant boksen: cd vagrant && vagrant up
 (vagrant up starten er virutell linux maskin med tjenester for å kjøre integrasjonstestene)
 For mer informasjon om vagrant se http://vagrantup.com
 
