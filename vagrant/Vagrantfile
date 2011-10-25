@@ -19,7 +19,7 @@ Vagrant::Config.run do |config|
 
   # Forward a port from the guest to the host, which allows for outside
   # computers to access the VM, whereas host only networking does not.
-  config.vm.forward_port "atlinnmock", 8101, 8101
+  config.vm.forward_port "altinnmock", 8101, 8101
   config.vm.forward_port "ldap", 389, 15389
   config.vm.forward_port "smtp", 25, 1525
  
