@@ -100,6 +100,18 @@ public class ForsendelsesArkiv {
 		return jdbcTemplate.queryForMap(sql, new Object[]{id});
 	}
 
+	public List<Forsendelse> retrieveRows( Date fromAndIncluding, Date toNotIncluding ) {
+		List<Forsendelse> list = new ArrayList<Forsendelse>();
+		String sql = "SELECT * from forsendelsesarkiv where sendt between ? and ?";
+		Object[] args = new Object[] { fromAndIncluding, toNotIncluding };
+		int[] types = new int[] { Types.DATE, Types.DATE };
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList( sql, args, types );
+		for (Map<String, Object> row : rows) {
+			list.add( createForsendelse( row ) );
+		}
+		return list;
+	}
+
 	public List<Forsendelse> retrieveRows(String[] ids) {
 		if (ids.length > 10000) throw new UserException("Selection is too large, more than 10000 rows");
 		List<String> list = Arrays.asList(ids);

@@ -1,6 +1,7 @@
 package no.kommune.bergen.soa.svarut;
 
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 
 import no.kommune.bergen.soa.svarut.domain.Forsendelse;
@@ -27,6 +28,8 @@ public interface ServiceDelegate {
 	String retrieveStatus( String id );
 
 	List<Forsendelse> retrieveStatus( String[] ids );
+
+	List<Forsendelse> retrieveStatus( Date fromAndIncluding, Date toNotIncluding );
 
 	String statistics();
 
