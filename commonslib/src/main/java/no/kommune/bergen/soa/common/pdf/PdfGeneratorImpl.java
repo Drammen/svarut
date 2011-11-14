@@ -224,7 +224,7 @@ public class PdfGeneratorImpl implements PdfGenerator {
 					}
 				}
 			}
-			return writer.getPageNumber();
+			return writer.getPageNumber() - 1;
 		} catch (DocumentException e) {
 			throw new RuntimeException( "Problems formating documents to A4", e );
 		} catch (IOException e) {
