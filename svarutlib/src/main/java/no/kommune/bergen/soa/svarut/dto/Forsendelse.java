@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Forsendelse", propOrder = {"fodselsnummer", "navn", "orgnr", "adresse", "avsenderNavn", "avsenderadresse", "tittel", "meldingstekst", "appid", "forsendelsesMate", "epost", "replyTo", "fargePrint"})
+@XmlType(name = "Forsendelse", propOrder = {"fodselsnummer", "navn", "orgnr", "adresse", "avsenderNavn", "avsenderadresse", "tittel", "meldingstekst", "appid", "forsendelsesMate", "epost", "replyTo", "fargePrint", "ansvarsSted"})
 public class Forsendelse {
 
 	@XmlElement(required = true)
@@ -30,6 +30,18 @@ public class Forsendelse {
 	protected String replyTo;
 	@XmlElement(defaultValue = "false")
 	protected boolean fargePrint;
+	protected String ansvarsSted;
+
+
+	public String getAnsvarsSted() {
+		return ansvarsSted;
+	}
+
+	public void setAnsvarsSted(String ansvarsSted) {
+		this.ansvarsSted = ansvarsSted;
+	}
+
+
 
 	/**
 	 * Gets the value of the fodselsnummer property.

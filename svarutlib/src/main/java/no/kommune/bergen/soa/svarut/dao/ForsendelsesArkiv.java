@@ -44,13 +44,13 @@ public class ForsendelsesArkiv {
 		if (logger.isDebugEnabled())
 			logger.debug("Inserting id = " + filename + " fodselsnr = " + f.getFnr() + " orgnr = " + orgnr);
 		String sql = "INSERT  INTO FORSENDELSESARKIV (SENDT, ID, FODSELSNR, NAVN, ADRESSE1, ADRESSE2, ADRESSE3, POSTNR, POSTSTED, LAND, "
-				+ "AVSENDER_NAVN, AVSENDER_ADRESSE1, AVSENDER_ADRESSE2, AVSENDER_ADRESSE3, AVSENDER_POSTNR, AVSENDER_POSTSTED, TITTEL, MELDING, APPID, PRINT_ID, ORGNR, FORSENDELSES_MATE, EPOST, REPLY_TO, PRINT_FARGE) "
-				+ "VALUES (SYSDATE, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)";
+				+ "AVSENDER_NAVN, AVSENDER_ADRESSE1, AVSENDER_ADRESSE2, AVSENDER_ADRESSE3, AVSENDER_POSTNR, AVSENDER_POSTSTED, TITTEL, MELDING, APPID, PRINT_ID, ORGNR, FORSENDELSES_MATE, EPOST, REPLY_TO, PRINT_FARGE, ANSVARSSTED) "
+				+ "VALUES (SYSDATE, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)";
 
 		Object[] args = new Object[]{filename, f.getFnr(), f.getNavn(), f.getAdresse1(), f.getAdresse2(), f.getAdresse3(), f.getPostnr(), f.getPoststed(), f.getLand(), f.getAvsenderNavn(), f.getAvsenderAdresse1(), f.getAvsenderAdresse2(),
-				f.getAvsenderAdresse3(), f.getAvsenderPostnr(), f.getAvsenderPoststed(), f.getTittel(), message, f.getAppid(), f.getPrintId(), orgnr, f.getShipmentPolicy(), f.getEmail(), f.getReplyTo(), f.isPrintFarge() ? "1" : "0"};
+				f.getAvsenderAdresse3(), f.getAvsenderPostnr(), f.getAvsenderPoststed(), f.getTittel(), message, f.getAppid(), f.getPrintId(), orgnr, f.getShipmentPolicy(), f.getEmail(), f.getReplyTo(), f.isPrintFarge() ? "1" : "0", f.getAnsvarsSted()};
 		int[] argTypes = {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
-				Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.CHAR};
+				Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.CHAR, Types.VARCHAR};
 		try {
 			jdbcTemplate.update(sql, args, argTypes);
 		} catch (Exception e) {
@@ -223,6 +223,7 @@ public class ForsendelsesArkiv {
 		f.setAntallSider(toInt(row.get("ANTALLSIDER")));
 		f.setAntallSiderPostlagt(toInt(row.get("ANTALLSIDERPOSTLAGT")));
 		f.setNesteForsok(toDate(row.get("NESTE_FORSOK")));
+		f.setAnsvarsSted((String) row.get("ANSVARSSTED"));
 		return f;
 	}
 

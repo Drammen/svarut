@@ -317,6 +317,19 @@ public class ForsendelsesArkivTest {
 		assertFalse( isInFailedToPrintList( id, forsendelsesArkiv.retrieveFailedToPrint() ) );
 	}
 
+	@Test
+	public void testAnsvarsstedInsert() throws Exception {
+		Forsendelse f = new Forsendelse();
+		f.setNavn("Test Testesen");
+		f.setMeldingsTekst("Hei fra SvarUtItest");
+		f.setTittel("Viktig melding!");
+		f.setEmail("test@hudson.iktofu.no");
+		f.setAnsvarsSted("EnKulPlass");
+		String id = forsendelsesArkiv.save(f, new ByteArrayInputStream(new byte[]{}));
+		Forsendelse f2 = forsendelsesArkiv.retrieve(id);
+		assertEquals("EnKulPlass", f2.getAnsvarsSted());
+	}
+
 	private PrintReceipt newPrintReceipt() {
 		PrintReceipt printReceipt = new PrintReceipt();
 		printReceipt.setPrintId( "MyPrintId" );

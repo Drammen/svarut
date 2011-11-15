@@ -15,8 +15,9 @@ public class Forsendelse {
 	private boolean printFarge;
 	private int antallSider, antallSiderPostlagt;
     private Date nesteForsok;
+	private String ansvarsSted;
 
-    public boolean isPrintFarge() {
+	public boolean isPrintFarge() {
 		return printFarge;
 	}
 
@@ -318,4 +319,12 @@ public class Forsendelse {
     public void setNesteForsok(Date nesteForsok) {
         this.nesteForsok = nesteForsok;
     }
+
+	public void setAnsvarsSted(String ansvarsSted) {
+		this.ansvarsSted = ansvarsSted;
+	}
+
+	public String getAnsvarsSted() {
+		return ansvarsSted;
+	}
 }
