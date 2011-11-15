@@ -23,7 +23,7 @@ public class AnsvarsstedTest {
 		f.setNavn("Test Testesen");
 		f.setMeldingstekst("Hei fra SvarUtItest");
 		f.setTittel("Viktig melding!");
-		f.setEpost("test@hudson.iktofu.no");
+		f.setEpost("test@hudson.iktfou.no");
 		f.setForsendelsesMate(ShipmentPolicy.KUN_EMAIL_INGEN_VEDLEGG);
 		f.setAnsvarsSted("EnKulPlass");
 		rq.setForsendelse(f);
