@@ -1,21 +1,14 @@
 package no.kommune.bergen.soa.svarut.dao;
 
-import junit.framework.Assert;
-import no.kommune.bergen.soa.common.pdf.PdfGeneratorImpl;
-import no.kommune.bergen.soa.svarut.JdbcHelper;
-import no.kommune.bergen.soa.svarut.ServiceContext;
-import no.kommune.bergen.soa.svarut.domain.*;
-import no.kommune.bergen.soa.svarut.dto.ShipmentPolicy;
-import no.kommune.bergen.soa.svarut.util.FilHenter;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import static no.kommune.bergen.soa.svarut.dto.ShipmentPolicy.NORGE_DOT_NO_OG_APOST;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.security.AccessControlException;
 import java.sql.Timestamp;
@@ -24,10 +17,30 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static no.kommune.bergen.soa.svarut.dto.ShipmentPolicy.NORGE_DOT_NO_OG_APOST;
-import static org.junit.Assert.*;
+import junit.framework.Assert;
+import no.kommune.bergen.soa.common.calendar.BusinessCalendar;
+import no.kommune.bergen.soa.common.calendar.CalendarHelper;
+import no.kommune.bergen.soa.common.calendar.PresentDayBusinessCalendarForNorway;
+import no.kommune.bergen.soa.common.pdf.PdfGeneratorImpl;
+import no.kommune.bergen.soa.svarut.JdbcHelper;
+import no.kommune.bergen.soa.svarut.ServiceContext;
+import no.kommune.bergen.soa.svarut.domain.Fodselsnr;
+import no.kommune.bergen.soa.svarut.domain.Forsendelse;
+import no.kommune.bergen.soa.svarut.domain.JuridiskEnhet;
+import no.kommune.bergen.soa.svarut.domain.Orgnr;
+import no.kommune.bergen.soa.svarut.domain.PrintReceipt;
+import no.kommune.bergen.soa.svarut.domain.Printed;
+import no.kommune.bergen.soa.svarut.dto.ShipmentPolicy;
+import no.kommune.bergen.soa.svarut.util.FilHenter;
+
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ForsendelsesArkivTest {
+	private static final BusinessCalendar businessCalendar = PresentDayBusinessCalendarForNorway.getInstance();
 	public static final String fnr = "12345678901";
 	public static final String orgnr = "987654321";
 	private static final String navn = "navn";
@@ -52,7 +65,7 @@ public class ForsendelsesArkivTest {
 
 	@Before
 	public void init() {
-		//forsendelsesArkiv = createForsendesesArkivOracle();
+		// forsendelsesArkiv = createForsendesesArkivOracle();
 		forsendelsesArkiv = createForsendesesArkiv();
 	}
 
@@ -64,9 +77,9 @@ public class ForsendelsesArkivTest {
 	}
 
 	@Test
-	public void testTestPdf(){
-		File fil = FilHenter.getFileAsFile(ForsendelsesArkivTest.testPdf);
-		assertTrue(fil.exists());
+	public void testTestPdf() {
+		File fil = FilHenter.getFileAsFile( ForsendelsesArkivTest.testPdf );
+		assertTrue( fil.exists() );
 	}
 
 	@Test
@@ -305,16 +318,101 @@ public class ForsendelsesArkivTest {
 	}
 
 	@Test
+	public void failedToPrintAlertWindowStartDayOverWeekend() {
+		long now = CalendarHelper.toDate( 2011, 11, 14 ).getTime();
+		int failedToPrintAlertWindowStartDay = 0;
+		Date failedToPrintAlertWindowStart = ForsendelsesArkiv.failedToPrintAlertWindowStart( now, failedToPrintAlertWindowStartDay, businessCalendar );
+		Assert.assertEquals( "2011-11-11", CalendarHelper.formatAsDate( failedToPrintAlertWindowStart ) );
+	}
+
+	@Test
 	public void retrieveFailedToPrint() {
 		String id = storeNewForsendelse();
-		forsendelsesArkiv.setFailedToPrintAlertWindowStartDay( 0 );
+		forsendelsesArkiv.setFailedToPrintAlertWindowStartDay( dayCountSincePreviousBusinessDay() );
 		forsendelsesArkiv.setFailedToPrintAlertWindowEndDay( 10 );
 		assertFalse( isInFailedToPrintList( id, forsendelsesArkiv.retrieveFailedToPrint() ) );
 		PrintReceipt printReceipt = newPrintReceipt();
 		forsendelsesArkiv.setPrinted( id, printReceipt );
-		assertTrue( isInFailedToPrintList( id, forsendelsesArkiv.retrieveFailedToPrint() ) );
-		forsendelsesArkiv.setFailedToPrintAlertWindowStartDay( 1 );
 		assertFalse( isInFailedToPrintList( id, forsendelsesArkiv.retrieveFailedToPrint() ) );
+		forsendelsesArkiv.setFailedToPrintAlertWindowStartDay( -1 - dayCountUntilNextBusinessDay() );
+		if (businessCalendar.isDayOff( new Date() )) {
+			assertFalse( isInFailedToPrintList( id, forsendelsesArkiv.retrieveFailedToPrint() ) );
+		} else {
+			assertTrue( isInFailedToPrintList( id, forsendelsesArkiv.retrieveFailedToPrint() ) );
+		}
+	}
+
+	private int dayCountSincePreviousBusinessDay() {
+		Date d = CalendarHelper.addDays( new Date(), -1 );
+		int i = 0;
+		while (businessCalendar.isDayOff( d )) {
+			d = CalendarHelper.addDays( d, -1 );
+			i++;
+		}
+		return i;
+	}
+
+	private int dayCountUntilNextBusinessDay() {
+		Date d = CalendarHelper.addDays( new Date(), 1 );
+		int i = 0;
+		while (businessCalendar.isDayOff( d )) {
+			d = CalendarHelper.addDays( d, 1 );
+			i++;
+		}
+		return i;
+	}
+
+	@Test
+	public void failedToPrintAlertWindowStartDayNextDay() {
+		final int failedToPrintAlertWindowStartDay = 0, failedToPrintAlertWindowEndDay = 15;
+		for (int i = 0; i < 20; i++) {
+			Date today = CalendarHelper.toDate( 2011, 11, 10 + i );
+			Date startOfWindow = ForsendelsesArkiv.failedToPrintAlertWindowStart( today.getTime(), failedToPrintAlertWindowStartDay, businessCalendar );
+			Date endOfWindow = ForsendelsesArkiv.failedToPrintAlertWindowEnd( today.getTime(), failedToPrintAlertWindowEndDay, businessCalendar );
+			verifyWindowCalculation( failedToPrintAlertWindowStartDay, failedToPrintAlertWindowEndDay, today, startOfWindow, endOfWindow );
+			verifyTodayIsOutsideWindow( today, startOfWindow, endOfWindow );
+		}
+	}
+
+	private void verifyWindowCalculation( final int failedToPrintAlertWindowStartDay, final int failedToPrintAlertWindowEndDay, Date today, Date startOfWindow, Date endOfWindow ) {
+		Date expectedEndOfWindow = calculateExpectedEndOfWindow( today, failedToPrintAlertWindowEndDay );
+		Date expectedStartOfWindow = calculateExpectedStartOfWindow( today, failedToPrintAlertWindowStartDay );
+		//System.out.printf( "Today=%s, ..WHERE UTSKREVET<=%s AND UTSKREVET>=%s\n", fmt( today ), fmt( startOfWindow ), fmt( endOfWindow ) );
+		Assert.assertEquals( fmt( expectedEndOfWindow ), fmt( endOfWindow ) );
+		Assert.assertEquals( fmt( expectedStartOfWindow ), fmt( startOfWindow ) );
+	}
+
+	private void verifyTodayIsOutsideWindow( Date today, Date startOfWindow, Date endOfWindow ) {
+		String msg = String.format( "%s is inside window [%s,%s]", fmt( today ), fmt( startOfWindow ), fmt( endOfWindow ) );
+		Assert.assertTrue( msg, !isBetween( today, startOfWindow, endOfWindow ) );
+	}
+
+	private boolean isBetween( Date date, Date startOfWindow, Date endOfWindow ) {
+		int compareToStartOfWindow = date.compareTo( startOfWindow );
+		int compareToEndOfWindow = date.compareTo( endOfWindow );
+		System.out.printf( "[%s (%s) %s] - ", fmt( startOfWindow ), fmt( date ), fmt( endOfWindow ) );
+		System.out.printf( "compareToStartOfWindow=%s, compareToEndOfWindow=%s\n", compareToStartOfWindow, compareToEndOfWindow );
+		if ((compareToStartOfWindow == 0 || compareToStartOfWindow == -1) && compareToEndOfWindow == 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private String fmt( Date date ) {
+		return CalendarHelper.formatAsDate( date );
+	}
+
+	private Date calculateExpectedStartOfWindow( Date todaysDate, int failedToPrintAlertWindowStartDay ) {
+		Date d = CalendarHelper.addDays( todaysDate, -(1 + failedToPrintAlertWindowStartDay) );
+		while (!businessCalendar.isWorkday( d )) {
+			d = CalendarHelper.addDays( d, -1 );
+		}
+		return d;
+	}
+
+	private Date calculateExpectedEndOfWindow( Date todaysDate, int failedToPrintAlertWindowEndDay ) {
+		return CalendarHelper.addDays( todaysDate, -failedToPrintAlertWindowEndDay );
 	}
 
 	private PrintReceipt newPrintReceipt() {
@@ -400,7 +498,7 @@ public class ForsendelsesArkivTest {
 
 	public static InputStream getTestDocument() {
 
-		return FilHenter.getFileAsInputStream(testPdf);
+		return FilHenter.getFileAsInputStream( testPdf );
 	}
 
 	@Test
