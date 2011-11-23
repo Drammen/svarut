@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import no.kommune.bergen.soa.common.calendar.BusinessCalendar;
+import no.kommune.bergen.soa.common.calendar.PresentDayBusinessCalendarForNorway;
 import no.kommune.bergen.soa.common.exception.UserException;
 import no.kommune.bergen.soa.svarut.domain.Fodselsnr;
 import no.kommune.bergen.soa.svarut.domain.Forsendelse;
@@ -464,8 +466,9 @@ public class ForsendelsesArkiv {
 		final String sql = "SELECT ID FROM FORSENDELSESARKIV WHERE UTSKREVET IS NOT NULL AND TIDSPUNKTPOSTLAGT IS NULL AND UTSKREVET <= ? AND UTSKREVET >= ?";
 		final List<String> ids = new ArrayList<String>();
 		long now = System.currentTimeMillis();
-		Date failedToPrintAlertWindowStart = new Date(now - this.failedToPrintAlertWindowStartDay * 1000L * 60 * 60 * 24);
-		Date failedToPrintAlertWindowEnd = new Date(now - this.failedToPrintAlertWindowEndDay * 1000L * 60 * 60 * 24);
+		BusinessCalendar businessCalendar = PresentDayBusinessCalendarForNorway.getInstance();
+		Date failedToPrintAlertWindowStart = failedToPrintAlertWindowStart( now, this.failedToPrintAlertWindowStartDay, businessCalendar );
+		Date failedToPrintAlertWindowEnd = failedToPrintAlertWindowStart( now, this.failedToPrintAlertWindowEndDay, businessCalendar );
 		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, new Object[]{failedToPrintAlertWindowStart, failedToPrintAlertWindowEnd});
 		if (rows != null) {
 			for (Map<String, Object> row : rows) {
@@ -475,6 +478,15 @@ public class ForsendelsesArkiv {
 			}
 		}
 		return ids;
+	}
+
+	static Date failedToPrintAlertWindowStart( long now, int failedToPrintAlertWindowStartDay, BusinessCalendar businessCalendar ) {
+		Date date = new Date( now - failedToPrintAlertWindowStartDay * 1000L * 60 * 60 * 24 );
+		return businessCalendar.previousWorkday( date );
+	}
+
+	static Date failedToPrintAlertWindowEnd( long now, int failedToPrintAlertWindowEndDay, BusinessCalendar businessCalendar ) {
+		return new Date( now - failedToPrintAlertWindowEndDay * 1000L * 60 * 60 * 24 );
 	}
 
 	/**
