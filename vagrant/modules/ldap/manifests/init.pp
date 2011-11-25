@@ -41,7 +41,7 @@ class ldap  {
   }
 
   exec { "add ldap users":
-    command => "/usr/bin/sudo /usr/bin/ldapadd -x -D cn=admin,dc=home,dc=local -w admin -f /etc/ldap/people.ldif",
+    command => "/bin/sleep 5 && /usr/bin/sudo /usr/bin/ldapadd -x -D cn=admin,dc=home,dc=local -w admin -f /etc/ldap/people.ldif",
 	returns => [0,68],
 	require => [Package["ldap-utils"], Exec ["restart slapd"]]
   }

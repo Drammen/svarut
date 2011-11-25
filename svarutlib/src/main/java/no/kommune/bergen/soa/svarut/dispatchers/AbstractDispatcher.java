@@ -78,12 +78,12 @@ public abstract class AbstractDispatcher implements Dispatcher {
 					long end = System.currentTimeMillis();
 					akkumulertDispatchTid += (end - start);
 					antallSendteForsendelser++;
-					double gjennomsnittMsPrForsendelse = akkumulertDispatchTid / antallSendteForsendelser;
+					double gjennomsnittMsPrForsendelse = (double)akkumulertDispatchTid / (double)antallSendteForsendelser;
 
 					int maksAntallForsendelserPrMinutt = dispatchPolicy.getMaxDispatchRate();
 					if (maksAntallForsendelserPrMinutt > 0) { // 0 == no delay
-						double minimumAntallMsPrForsendelse = 60 * 1000 / maksAntallForsendelserPrMinutt;
-						long delay = (long) (minimumAntallMsPrForsendelse - gjennomsnittMsPrForsendelse);
+						double minimumAntallMsPrForsendelse = (double)(60 * 1000) / (double)maksAntallForsendelserPrMinutt;
+						long delay = (long)(minimumAntallMsPrForsendelse - gjennomsnittMsPrForsendelse);
 						logger.debug( "sendAlleForsendelser delay: " + delay );
 
 						if (delay > 0) {
@@ -131,12 +131,12 @@ public abstract class AbstractDispatcher implements Dispatcher {
 					long end = System.currentTimeMillis();
 					akkumulertDispatchTid += (end - start);
 					antallSendteForsendelser++;
-					double gjennomsnittMsPrForsendelse = akkumulertDispatchTid / antallSendteForsendelser;
+					double gjennomsnittMsPrForsendelse = (double)akkumulertDispatchTid / (double)antallSendteForsendelser;
 
 					int maksAntallForsendelserPrMinutt = dispatchPolicy.getMaxDispatchRate();
 					if (maksAntallForsendelserPrMinutt > 0) { // 0 == no delay
-						double minimumAntallMsPrForsendelse = 60 * 1000 / maksAntallForsendelserPrMinutt;
-						long delay = (long) (minimumAntallMsPrForsendelse - gjennomsnittMsPrForsendelse);
+						double minimumAntallMsPrForsendelse = (double)(60 * 1000) / (double)maksAntallForsendelserPrMinutt;
+						long delay = (long)(minimumAntallMsPrForsendelse - gjennomsnittMsPrForsendelse);
 						logger.debug( "handleAllUnread delay: " + delay );
 
 						if (delay > 0) {

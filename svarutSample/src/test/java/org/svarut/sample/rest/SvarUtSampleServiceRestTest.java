@@ -18,7 +18,6 @@ import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
-import no.kommune.bergen.soa.svarut.DispatcherFactory;
 import no.kommune.bergen.soa.svarut.domain.Forsendelse;
 import no.kommune.bergen.soa.svarut.dto.ForsendelseStatusRest;
 import no.kommune.bergen.soa.svarut.dto.ShipmentPolicy;

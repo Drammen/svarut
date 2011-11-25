@@ -26,12 +26,12 @@ public class FtpsClient extends FtpClient {
 		try {
 			ftpClient = new FTPSClient( this.protocol.asString() );
 		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException( String.format( "% does not understand %s", this.hostname, this.protocol ), e );
+			throw new RuntimeException( String.format( "%s does not understand %s", this.hostname, this.protocol ), e );
 		}
 		ftpClient.connect( InetAddress.getByName( hostname ) );
 		if (!FTPReply.isPositiveCompletion( ftpClient.getReplyCode() )) {
 			ftpClient.disconnect();
-			throw new RuntimeException( String.format( "% refused connection over %s", this.hostname, this.protocol ) );
+			throw new RuntimeException( String.format( "%s refused connection over %s", this.hostname, this.protocol ) );
 		}
 		ftpClient.login( this.username, this.password );
 		ftpClient.enterLocalPassiveMode();

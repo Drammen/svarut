@@ -36,9 +36,9 @@ public class ForsendelsesArkiv {
 
 	private void insert(Forsendelse f, String filename) {
 		String message = f.getMeldingsTekst();
-		if (message.length() > 300) {
-			message = message.substring(0, 299);
-			logger.warn("Message text is longer than 300 characters. Truncated to: " + message);
+		if (message.length() > 4000) {
+			message = message.substring( 0, 3999 );
+			logger.warn( "Message text is longer than 4000 characters. Truncated!" );
 		}
 		Integer orgnr = (f.getOrgnr() == null) ? null : new Integer(f.getOrgnr());
 		if (logger.isDebugEnabled())
