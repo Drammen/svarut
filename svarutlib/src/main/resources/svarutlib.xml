@@ -128,12 +128,12 @@
 
 
 
-	<bean
-			class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
 				<ref bean="cronTriggerScavenge"/>
 				<ref bean="cronTriggerPrintUnread"/>
+				<ref bean="cronTriggerImportPrintStatements"/>
 			</list>
 		</property>
 	</bean>
