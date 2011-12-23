@@ -1,10 +1,12 @@
 ==== HVORDAN FINNE FRAM I KODEN
 
-Koden er organisert rundt tre sentrale klasser: Forsendelse, ServiceContext, ServiceDelegate og Dispatcher.
+Koden er organisert rundt fire sentrale klasser: Forsendelse, ServiceContext, ServiceDelegate og Dispatcher.
 
-* Forsendelse ineholder dokumentet som skal sendes i form av en pdf adresseinformasjon og ønsket ShipmentPolicy (NorgeDotNoOgApost, KunApost ...). Forsendelsene lagres i et forsendelsesarkiv (se ForsendelsesArkiv)
+* Forsendelse ineholder dokumentet som skal sendes i form av en pdf adresseinformasjon og ønsket ShipmentPolicy (NorgeDotNoOgApost, KunApost ...). 
+  Dao-klassen ForsendelsesArkiv står for lagring og gjenfinning av Forsendelser.
 
-* Dispatcher (interface) - Det finnes mange dispatchers, og DispatcherFactory setter opp og leverer en som er egnet til gitt ShipmentPolicy for en Forsendelse.     
+* Dispatcher (interface) - Det finnes mange dispatchers, og DispatcherFactory setter opp og leverer en som er egnet til gitt ShipmentPolicy for en Forsendelse. 
+  En dispatcher har som oppgave å utføre forsendelsen i henhold til gitt ShipmentPolicy.     
 
 * ServiceContext holder all context for alle dispatchers og all øvrig kode, og konfigureres typisk fra Spring.
   Her holdes også et sett med integrasjons klasser som typisk har navn som slutter med 'Facade'.
