@@ -9,10 +9,7 @@ import org.junit.Test;
 
 /** @author einarvalen@gmail.com */
 public class BusinessCalendarTest {
-	private final Date from = CalendarHelper.toDate( 2012, 1, 1 );
-	private final Date until = CalendarHelper.toDate( 2012, 12, 31 );
-	private final Set<Date> vacationDays = new NorwegianBankHolidays( 2012 );
-	private final BusinessCalendar businessCalendar = new BusinessCalendar( from, until, vacationDays );
+	private final BusinessCalendar businessCalendar = new BusinessCalendar( );
 
 	@Test
 	public void isWorkday() {
@@ -62,10 +59,6 @@ public class BusinessCalendarTest {
 		Assert.assertEquals( "2012-12-24", CalendarHelper.formatAsDate( this.businessCalendar.previousWorkday( CalendarHelper.toDate( 2012, 12, 27 ) ) ) );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void previousWorkdayFromNewYear() {
-		this.businessCalendar.previousWorkday( CalendarHelper.toDate( 2012, 1, 1 ) );
-	}
 	@Test
 	public void nextWorkdayFromSunday() {
 		Assert.assertEquals( "2012-01-02", CalendarHelper.formatAsDate( this.businessCalendar.nextWorkday( CalendarHelper.toDate( 2012, 1, 1 ) ) ) );
@@ -94,11 +87,6 @@ public class BusinessCalendarTest {
 	@Test
 	public void nextWorkdayFromTheDayBeforeXmas() {
 		Assert.assertEquals( "2012-12-27", CalendarHelper.formatAsDate( this.businessCalendar.nextWorkday( CalendarHelper.toDate( 2012, 12, 24 ) ) ) );
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void nextWorkdayFromDecember31() {
-		this.businessCalendar.nextWorkday( CalendarHelper.toDate( 2012, 12, 31 ) );
 	}
 
 	@Test
@@ -131,11 +119,6 @@ public class BusinessCalendarTest {
 		Assert.assertEquals( "2012-12-25", CalendarHelper.formatAsDate( this.businessCalendar.previousDayOff( CalendarHelper.toDate( 2012, 12, 26 ) ) ) );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void previousDayOffFromNewYear() {
-		this.businessCalendar.previousDayOff( CalendarHelper.toDate( 2012, 1, 1 ) );
-	}
-
 	@Test
 	public void nextDayOffFromSunday() {
 		Assert.assertEquals( "2012-01-07", CalendarHelper.formatAsDate( this.businessCalendar.nextDayOff( CalendarHelper.toDate( 2012, 1, 1 ) ) ) );
@@ -164,11 +147,6 @@ public class BusinessCalendarTest {
 	@Test
 	public void nextDayOffFromTheDayBeforeXmas() {
 		Assert.assertEquals( "2012-12-25", CalendarHelper.formatAsDate( this.businessCalendar.nextDayOff( CalendarHelper.toDate( 2012, 12, 24 ) ) ) );
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void nextDayOffFromDecember31() {
-		this.businessCalendar.nextDayOff( CalendarHelper.toDate( 2012, 12, 31 ) );
 	}
 
 }
