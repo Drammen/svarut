@@ -3,12 +3,11 @@ package no.kommune.bergen.soa.svarut;
 import java.io.File;
 import java.io.FileOutputStream;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.pdf.PdfWriter;
 import no.kommune.bergen.soa.common.pdf.PdfGenerator;
 import no.kommune.bergen.soa.common.pdf.PdfGeneratorImpl;
-
-import com.lowagie.text.Document;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.pdf.PdfWriter;
 
 public class SvarUtPdfGenerator extends PdfGeneratorImpl implements PdfGenerator {
 

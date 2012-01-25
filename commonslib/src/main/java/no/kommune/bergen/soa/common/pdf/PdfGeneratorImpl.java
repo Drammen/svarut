@@ -1,5 +1,6 @@
 package no.kommune.bergen.soa.common.pdf;
 
+import java.awt.geom.AffineTransform;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -11,18 +12,10 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.*;
 import org.apache.log4j.Logger;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfCopyFields;
-import com.lowagie.text.pdf.PdfImportedPage;
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.PdfWriter;
 
 public class PdfGeneratorImpl implements PdfGenerator {
 	private final String prefix = "delete-";
@@ -203,15 +196,25 @@ public class PdfGeneratorImpl implements PdfGenerator {
 						int pageRotation = reader.getPageRotation( pageNum );
 
 						boolean rotate = (rPageWidth > rPageHeight) && (pageRotation == 0 || pageRotation == 180);
+						//if changing rotation gives us better space rotate an extra 90 degrees.
+						if(rotate) pageRotation += 90;
+						double randrotate = (double)pageRotation * Math.PI/(double)180;
 
-						if (rotate) {
-							float margin = 20.0f;
-							float scale = Math.min( (wPageHeight - margin * 2) / rPageWidth, (wPageWidth - margin * 2) / rPageHeight );
-							pdfContentByte.addTemplate( importedPage, 0, -scale, scale, 0, 0 + margin, wPageHeight - margin );
+						AffineTransform transform = new AffineTransform();
+						float margin = 0;
+						float scale = 1.0f;
+						if(pageRotation == 90 || pageRotation == 270 ){
+							scale = Math.min((wPageHeight - 2 * margin) / rPageWidth, (wPageWidth- 2 * margin) / rPageHeight);
 						} else {
-							float scale = Math.min( wPageHeight / rPageHeight, wPageWidth / rPageWidth );
-							pdfContentByte.addTemplate( importedPage, scale, 0, 0, scale, 0, 0 );
+							scale = Math.min(wPageHeight / rPageHeight, wPageWidth / rPageWidth);
 						}
+						transform.scale(scale,scale);
+						transform.translate((wPageWidth/2) + margin, wPageHeight/2 + margin);
+						//transform.rotate(-randrotate);
+						transform.translate(-rPageWidth/2,-rPageHeight/2);
+
+						pdfContentByte.addTemplate(importedPage, transform);
+
 						document.newPage();
 					}
 					if (numberOfPages % 2 == 1) {

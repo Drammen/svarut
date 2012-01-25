@@ -15,6 +15,10 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.PdfDictionary;
+import com.itextpdf.text.pdf.PdfName;
+import com.itextpdf.text.pdf.PdfObject;
 import no.kommune.bergen.soa.util.Files;
 
 import org.junit.Before;
@@ -22,8 +26,8 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.pdf.PdfReader;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.pdf.PdfReader;
 
 public class PdfGeneratorImplTest {
 
@@ -76,16 +80,16 @@ public class PdfGeneratorImplTest {
 	public void formatA4() throws Exception {
 		File result = File.createTempFile( "formated-", ".pdf", new File(TEMPDIR) );
 		FileOutputStream newPdfOutputStream = new FileOutputStream( result );
-		FileInputStream folgebrev = new FileInputStream( "src/test/resources/test.pdf" );
-		FileInputStream dokument = new FileInputStream( "src/test/resources/1000_210000_000000002187.pdf" );
+		InputStream folgebrev =  Thread.currentThread().getContextClassLoader().getResourceAsStream("test.pdf" );
+		InputStream dokument = Thread.currentThread().getContextClassLoader().getResourceAsStream( "1000_210000_000000002187.pdf" );
 
 		testObj.formatA4( newPdfOutputStream, new InputStream[] { folgebrev, dokument } );
 		assertTrue( result.exists() );
 		assertTrue( result.length() > 0 );
 		assertTrue( testObj.isValidPdf( result ) );
 		PdfReader readerResult = new PdfReader( new FileInputStream( result ) );
-		assertEquals( "antallSider folgebrev", 1, new PdfReader( new FileInputStream( "src/test/resources/test.pdf" ) ).getNumberOfPages() );
-		assertEquals( "antallSider dokument", 14, new PdfReader( new FileInputStream( "src/test/resources/1000_210000_000000002187.pdf" ) ).getNumberOfPages() );
+		assertEquals( "antallSider folgebrev", 1, new PdfReader( Thread.currentThread().getContextClassLoader().getResourceAsStream("test.pdf" ) ).getNumberOfPages() );
+		assertEquals( "antallSider dokument", 14, new PdfReader( Thread.currentThread().getContextClassLoader().getResourceAsStream("1000_210000_000000002187.pdf" ) ).getNumberOfPages() );
 		assertEquals( "antall sider resultat", 16, readerResult.getNumberOfPages() );
 		//view( result );
 	}
@@ -104,22 +108,73 @@ public class PdfGeneratorImplTest {
 	public void concatAddBlankPageWhenDocumentHasOddNumberOfPages() throws Exception {
 		File result = File.createTempFile( "concatinated-", ".pdf", new File(TEMPDIR) );
 		FileOutputStream newPdfOutputStream = new FileOutputStream( result );
-		FileInputStream docA = new FileInputStream( "src/test/resources/test.pdf" );
-		FileInputStream docB = new FileInputStream( "src/test/resources/test.pdf" );
-		FileInputStream docC = new FileInputStream( "src/test/resources/1000_210000_000000002187.pdf" );
-		FileInputStream docD = new FileInputStream( "src/test/resources/000000000061.pdf" );
+		InputStream docA = Thread.currentThread().getContextClassLoader().getResourceAsStream("test.pdf" );
+		InputStream docB = Thread.currentThread().getContextClassLoader().getResourceAsStream("test.pdf" );
+		InputStream docC = Thread.currentThread().getContextClassLoader().getResourceAsStream("1000_210000_000000002187.pdf" );
+		InputStream docD = Thread.currentThread().getContextClassLoader().getResourceAsStream("000000000061.pdf" );
 		testObj.concat( newPdfOutputStream, new InputStream[] { docA, docB, docC, docD } );
 		assertTrue( result.exists() );
 		assertTrue( result.length() > 0 );
 		assertTrue( testObj.isValidPdf( result ) );
 		//view( result );
 		PdfReader readerResult = new PdfReader( new FileInputStream( result ) );
-		assertEquals( "antallSider docA", 1, new PdfReader( new FileInputStream( "src/test/resources/test.pdf" ) ).getNumberOfPages() );
-		assertEquals( "antallSider docB", 1, new PdfReader( new FileInputStream( "src/test/resources/test.pdf" ) ).getNumberOfPages() );
-		assertEquals( "antallSider docC", 14, new PdfReader( new FileInputStream( "src/test/resources/1000_210000_000000002187.pdf" ) ).getNumberOfPages() );
-		assertEquals( "antallSider docD", 4, new PdfReader( new FileInputStream( "src/test/resources/000000000061.pdf" ) ).getNumberOfPages() );
+		assertEquals( "antallSider docA", 1, new PdfReader( Thread.currentThread().getContextClassLoader().getResourceAsStream("test.pdf" ) ).getNumberOfPages() );
+		assertEquals( "antallSider docB", 1, new PdfReader( Thread.currentThread().getContextClassLoader().getResourceAsStream("test.pdf" ) ).getNumberOfPages() );
+		assertEquals( "antallSider docC", 14, new PdfReader( Thread.currentThread().getContextClassLoader().getResourceAsStream("1000_210000_000000002187.pdf" ) ).getNumberOfPages() );
+		assertEquals( "antallSider docD", 4, new PdfReader( Thread.currentThread().getContextClassLoader().getResourceAsStream("000000000061.pdf" ) ).getNumberOfPages() );
 		assertEquals( "antall sider resultat", 22, readerResult.getNumberOfPages() );
 	}
+
+	@Test
+	public void testNormalPortrait() throws Exception {
+		testRotation("normal_portrait.pdf");
+	}
+
+	@Test
+	public void testNormalLandscape() throws Exception {
+		testRotation("normal_landscape.pdf");
+	}
+
+	@Test
+	public void test270rotation() throws Exception {
+		testRotation("270rotation.pdf");
+	}
+
+	@Test
+	public void testLandscape_no_margin() throws Exception {
+		testRotation("green_landscape_no_margin.pdf");
+	}
+
+	@Test
+	public void testLandscape_with_margin() throws Exception {
+		testRotation("grey_landscape_with_margin.pdf");
+	}
+
+	@Test
+	public void testPortrait_with_margin() throws Exception {
+		testRotation("grey_portrait_with_margin.pdf");
+	}
+
+	private void testRotation(String filename) throws Exception {
+		File result = File.createTempFile("concatinated-", ".pdf", new File(TEMPDIR));
+		FileOutputStream newPdfOutputStream = new FileOutputStream(result);
+		InputStream ikkesnu = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);
+		testObj.formatA4(newPdfOutputStream, new InputStream[]{ikkesnu});
+		assertTrue(result.exists());
+		assertTrue(result.length() > 0);
+		assertTrue(testObj.isValidPdf(result));
+
+		PdfReader reader = new PdfReader(new FileInputStream(result));
+		int numberOfPages = reader.getNumberOfPages();
+		for (int i = 1; i <= numberOfPages; i++) {
+			Rectangle size = reader.getPageSize(i);
+			assertEquals(842, size.getHeight(), 0.1);
+			assertEquals(595, size.getWidth(), 0.1);
+			assertEquals(0, size.getRotation());
+		}
+	}
+
+
 
 	@Test
 	public void concat() throws Exception {
