@@ -39,7 +39,8 @@ public class MailSender {
 		if (null != attachments && attachments.length > 0) {
 			sendMimeMessage( recipients, from, subject, body, attachments );
 		} else {
-			sendPlainMessage( recipients, from, subject, body );
+			final File[] emptyAttachments = new File[0];
+			sendMimeMessage( recipients, from, subject, body, emptyAttachments );
 		}
 	}
 
