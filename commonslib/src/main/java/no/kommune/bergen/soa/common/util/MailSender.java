@@ -31,7 +31,6 @@ public class MailSender {
 		} else {
 			final File[] emptyAttachments = new File[0];
 			sendMimeMessage( recipient, from, subject, body, emptyAttachments);
-			//sendPlainMessage( recipient, from, subject, body );
 		}
 	}
 
@@ -42,7 +41,6 @@ public class MailSender {
 		} else {
 			final File[] emptyAttachments = new File[0];
 			sendMimeMessage( recipients, from, subject, body, emptyAttachments );
-			//sendPlainMessage( recipients, from, subject, body );
 		}
 	}
 
