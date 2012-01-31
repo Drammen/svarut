@@ -29,9 +29,9 @@ public class MailSender {
 		if (null != attachments && attachments.length > 0) {
 			sendMimeMessage( recipient, from, subject, body, attachments );
 		} else {
-			//final File[] emptyAttachments = new File[0];
-			//sendMimeMessage( recipient, from, subject, body, emptyAttachments);
-			sendPlainMessage( recipient, from, subject, body );
+			final File[] emptyAttachments = new File[0];
+			sendMimeMessage( recipient, from, subject, body, emptyAttachments);
+			//sendPlainMessage( recipient, from, subject, body );
 		}
 	}
 
@@ -40,9 +40,9 @@ public class MailSender {
 		if (null != attachments && attachments.length > 0) {
 			sendMimeMessage( recipients, from, subject, body, attachments );
 		} else {
-			//final File[] emptyAttachments = new File[0];
-			//sendMimeMessage( recipients, from, subject, body, emptyAttachments );
-			sendPlainMessage( recipients, from, subject, body );
+			final File[] emptyAttachments = new File[0];
+			sendMimeMessage( recipients, from, subject, body, emptyAttachments );
+			//sendPlainMessage( recipients, from, subject, body );
 		}
 	}
 
