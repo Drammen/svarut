@@ -147,7 +147,7 @@ public class JobController {
 				total += executor.getActiveCount();
 			}
 			if (total > 0) try {
-				Thread.sleep(200);
+				Thread.sleep(500);
 			} catch (InterruptedException e) {
 			}
 		}
