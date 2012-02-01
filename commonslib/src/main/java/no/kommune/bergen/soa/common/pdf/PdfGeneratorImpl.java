@@ -193,9 +193,13 @@ public class PdfGeneratorImpl implements PdfGenerator {
 						float wPageHeight = writerPageSize.getHeight();
 						float wPageWidth = writerPageSize.getWidth();
 
+
 						int pageRotation = reader.getPageRotation( pageNum );
 
+
 						boolean rotate = (rPageWidth > rPageHeight) && (pageRotation == 0 || pageRotation == 180);
+						if(!rotate)
+							rotate = ((rPageHeight > rPageWidth) && (pageRotation == 90 || pageRotation ==270));
 						//if changing rotation gives us better space rotate an extra 90 degrees.
 						if(rotate) pageRotation += 90;
 						double randrotate = (double)pageRotation * Math.PI/(double)180;
@@ -209,8 +213,11 @@ public class PdfGeneratorImpl implements PdfGenerator {
 							scale = Math.min(wPageHeight / rPageHeight, wPageWidth / rPageWidth);
 						}
 						transform.scale(scale,scale);
-						transform.translate((wPageWidth/2) + margin, wPageHeight/2 + margin);
-						//transform.rotate(-randrotate);
+						if(pageRotation == 180)
+							transform.translate((rPageWidth/2) + margin, rPageHeight/2 + margin);
+						else
+							transform.translate((wPageWidth/2) + margin, wPageHeight/2 + margin);
+						transform.rotate(-randrotate);
 						transform.translate(-rPageWidth/2,-rPageHeight/2);
 
 						pdfContentByte.addTemplate(importedPage, transform);

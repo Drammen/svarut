@@ -126,6 +126,11 @@ public class PdfGeneratorImplTest {
 	}
 
 	@Test
+	public void testLatned() throws Exception {
+		testRotation("lastned.pdf");
+	}
+
+	@Test
 	public void testNormalPortrait() throws Exception {
 		testRotation("normal_portrait.pdf");
 	}
