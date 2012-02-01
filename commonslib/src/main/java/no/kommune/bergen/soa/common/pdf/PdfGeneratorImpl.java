@@ -212,12 +212,10 @@ public class PdfGeneratorImpl implements PdfGenerator {
 						} else {
 							scale = Math.min(wPageHeight / rPageHeight, wPageWidth / rPageWidth);
 						}
-						transform.scale(scale,scale);
-						if(pageRotation == 180)
-							transform.translate((rPageWidth/2) + margin, rPageHeight/2 + margin);
-						else
-							transform.translate((wPageWidth/2) + margin, wPageHeight/2 + margin);
+
+						transform.translate((wPageWidth/2) + margin, wPageHeight/2 + margin);
 						transform.rotate(-randrotate);
+						transform.scale(scale,scale);
 						transform.translate(-rPageWidth/2,-rPageHeight/2);
 
 						pdfContentByte.addTemplate(importedPage, transform);
