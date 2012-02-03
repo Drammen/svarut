@@ -29,7 +29,9 @@ public class MailSender {
 		if (null != attachments && attachments.length > 0) {
 			sendMimeMessage( recipient, from, subject, body, attachments );
 		} else {
-			sendPlainMessage( recipient, from, subject, body );
+			final File[] emptyAttachments = new File[0];
+			sendMimeMessage( recipient, from, subject, body, emptyAttachments);
+			//sendPlainMessage( recipient, from, subject, body );
 		}
 	}
 
@@ -38,7 +40,9 @@ public class MailSender {
 		if (null != attachments && attachments.length > 0) {
 			sendMimeMessage( recipients, from, subject, body, attachments );
 		} else {
-			sendPlainMessage( recipients, from, subject, body );
+			final File[] emptyAttachments = new File[0];
+			sendMimeMessage( recipients, from, subject, body, emptyAttachments );
+			//sendPlainMessage( recipients, from, subject, body );
 		}
 	}
 
@@ -61,6 +65,7 @@ public class MailSender {
 			Assert.isTrue( to != null && to.length() != 0 && to.indexOf( '@' ) > -1 );
 			if (logger.isDebugEnabled()) logger.debug( "Sending email to:" + to + " from:" + from + " subject:" + subject );
 			this.javaMailSender.send( new MimeMessagePreparator() {
+				@Override
 				public void prepare( MimeMessage mimeMessage ) throws MessagingException {
 					MimeMessageHelper message = new MimeMessageHelper( mimeMessage, MimeMessageHelper.MULTIPART_MODE_MIXED, encoding );
 					message.setFrom( from );

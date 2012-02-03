@@ -1,6 +1,7 @@
 package no.kommune.bergen.soa.svarut.util;
 
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 
 import no.kommune.bergen.soa.svarut.ServiceDelegate;
@@ -261,6 +262,11 @@ public class JmxMonitorProxy implements ServiceDelegate, no.kommune.bergen.soa.u
 	@Override
 	public List<Forsendelse> retrieveStatus( String[] ids ) {
 		return this.serviceDelegate.retrieveStatus( ids );
+	}
+
+	@Override
+	public List<Forsendelse> retrieveStatus( Date fromAndIncluding, Date toNotIncluding ) {
+		return this.serviceDelegate.retrieveStatus( fromAndIncluding, toNotIncluding );
 	}
 
 	@Override

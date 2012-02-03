@@ -1,16 +1,12 @@
 package no.kommune.bergen.soa.common.pdf;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.lowagie.text.Anchor;
-import com.lowagie.text.Element;
-import com.lowagie.text.Font;
-import com.lowagie.text.Paragraph;
+import com.itextpdf.text.*;
 
 /**
  * A crude attempt to add syntax to a Velocity macro/template, that can spill over to Pdf generation. Presently a selection of
@@ -26,12 +22,12 @@ public class PdfTemplateParser {
 	public PdfTemplateParser( Map<String, String> model, String velocityMacro ) {
 		this.model = model;
 		this.velocityMacro = velocityMacro;
-		font = new Font( Font.TIMES_ROMAN, 12 );
-		bFont = new Font( Font.TIMES_ROMAN, 12, Font.BOLD );
-		linkFont = new Font( Font.TIMES_ROMAN, 10, Font.UNDERLINE, Color.blue );
-		h1Font = new Font( Font.TIMES_ROMAN, 10, Font.BOLD );
-		f1Font = new Font( Font.TIMES_ROMAN, 8 );
-		f2Font = new Font( Font.TIMES_ROMAN, 10 );
+		font = new Font( Font.FontFamily.TIMES_ROMAN, 12 );
+		bFont = new Font( Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD );
+		linkFont = new Font( Font.FontFamily.TIMES_ROMAN, 10f, Font.UNDERLINE, BaseColor.BLUE );
+		h1Font = new Font( Font.FontFamily.TIMES_ROMAN, 10, Font.BOLD );
+		f1Font = new Font( Font.FontFamily.TIMES_ROMAN, 8 );
+		f2Font = new Font( Font.FontFamily.TIMES_ROMAN, 10 );
 	}
 
 	public Element[] getElements() {

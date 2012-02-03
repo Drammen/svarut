@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import no.kommune.bergen.soa.common.calendar.BusinessCalendar;
+import no.kommune.bergen.soa.common.calendar.PresentDayBusinessCalendarForNorway;
 import no.kommune.bergen.soa.common.exception.UserException;
 import no.kommune.bergen.soa.svarut.domain.Fodselsnr;
 import no.kommune.bergen.soa.svarut.domain.Forsendelse;
@@ -44,13 +46,13 @@ public class ForsendelsesArkiv {
 		if (logger.isDebugEnabled())
 			logger.debug("Inserting id = " + filename + " fodselsnr = " + f.getFnr() + " orgnr = " + orgnr);
 		String sql = "INSERT  INTO FORSENDELSESARKIV (SENDT, ID, FODSELSNR, NAVN, ADRESSE1, ADRESSE2, ADRESSE3, POSTNR, POSTSTED, LAND, "
-				+ "AVSENDER_NAVN, AVSENDER_ADRESSE1, AVSENDER_ADRESSE2, AVSENDER_ADRESSE3, AVSENDER_POSTNR, AVSENDER_POSTSTED, TITTEL, MELDING, APPID, PRINT_ID, ORGNR, FORSENDELSES_MATE, EPOST, REPLY_TO, PRINT_FARGE) "
-				+ "VALUES (SYSDATE, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)";
+				+ "AVSENDER_NAVN, AVSENDER_ADRESSE1, AVSENDER_ADRESSE2, AVSENDER_ADRESSE3, AVSENDER_POSTNR, AVSENDER_POSTSTED, TITTEL, MELDING, APPID, PRINT_ID, ORGNR, FORSENDELSES_MATE, EPOST, REPLY_TO, PRINT_FARGE, ANSVARSSTED) "
+				+ "VALUES (SYSDATE, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)";
 
 		Object[] args = new Object[]{filename, f.getFnr(), f.getNavn(), f.getAdresse1(), f.getAdresse2(), f.getAdresse3(), f.getPostnr(), f.getPoststed(), f.getLand(), f.getAvsenderNavn(), f.getAvsenderAdresse1(), f.getAvsenderAdresse2(),
-				f.getAvsenderAdresse3(), f.getAvsenderPostnr(), f.getAvsenderPoststed(), f.getTittel(), message, f.getAppid(), f.getPrintId(), orgnr, f.getShipmentPolicy(), f.getEmail(), f.getReplyTo(), f.isPrintFarge() ? "1" : "0"};
+				f.getAvsenderAdresse3(), f.getAvsenderPostnr(), f.getAvsenderPoststed(), f.getTittel(), message, f.getAppid(), f.getPrintId(), orgnr, f.getShipmentPolicy(), f.getEmail(), f.getReplyTo(), f.isPrintFarge() ? "1" : "0", f.getAnsvarsSted()};
 		int[] argTypes = {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
-				Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.CHAR};
+				Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.CHAR, Types.VARCHAR};
 		try {
 			jdbcTemplate.update(sql, args, argTypes);
 		} catch (Exception e) {
@@ -98,6 +100,18 @@ public class ForsendelsesArkiv {
 	public Map<String, Object> retrieveRow(String id) {
 		String sql = "SELECT * FROM FORSENDELSESARKIV WHERE ID=?";
 		return jdbcTemplate.queryForMap(sql, new Object[]{id});
+	}
+
+	public List<Forsendelse> retrieveRows( Date fromAndIncluding, Date toNotIncluding ) {
+		List<Forsendelse> list = new ArrayList<Forsendelse>();
+		String sql = "SELECT * from forsendelsesarkiv where sendt between ? and ?";
+		Object[] args = new Object[] { fromAndIncluding, toNotIncluding };
+		int[] types = new int[] { Types.DATE, Types.DATE };
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList( sql, args, types );
+		for (Map<String, Object> row : rows) {
+			list.add( createForsendelse( row ) );
+		}
+		return list;
 	}
 
 	public List<Forsendelse> retrieveRows(String[] ids) {
@@ -211,6 +225,7 @@ public class ForsendelsesArkiv {
 		f.setAntallSider(toInt(row.get("ANTALLSIDER")));
 		f.setAntallSiderPostlagt(toInt(row.get("ANTALLSIDERPOSTLAGT")));
 		f.setNesteForsok(toDate(row.get("NESTE_FORSOK")));
+		f.setAnsvarsSted((String) row.get("ANSVARSSTED"));
 		return f;
 	}
 
@@ -451,8 +466,9 @@ public class ForsendelsesArkiv {
 		final String sql = "SELECT ID FROM FORSENDELSESARKIV WHERE UTSKREVET IS NOT NULL AND TIDSPUNKTPOSTLAGT IS NULL AND UTSKREVET <= ? AND UTSKREVET >= ?";
 		final List<String> ids = new ArrayList<String>();
 		long now = System.currentTimeMillis();
-		Date failedToPrintAlertWindowStart = new Date(now - this.failedToPrintAlertWindowStartDay * 1000L * 60 * 60 * 24);
-		Date failedToPrintAlertWindowEnd = new Date(now - this.failedToPrintAlertWindowEndDay * 1000L * 60 * 60 * 24);
+		BusinessCalendar businessCalendar = PresentDayBusinessCalendarForNorway.getInstance();
+		Date failedToPrintAlertWindowStart = failedToPrintAlertWindowStart( now, this.failedToPrintAlertWindowStartDay, businessCalendar );
+		Date failedToPrintAlertWindowEnd = failedToPrintAlertWindowStart( now, this.failedToPrintAlertWindowEndDay, businessCalendar );
 		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, new Object[]{failedToPrintAlertWindowStart, failedToPrintAlertWindowEnd});
 		if (rows != null) {
 			for (Map<String, Object> row : rows) {
@@ -462,6 +478,15 @@ public class ForsendelsesArkiv {
 			}
 		}
 		return ids;
+	}
+
+	static Date failedToPrintAlertWindowStart( long now, int failedToPrintAlertWindowStartDay, BusinessCalendar businessCalendar ) {
+		Date date = new Date( now - failedToPrintAlertWindowStartDay * 1000L * 60 * 60 * 24 );
+		return businessCalendar.previousWorkday( date );
+	}
+
+	static Date failedToPrintAlertWindowEnd( long now, int failedToPrintAlertWindowEndDay, BusinessCalendar businessCalendar ) {
+		return new Date( now - failedToPrintAlertWindowEndDay * 1000L * 60 * 60 * 24 );
 	}
 
 	/**

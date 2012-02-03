@@ -2,6 +2,7 @@ package no.kommune.bergen.soa.svarut;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -91,6 +92,10 @@ public class ServiceDelegateImpl implements ServiceDelegate {
 
 	public List<Forsendelse> retrieveStatus( String[] ids ) {
 		return forsendelsesArkiv.retrieveRows( ids );
+	}
+
+	public List<Forsendelse> retrieveStatus( Date fromAndIncluding, Date toNotIncluding ) {
+		return forsendelsesArkiv.retrieveRows( fromAndIncluding, toNotIncluding );
 	}
 
 	/** Returner statistikk fra forsendelsesarkivet som en komma-separert list med key-value-pairs */

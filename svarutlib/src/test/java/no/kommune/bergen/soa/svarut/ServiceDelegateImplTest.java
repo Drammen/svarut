@@ -20,6 +20,8 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -93,6 +95,21 @@ public class ServiceDelegateImplTest {
 		assertTrue( forsendelser != null && forsendelser.size() > 0 );
 		for (Forsendelse f : forsendelser) {
 			assertNotNull( f.getId() );
+		}
+	}
+
+	@Test
+	public void retrieveStatus3() throws Exception {
+		List<String> forsendelsesIds = Arrays.asList( postSome( 1, 2 ) );
+		long now = System.currentTimeMillis();
+		final long TwentyFourHoursInMillis = 1000*60*60*24;
+		Date yesterday = new Date( now - TwentyFourHoursInMillis );
+		Date tomorrow = new Date( now + TwentyFourHoursInMillis );
+		List<Forsendelse> forsendelser = service.retrieveStatus( yesterday, tomorrow );
+		assertTrue( forsendelser != null && forsendelser.size() == 2 );
+		for (Forsendelse f : forsendelser) {
+			assertNotNull( f.getId() );
+			assertTrue( forsendelsesIds.contains( f.getId() ) );
 		}
 	}
 
