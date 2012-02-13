@@ -5,7 +5,7 @@ public class CorrespondenceSettings {
 	private String notificationType = "Melding fra Bergen kommune";
 	private String fromAddress = "einarvalen@gmail.com";
 	private String languageCode = "1044";
-	private String serviceCode = "1268";
+	private String serviceCode = "2930";
 	private String endpoint = "https://tt02.altinn.basefarm.net/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc";
 	private String systemUserName = ""; // Service login
 	private String systemPassword = ""; // Service login

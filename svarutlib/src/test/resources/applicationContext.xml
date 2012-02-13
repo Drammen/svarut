@@ -100,17 +100,13 @@
 				<property name="systemPassword" value="${altinn.systemPassword}" />
 				<property name="systemUserCode" value="${altinn.systemUserCode}" />
 				<property name="serviceEdition" value="1" />
+				<property name="subjectTemplate" value="$texts{subjectTemplate}" />
+				<property name="bodyTemplate" value="$texts{bodyTemplate}" />
 			</bean>
 		</property>
 		<property name="leadTimeApost" value="2"/>
 		<property name="leadTimeBpost" value="2"/>
 		<property name="leadTimeRekommandert" value="1"/>
-		<property name="messageTemplateAssembly">
-			<bean class="no.kommune.bergen.soa.svarut.context.MessageTemplateAssembly">
-				<property name="subjectTemplate" value="$texts{subjectTemplate}" />
-				<property name="bodyTemplate" value="$texts{bodyTemplate}" />
-			</bean>
-		</property>
         <property name="dispatchWindow" ref="altinnDispatchWindow"/>
 	</bean>
 

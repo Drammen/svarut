@@ -10,18 +10,15 @@ import no.kommune.bergen.soa.svarut.util.DispatchWindow;
 public class AltinnContext {
 	private CorrespondenceSettings correspondenceSettings;
 	private long leadTimeApost = 2, leadTimeBpost = 2, leadTimeRekommandert = 2;
-	private MessageTemplateAssembly messageTemplateAssembly;
     private DispatchWindow dispatchWindow;
 
 	public void verify() {
 		if (correspondenceSettings == null) throw new RuntimeException( "Undefined field: correspondenceSettings" );
-		if (messageTemplateAssembly == null) throw new RuntimeException( "Undefined field: messageTemplateAssembly" );
 	}
 
 	@Override
 	public String toString() {
-		return String.format( "{\n  correspondenceSettings=%s\n leadTimeApost=%s\n leadTimeBpost=%s\n leadTimeRekommandert=%s\n messageTemplateAssembly=%s\n \n}", correspondenceSettings, leadTimeApost, leadTimeBpost, leadTimeRekommandert,
-				messageTemplateAssembly );
+		return String.format( "{\n  correspondenceSettings=%s\n leadTimeApost=%s\n leadTimeBpost=%s\n leadTimeRekommandert=%s\n \n}", correspondenceSettings, leadTimeApost, leadTimeBpost, leadTimeRekommandert);
 	}
 
 	public CorrespondenceSettings getCorrespondenceSettings() {
@@ -54,14 +51,6 @@ public class AltinnContext {
 
 	public void setLeadTimeRekommandert( long leadTimeRekommandert ) {
 		this.leadTimeRekommandert = leadTimeRekommandert;
-	}
-
-	public MessageTemplateAssembly getMessageTemplateAssembly() {
-		return messageTemplateAssembly;
-	}
-
-	public void setMessageTemplateAssembly( MessageTemplateAssembly messageTemplateAssembly ) {
-		this.messageTemplateAssembly = messageTemplateAssembly;
 	}
 
     public DispatchWindow getDispatchWindow() {
