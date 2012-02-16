@@ -3,12 +3,12 @@ package no.kommune.bergen.soa.svarut.altin;
 import java.util.Calendar;
 
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptExternal;
-import no.altinn.schemas.services.serviceengine.correspondence._2009._10.ExternalContent;
-import no.altinn.schemas.services.serviceengine.correspondence._2009._10.InsertCorrespondence;
+import no.altinn.schemas.services.serviceengine.correspondence._2010._10.ExternalContentV2;
+import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2;
 import no.altinn.schemas.services.serviceengine.notification._2009._10.NotificationBEList;
 import no.altinn.services.common.fault._2009._10.AltinnFault;
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic;
-import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicAltinnFaultFaultFaultMessage;
+import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage;
 import no.kommune.bergen.soa.util.XMLDatatypeUtil;
 
 import org.apache.cxf.endpoint.Client;
@@ -27,7 +27,7 @@ public class CorrespondenceClient {
 
 	public int send( CorrespondenceMessage msg ) {
 		ICorrespondenceAgencyExternalBasic port = createClientPort();
-		InsertCorrespondence request = createRequest( msg );
+		InsertCorrespondenceV2 request = createRequest( msg );
 		request.setContent( createContent( msg ) );
 		return submitRequest( port, request, msg );
 	}
@@ -42,8 +42,8 @@ public class CorrespondenceClient {
 		return messageNotification.notifications;
 	}
 
-	private InsertCorrespondence createRequest( CorrespondenceMessage msg ) {
-		InsertCorrespondence insertCorrespondence = new InsertCorrespondence();
+	private InsertCorrespondenceV2 createRequest( CorrespondenceMessage msg ) {
+		InsertCorrespondenceV2 insertCorrespondence = new InsertCorrespondenceV2();
 		insertCorrespondence.setServiceCode( this.settings.getServiceCode() );
 		insertCorrespondence.setServiceEdition( this.settings.getServiceEdition() );
 		insertCorrespondence.setReportee( msg.getOrgNr() );
@@ -52,8 +52,8 @@ public class CorrespondenceClient {
 		return insertCorrespondence;
 	}
 
-	private ExternalContent createContent( CorrespondenceMessage msg ) {
-		ExternalContent externalContent = new ExternalContent();
+	private ExternalContentV2 createContent( CorrespondenceMessage msg ) {
+		ExternalContentV2 externalContent = new ExternalContentV2();
 		externalContent.setLanguageCode( this.settings.getLanguageCode() );
 		externalContent.setMessageTitle( msg.getMessageTitle() );
 		externalContent.setMessageBody( msg.getMessageBody() );
@@ -78,18 +78,18 @@ public class CorrespondenceClient {
 		return service;
 	}
 
-	protected int submitRequest( ICorrespondenceAgencyExternalBasic port, InsertCorrespondence request, CorrespondenceMessage msg ) {
+	protected int submitRequest( ICorrespondenceAgencyExternalBasic port, InsertCorrespondenceV2 request, CorrespondenceMessage msg ) {
 
 		ReceiptExternal response = null;
 		try {
-			response = port.insertCorrespondenceBasic( this.settings.getSystemUserName(), this.settings.getSystemPassword(), this.settings.getSystemUserCode(), msg.getExternalReference(), request );
-		} catch (ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicAltinnFaultFaultFaultMessage e) {
+			response = port.insertCorrespondenceBasicV2( this.settings.getSystemUserName(), this.settings.getSystemPassword(), this.settings.getSystemUserCode(), msg.getExternalReference(), request );
+		} catch (ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage e) {
 			throw new RuntimeException( getAltinFaultMessage( e ), e );
 		}
 		return response.getReceiptId();
 	}
 
-	private String getAltinFaultMessage( ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicAltinnFaultFaultFaultMessage f ) {
+	private String getAltinFaultMessage( ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage f ) {
 		AltinnFault faultMessage = f.getFaultInfo();
 		return faultMessage.getAltinnErrorMessage();
 	}
