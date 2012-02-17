@@ -33,7 +33,9 @@ public class ServiceDelegateImpl implements ServiceDelegate {
 	}
 
 	/** Aksepterer en forsendelse og lagrer den i forsendelsesarkivet. Returnerer forsendelsesId */
+	@Override
 	public String send( Forsendelse forsendelse, byte[] content ) {
+		logger.debug("Sending forsendelse : Tittel " + forsendelse.getTittel() + " email " + forsendelse.getEmail());
 		if (content == null || content.length < 1) throw new UserException( "Document content is empty" );
 		this.dispatcherFactory.getDispatcher( forsendelse ); // Verify that we have a dispatcher for this
 		String forsendelsesId = forsendelsesArkiv.save( forsendelse, new ByteArrayInputStream( content ) );
@@ -42,7 +44,9 @@ public class ServiceDelegateImpl implements ServiceDelegate {
 	}
 
 	/** Aksepterer en forsendelse og lagrer den i forsendelsesarkivet. Returnerer forsendelsesId */
+	@Override
 	public String send( Forsendelse forsendelse, InputStream inputStream ) {
+		logger.debug("Sending forsendelse : Tittel " + forsendelse.getTittel() + " email " + forsendelse.getEmail());
 		this.dispatcherFactory.getDispatcher( forsendelse ); // Verify that we have a dispatcher for this
 		String forsendelsesId = forsendelsesArkiv.save( forsendelse, inputStream );
 		if (logger.isInfoEnabled()) logger.info( "Successfully saved. Id=" + forsendelsesId + ", Name=" + forsendelse.getNavn() );
@@ -50,28 +54,33 @@ public class ServiceDelegateImpl implements ServiceDelegate {
 	}
 
 	/** Returnerer en Forsendelse angitt ved forsendelsesId og som tilhører en gitt JuridiskEnhet */
+	@Override
 	public Forsendelse retrieve( String id, JuridiskEnhet juridiskEnhet ) {
 		forsendelsesArkiv.authorize( id, juridiskEnhet );
 		return forsendelsesArkiv.retrieve( id );
 	}
 
 	/** Returnerer Forsendelser som tilhører en gitt JuridiskEnhet */
+	@Override
 	public List<Forsendelse> retrieveList( JuridiskEnhet juridiskEnhet ) {
 		return forsendelsesArkiv.retrieveList( juridiskEnhet );
 	}
 
 	/** Returnerer dokument-innhold for en forsendelse angitt ved forsendelsesId og som tilhører en gitt JuridiskEnhet */
+	@Override
 	public InputStream retrieveContent( String id, JuridiskEnhet juridiskEnhet ) {
 		forsendelsesArkiv.authorize( id, juridiskEnhet );
 		return forsendelsesArkiv.retrieveContent( id );
 	}
 
 	/** Returnerer dokument-innholde for en forsendelse angitt ved forsendelsesId */
+	@Override
 	public InputStream retrieveContentNoAuthorization( String id ) {
 		return forsendelsesArkiv.retrieveContent( id );
 	}
 
 	/** Sender en gitt forsendelse til PrintServiceProvider */
+	@Override
 	public void print( String id ) {
 		Forsendelse f = forsendelsesArkiv.retrieve( id );
 		PrintReceipt printReceipt = printFacade.print( f );
@@ -81,48 +90,58 @@ public class ServiceDelegateImpl implements ServiceDelegate {
 	}
 
 	/** Henter status for nye post-forsendeser fra PrintServiceProvider */
+	@Override
 	public void importPrintStatements() {
 		this.printFacade.importPrintStatements( forsendelsesArkiv );
 	}
 
 	/** Returner en Forsendelse som en komma-separert list med key-value-pairs */
+	@Override
 	public String retrieveStatus( String id ) {
 		return toString( forsendelsesArkiv.retrieveRow( id ) );
 	}
 
+	@Override
 	public List<Forsendelse> retrieveStatus( String[] ids ) {
 		return forsendelsesArkiv.retrieveRows( ids );
 	}
 
+	@Override
 	public List<Forsendelse> retrieveStatus( Date fromAndIncluding, Date toNotIncluding ) {
 		return forsendelsesArkiv.retrieveRows( fromAndIncluding, toNotIncluding );
 	}
 
 	/** Returner statistikk fra forsendelsesarkivet som en komma-separert list med key-value-pairs */
+	@Override
 	public String statistics() {
 		return toString( forsendelsesArkiv.statistics() );
 	}
 
 	/** Bekrefter at forsendelsesdokumentet er å betrakte som lest elektronisk */
+	@Override
 	public void confirm( String id ) {
 		forsendelsesArkiv.confirm( id );
 	}
 
 	/** Reset bekreftelse på at forsendelsesdokumentet er lest elektronisk */
+	@Override
 	public void setUnread( String id ) {
 		forsendelsesArkiv.setUnread( id );
 	}
 
 	/** Stopp all videre behandling av denne forsendelsen */
+	@Override
 	public void stop( String id ) {
 		forsendelsesArkiv.stop( id );
 	}
 
 	/** Returnerer url for å laste ned dokumentet tilhørende en forsendelse */
+	@Override
 	public String getUrl( JuridiskEnhet juridiskEnhet, String id ) {
 		return this.serviceContext.getVelocityModelFactory().getUrl( juridiskEnhet, id );
 	}
 
+	@Override
 	public void dispatch() {
 		logger.debug( "Dispatch() start" );
 		List<Dispatcher> dispatchers = dispatcherFactory.getAllDispatchers();
@@ -132,6 +151,7 @@ public class ServiceDelegateImpl implements ServiceDelegate {
 		logger.debug( "Dispatch() end" );
 	}
 
+	@Override
 	public void printUnread() {
 		logger.debug( "printUnread() start" );
 		List<Dispatcher> dispatchers = dispatcherFactory.getAllDispatchers();
@@ -142,6 +162,7 @@ public class ServiceDelegateImpl implements ServiceDelegate {
 	}
 
 	/** Fjerner forsendelser som er foreldet fra arkivet */
+	@Override
 	public void removeOld() {
 		logger.debug( "removeOld() start, retirementAgeIndays=" + this.retirementAgeIndays );
 		forsendelsesArkiv.removeOlderThan( this.retirementAgeIndays );
