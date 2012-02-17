@@ -1,10 +1,22 @@
 package no.kommune.bergen.soa.common.jms;
 
+import javax.jms.BytesMessage;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Queue;
+import javax.jms.QueueConnection;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.QueueReceiver;
+import javax.jms.QueueSender;
+import javax.jms.QueueSession;
+import javax.jms.Session;
+import javax.jms.TemporaryQueue;
+import javax.jms.TextMessage;
+
 import org.apache.log4j.Logger;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
-
-import javax.jms.*;
 
 /** Wrapper for Spring jms */
 public class Jms {
@@ -74,6 +86,7 @@ public class Jms {
 
 	private static void send( final JmsTemplate jmsTemplate, final Queue queue, final String msg ) {
 		send( jmsTemplate, queue, new MessageCreator() {
+			@Override
 			public Message createMessage( Session session ) throws JMSException {
 				if (logger.isDebugEnabled()) logger.debug( "Creating JMS message " + msg );
 				return session.createTextMessage( msg );
@@ -89,6 +102,7 @@ public class Jms {
 			return;
 		}
 		jmsTemplate.send( replyTo, new MessageCreator() {
+			@Override
 			public Message createMessage( Session session ) throws JMSException {
 				TextMessage message = session.createTextMessage( response );
 				String correlationId = messageReceived.getJMSMessageID();
@@ -102,6 +116,7 @@ public class Jms {
 
 	private static void send( final JmsTemplate jmsTemplate, final Queue queue, final byte[] msg ) {
 		send( jmsTemplate, queue, new MessageCreator() {
+			@Override
 			public Message createMessage( Session session ) throws JMSException {
 				if (logger.isDebugEnabled()) logger.debug( "Creating JMS message " + msg );
 				BytesMessage message = session.createBytesMessage();
@@ -148,6 +163,7 @@ public class Jms {
 
 	private static void send( final JmsTemplate jmsTemplate, final Queue queue, final Message msg ) {
 		send( jmsTemplate, queue, new MessageCreator() {
+			@Override
 			public Message createMessage( Session session ) throws JMSException {
 				return msg;
 			}
