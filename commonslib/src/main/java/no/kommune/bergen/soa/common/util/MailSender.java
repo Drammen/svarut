@@ -31,7 +31,6 @@ public class MailSender {
 		} else {
 			final File[] emptyAttachments = new File[0];
 			sendMimeMessage( recipient, from, subject, body, emptyAttachments);
-			//sendPlainMessage( recipient, from, subject, body );
 		}
 	}
 
@@ -42,10 +41,10 @@ public class MailSender {
 		} else {
 			final File[] emptyAttachments = new File[0];
 			sendMimeMessage( recipients, from, subject, body, emptyAttachments );
-			//sendPlainMessage( recipients, from, subject, body );
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void sendPlainMessage( final List<String> recipients, final String from, final String subject, final String body ) {
 		for (String to : recipients) {
 			if (logger.isDebugEnabled()) logger.debug( "Sending email to:" + to + " from:" + from + " subject:" + subject );
@@ -67,11 +66,13 @@ public class MailSender {
 			this.javaMailSender.send( new MimeMessagePreparator() {
 				@Override
 				public void prepare( MimeMessage mimeMessage ) throws MessagingException {
-					MimeMessageHelper message = new MimeMessageHelper( mimeMessage, MimeMessageHelper.MULTIPART_MODE_MIXED, encoding );
+					MimeMessageHelper message = null;
+					message = new MimeMessageHelper( mimeMessage, MimeMessageHelper.MULTIPART_MODE_MIXED, encoding );
 					message.setFrom( from );
 					message.setTo( InternetAddress.parse( to ) );
 					message.setSubject( subject );
 					message.setText( body, false );
+
 					for (File attachment : attachments) {
 						message.addAttachment( attachment.getName(), attachment );
 					}

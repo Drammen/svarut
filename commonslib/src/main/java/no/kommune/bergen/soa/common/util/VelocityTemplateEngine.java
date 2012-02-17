@@ -11,6 +11,7 @@ public class VelocityTemplateEngine implements TemplateEngine {
 	private VelocityEngine velocityEngine = null;
 	private String encoding = "UTF-8";
 
+	@Override
 	public String merge( Map<String, String> data, String templateLocation ) {
 		String result = VelocityEngineUtils.mergeTemplateIntoString( this.velocityEngine, templateLocation, encoding, data );
 		if (result.indexOf( "${" ) > -1) {
