@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- For assistance related to logback-translator or configuration  -->
+<!-- files in general, please contact the logback user mailing list -->
+<!-- at http://www.qos.ch/mailman/listinfo/logback-user             -->
+<!--                                                                -->
+<!-- For professional support please see                            -->
+<!--    http://www.qos.ch/shop/products/professionalSupport         -->
+<!--                                                                -->
+<configuration>
+	<appender name="svarutSample" class="ch.qos.logback.core.ConsoleAppender">
+		<DatePattern>'.'yyyy-MM-dd</DatePattern>
+		<Append>true</Append>
+		<encoder>
+			<pattern>%p, %t, %d, %C - %m%n</pattern>
+		</encoder>
+	</appender>
+	<root level="INFO">
+		<appender-ref ref="svarutSample"/>
+	</root>
+</configuration>
+
