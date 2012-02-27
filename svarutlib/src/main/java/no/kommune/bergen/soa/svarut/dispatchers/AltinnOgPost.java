@@ -44,12 +44,15 @@ public class AltinnOgPost extends AbstractDispatcher {
 
     @Override
 	public void verify( Forsendelse f ) {
-		final String[] required = { f.getOrgnr(), f.getNavn(), f.getPostnr(), f.getPoststed(), f.getTittel(), f.getMeldingsTekst() };
+		final String[] required = { f.getNavn(), f.getPostnr(), f.getPoststed(), f.getTittel(), f.getMeldingsTekst() };
 		for (String field : required) {
 			if (field == null) {
-				throw new UserException( String.format( "Required fields are: orgnr, navn,  postnr, poststed, tittel, meldingsTekst. Received: orgnr=%s, navn=%s, postnr=%s, poststed=%s, tittel=%s, meldingsTekst=%s.", f.getOrgnr(), f.getNavn(), f.getPostnr(), f.getPoststed(), f
+				throw new UserException( String.format( "Required fields are: orgnr, navn,  postnr, poststed, tittel, meldingsTekst. Received: navn=%s, postnr=%s, poststed=%s, tittel=%s, meldingsTekst=%s.", f.getNavn(), f.getPostnr(), f.getPoststed(), f
 						.getTittel(), f.getMeldingsTekst() ) );
 			}
+		}
+		if (f.getOrgnr() == null && f.getFnr() == null) {
+			throw new UserException( String.format( "Required fields are: orgnr/fodselsnr, tittel. Received: orgnr=%s, fodselsnr=%s, tittel=%s.", f.getOrgnr(), f.getTittel(), f.getFnr() ) );
 		}
 	}
 

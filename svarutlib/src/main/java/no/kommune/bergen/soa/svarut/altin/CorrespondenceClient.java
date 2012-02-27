@@ -13,6 +13,8 @@ import no.kommune.bergen.soa.util.XMLDatatypeUtil;
 
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
+import org.apache.cxf.interceptor.LoggingInInterceptor;
+import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
@@ -64,6 +66,8 @@ public class CorrespondenceClient {
 	protected ICorrespondenceAgencyExternalBasic createClientPort() {
 		ICorrespondenceAgencyExternalBasic service;
 		JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+		factory.getInInterceptors().add(new LoggingInInterceptor());
+		factory.getOutInterceptors().add(new LoggingOutInterceptor());
 		factory.setServiceClass( ICorrespondenceAgencyExternalBasic.class );
 		factory.setAddress( this.settings.getEndpoint() );
 		service = (ICorrespondenceAgencyExternalBasic) factory.create();

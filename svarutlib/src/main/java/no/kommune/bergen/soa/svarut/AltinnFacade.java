@@ -41,7 +41,10 @@ public class AltinnFacade {
 		String body = templateEngine.merge( model, this.settings.getBodyTemplate() );
 		if(log.isDebugEnabled())log.debug("Subject: " + subject + " body: " + body);
 		CorrespondenceMessage message = new CorrespondenceMessage();
-		message.setOrgNr( f.getOrgnr() );
+		if (f.getOrgnr() != null)
+			message.setOrgNr(f.getOrgnr());
+		else
+			message.setOrgNr(f.getFnr());
 		message.setEmailToNotify( f.getEmail() );
 		message.setSmsToNotify( f.getSms() );
 		message.setMessageTitle( subject );

@@ -36,12 +36,9 @@ public class KunAltinn extends AbstractDispatcher  {
 	}
 
 	@Override
-	public void verify( Forsendelse f ) {
-		final String[] required = { f.getOrgnr(), f.getTittel() };
-		for (String field : required) {
-			if (field == null) {
-				throw new UserException( String.format( "Required fields are: orgnr, tittel. Received: orgnr=%s, tittel=%s.", f.getOrgnr(), f.getTittel() ) );
-			}
+	public void verify(Forsendelse f) {
+		if (f.getTittel() == null || (f.getOrgnr() == null && f.getFnr() == null)) {
+			throw new UserException(String.format("Required fields are: orgnr/fodselsnr, tittel. Received: orgnr=%s, fodselsnr=%s, tittel=%s.", f.getOrgnr(), f.getTittel(), f.getFnr()));
 		}
 	}
 
