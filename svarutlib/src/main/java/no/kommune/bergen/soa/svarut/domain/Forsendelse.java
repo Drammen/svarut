@@ -16,6 +16,7 @@ public class Forsendelse {
 	private int antallSider, antallSiderPostlagt;
     private Date nesteForsok;
 	private String ansvarsSted;
+	private String konteringkode;
 
 	public boolean isPrintFarge() {
 		return printFarge;
@@ -326,5 +327,13 @@ public class Forsendelse {
 
 	public String getAnsvarsSted() {
 		return ansvarsSted;
+	}
+
+	public void setKonteringkode(String konteringkode) {
+		this.konteringkode = konteringkode;
+	}
+
+	public String getKonteringkode() {
+		return konteringkode;
 	}
 }

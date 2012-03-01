@@ -54,6 +54,7 @@ public class ForsendelseMapper {
 		result.setReplyTo( f.getReplyTo() );
 		result.setFargePrint( f.isPrintFarge() );
 		result.setAnsvarsSted( f.getAnsvarsSted() );
+		result.setKonteringkode( f.getKonteringkode());
 		try {
 			result.setForsendelsesMate( ShipmentPolicy.fromValue( f.getShipmentPolicy() ) );
 		} catch (IllegalArgumentException e) {
@@ -93,6 +94,7 @@ public class ForsendelseMapper {
 		result.setReplyTo( rq.getReplyTo() );
 		result.setPrintFarge( rq.isFargePrint() );
 		result.setAnsvarsSted(rq.getAnsvarsSted());
+		result.setKonteringkode(rq.getKonteringkode());
 		ShipmentPolicy forsendelsesMate = rq.getForsendelsesMate();
 		if (forsendelsesMate != null) {
 			result.setShipmentPolicy( forsendelsesMate.value() );
