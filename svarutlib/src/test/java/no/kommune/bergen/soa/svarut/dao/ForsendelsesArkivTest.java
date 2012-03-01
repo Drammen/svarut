@@ -424,9 +424,11 @@ public class ForsendelsesArkivTest {
 		f.setTittel("Viktig melding!");
 		f.setEmail("test@hudson.iktofu.no");
 		f.setAnsvarsSted("EnKulPlass");
+		f.setKonteringkode("kontkode123");
 		String id = forsendelsesArkiv.save(f, new ByteArrayInputStream(new byte[]{}));
 		Forsendelse f2 = forsendelsesArkiv.retrieve(id);
 		assertEquals("EnKulPlass", f2.getAnsvarsSted());
+		assertEquals("kontkode123", f2.getKonteringkode());
 	}
 
 	private PrintReceipt newPrintReceipt() {

@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Forsendelse", propOrder = {"fodselsnummer", "navn", "orgnr", "adresse", "avsenderNavn", "avsenderadresse", "tittel", "meldingstekst", "appid", "forsendelsesMate", "epost", "replyTo", "fargePrint", "ansvarsSted"})
+@XmlType(name = "Forsendelse", propOrder = {"fodselsnummer", "navn", "orgnr", "adresse", "avsenderNavn", "avsenderadresse", "tittel", "meldingstekst", "appid", "forsendelsesMate", "epost", "replyTo", "fargePrint", "ansvarsSted", "konteringkode"})
 public class Forsendelse {
 
 	@XmlElement(required = true)
@@ -31,6 +31,7 @@ public class Forsendelse {
 	@XmlElement(defaultValue = "false")
 	protected boolean fargePrint;
 	protected String ansvarsSted;
+	protected String konteringkode;
 
 
 	public String getAnsvarsSted() {
@@ -267,6 +268,14 @@ public class Forsendelse {
 	 */
 	public void setFargePrint(boolean value) {
 		this.fargePrint = value;
+	}
+
+	public String getKonteringkode() {
+		return konteringkode;
+	}
+
+	public void setKonteringkode(String konteringkode) {
+		this.konteringkode = konteringkode;
 	}
 
 }
