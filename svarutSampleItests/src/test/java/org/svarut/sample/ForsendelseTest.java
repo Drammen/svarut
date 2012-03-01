@@ -11,7 +11,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class AnsvarsstedTest {
+public class ForsendelseTest {
 
 	private SvarUtService service = SvarUtServiceCreator.getService();
 
@@ -26,11 +26,13 @@ public class AnsvarsstedTest {
 		f.setEpost("test@hudson.iktfou.no");
 		f.setForsendelsesMate(ShipmentPolicy.KUN_EMAIL_INGEN_VEDLEGG);
 		f.setAnsvarsSted("EnKulPlass");
+		f.setKonteringkode("01234567890");
 		rq.setForsendelse(f);
 
 		String forsendelsesId = service.send(null, rq);
 		SvarUtServiceCreator.waitTillFinishedWorking();
 		List<ForsendelseStatus> status = service.retrieveStatus(null, Arrays.asList(new String[]{forsendelsesId}));
 		assertEquals("EnKulPlass", status.get(0).getForsendelse().getAnsvarsSted());
+		assertEquals("01234567890", status.get(0).getForsendelse().getKonteringkode());
 	}
 }
