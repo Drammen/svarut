@@ -21,8 +21,8 @@ public class KunAltinn extends AbstractDispatcher  {
 	}
 
 	public void send( Forsendelse f ) {
-		altinnFacade.send( f );
-		forsendelsesArkiv.setSentAltinn( f.getId() );
+		int receiptId = altinnFacade.send( f );
+		forsendelsesArkiv.setSentAltinn( f.getId(), receiptId );
 		logger.info( String.format( "Successfully sent to Altinn. Id=%s, Org=%s, Navn=%s", f.getId(), f.getOrgnr(), f.getNavn() ) );
 	}
 

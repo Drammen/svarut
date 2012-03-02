@@ -47,7 +47,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<cxf.version>2.4.2</cxf.version>
-		<constretto.version>1.1</constretto.version>
+		<constretto.version>1.1.2</constretto.version>
 		<spring.version>3.0.6.RELEASE</spring.version>
 		<log4j.version>1.2.16</log4j.version>
 		<jetty.version>8.0.0.v20110901</jetty.version>
@@ -76,13 +76,6 @@
 		</snapshotRepository>
 	</distributionManagement>
 
-	<repositories>
-		<repository>
-			<id>constretto.org</id>
-			<name>Constretto public maven repository</name>
-			<url>http://repo.constretto.org/content/repositories/releases</url>
-		</repository>
-	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>

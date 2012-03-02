@@ -39,9 +39,7 @@ public class MockCorrespondenceClient extends CorrespondenceClient {
 		for (ReceiverEndPoint receiverEndPoint : receiverEndPoints) {
 			TransportType transportType = receiverEndPoint.getTransportType();
 			if (TransportType.EMAIL.equals( transportType )) {
-				Assert.assertEquals( message.getEmailToNotify(), receiverEndPoint.getReceiverAddress() );
 			} else if (TransportType.SMS.equals( transportType )) {
-				Assert.assertEquals( message.getSmsToNotify(), receiverEndPoint.getReceiverAddress() );
 			} else {
 				Assert.fail( "Unknown TransportType: " + transportType );
 			}
@@ -69,8 +67,6 @@ public class MockCorrespondenceClient extends CorrespondenceClient {
 	public static CorrespondenceMessage createMessage() {
 		CorrespondenceMessage message = new CorrespondenceMessage();
 		message.setOrgNr( "910558919" );
-		message.setSmsToNotify( "004795996325" );
-		message.setEmailToNotify( "einarvalen@gmail.com" );
 		message.setMessageSummary( "TestMessageSummary" );
 		message.setMessageTitle( "Meldings tittel" );
 		message.setMessageBody( "Meldingens tekst" );

@@ -3,10 +3,7 @@ package no.kommune.bergen.soa.svarut.altin;
 import java.util.Calendar;
 
 import no.altinn.schemas.serviceengine.formsengine._2009._10.TransportType;
-import no.altinn.schemas.services.serviceengine.notification._2009._10.Notification;
-import no.altinn.schemas.services.serviceengine.notification._2009._10.NotificationBEList;
-import no.altinn.schemas.services.serviceengine.notification._2009._10.ReceiverEndPoint;
-import no.altinn.schemas.services.serviceengine.notification._2009._10.ReceiverEndPointBEList;
+import no.altinn.schemas.services.serviceengine.notification._2009._10.*;
 import no.kommune.bergen.soa.util.XMLDatatypeUtil;
 
 /** CorrespondenceClient helper */
@@ -22,20 +19,14 @@ public class MessageNotification {
 		this.notification.setShipmentDateTime( XMLDatatypeUtil.toXMLGregorianCalendar( Calendar.getInstance() ) );
 		this.notification.setReceiverEndPoints( endPoints );
 		this.notifications.getNotification().add( notification );
-	}
-
-	public void addSms( String receiverSmsNumber ) {
-		add( TransportType.SMS, receiverSmsNumber );
-	}
-
-	public void addEmail( String receiverEmail ) {
-		add( TransportType.EMAIL, receiverEmail );
+		add(TransportType.SMS, "");
+		add(TransportType.EMAIL, "");
 	}
 
 	private void add( TransportType transportType, String receiverAddress ) {
 		if (isOmitted( receiverAddress )) return;
 		ReceiverEndPoint receiverEndPoint = new ReceiverEndPoint();
-		receiverEndPoint.setReceiverAddress( receiverAddress );
+		receiverEndPoint.setReceiverAddress( "" );
 		receiverEndPoint.setTransportType( transportType );
 		endPoints.getReceiverEndPoint().add( receiverEndPoint );
 	}

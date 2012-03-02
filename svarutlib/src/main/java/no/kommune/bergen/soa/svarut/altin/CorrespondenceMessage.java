@@ -3,8 +3,6 @@ package no.kommune.bergen.soa.svarut.altin;
 /** Melding som sendes til mottakerens Altinn postkasse */
 public class CorrespondenceMessage {
 	private String orgNr;
-	private String smsToNotify;
-	private String emailToNotify;
 	private String messageSummary;
 	private String messageTitle;
 	private String messageBody;
@@ -16,24 +14,6 @@ public class CorrespondenceMessage {
 
 	public void setOrgNr( String orgNr ) {
 		this.orgNr = orgNr;
-	}
-
-	public String getSmsToNotify() {
-		return smsToNotify;
-	}
-
-	/** Varsling om at ny melding er ankommet i mottakers Altinn postkasse */
-	public void setSmsToNotify( String smsToNotify ) {
-		this.smsToNotify = smsToNotify;
-	}
-
-	public String getEmailToNotify() {
-		return emailToNotify;
-	}
-
-	/** Varsling om at ny melding er ankommet i mottakers Altinn postkasse */
-	public void setEmailToNotify( String emailToNotify ) {
-		this.emailToNotify = emailToNotify;
 	}
 
 	public String getMessageSummary() {

@@ -25,8 +25,8 @@ public class AltinnFacade {
 		this.settings = correspondenceClient.getSettings();
 	}
 
-	public void send( Forsendelse f ) {
-		correspondenceClient.send( createMessage( f ) );
+	public int send(Forsendelse f) {
+		return correspondenceClient.send( createMessage( f ) );
 	}
 
 	CorrespondenceMessage createMessage( Forsendelse f ) {
@@ -45,8 +45,6 @@ public class AltinnFacade {
 			message.setOrgNr(f.getOrgnr());
 		else
 			message.setOrgNr(f.getFnr());
-		message.setEmailToNotify( f.getEmail() );
-		message.setSmsToNotify( f.getSms() );
 		message.setMessageTitle( subject );
 		message.setMessageSummary( subject );
 		message.setMessageBody( body );
