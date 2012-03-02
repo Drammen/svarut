@@ -39,23 +39,6 @@ public class AltinnOgPostTest {
 	}
 
 	@Test
-	public void sendNorgeNo() {
-		int variant = 2;
-		Forsendelse forsendelse = ForsendelsesArkivTest.createForsendelse( variant );
-		forsendelse.setId( "" + variant );
-		forsendelse.setFile( new File( "src/test/resources/test.pdf" ) );
-		String fnr = forsendelse.getFnr();
-		assertNotNull( fnr );
-		altinnFacade.send( eq( forsendelse ) );
-		forsendelsesArkiv.setSentAltinn( eq( forsendelse.getId() ) );
-		replay( altinnFacade );
-		replay( forsendelsesArkiv );
-		dispatcher.send( forsendelse );
-		verify( altinnFacade );
-		verify( forsendelsesArkiv );
-	}
-
-	@Test
 	public void handleUnread() {
 		int variant = 3;
 		Forsendelse forsendelse = ForsendelsesArkivTest.createForsendelse( 1 );

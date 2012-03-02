@@ -64,7 +64,6 @@ public class AltinnnFacadeTest {
 
 	private void satisfyChecksInMockCorrespondenceClient( Forsendelse forsendelse ) {
 		CorrespondenceMessage message = MockCorrespondenceClient.createMessage();
-		forsendelse.setEmail( message.getEmailToNotify() );
 		forsendelse.setId( message.getExternalReference() );
 		forsendelse.setMeldingsTekst( message.getMessageBody() );
 		forsendelse.setTittel( message.getMessageTitle() );

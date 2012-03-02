@@ -37,21 +37,6 @@ public class KunAltinnTest {
 	}
 
 	@Test
-	public void sendAltin() {
-		int variant = 2;
-		Forsendelse forsendelse = ForsendelsesArkivTest.createForsendelse( variant );
-		forsendelse.setId( "" + variant );
-		forsendelse.setFile( new File( "src/test/resources/test.pdf" ) );
-		altinnFacade.send( eq( forsendelse ) );
-		forsendelsesArkiv.setSentAltinn( eq( forsendelse.getId() ) );
-		replay( altinnFacade );
-		replay( forsendelsesArkiv );
-		dispatcher.send( forsendelse );
-		verify( altinnFacade );
-		verify( forsendelsesArkiv );
-	}
-
-	@Test
 	public void verifyForsendlese() {
 		Forsendelse f = new Forsendelse();
 		assertFalse( isOk( f ) );

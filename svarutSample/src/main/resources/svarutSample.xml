@@ -108,33 +108,6 @@
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 
-
-		<bean id="altinnContext" class="no.kommune.bergen.soa.svarut.context.AltinnContext">
-			<property name="correspondenceSettings">
-				<bean class="no.kommune.bergen.soa.svarut.altin.CorrespondenceSettings">
-					<property name="notificationType" value="${altinn.notificationType}" />
-					<property name="fromAddress" value="${altinn.fromAddress}" />
-					<property name="languageCode" value="1044" />
-					<property name="serviceCode" value="${altinn.serviceCode}" />
-					<property name="endpoint" value="${altinn.endpoint}" />
-					<property name="systemUserName" value="${altinn.systemUserName}" />
-					<property name="systemPassword" value="${altinn.systemPassword}" />
-					<property name="systemUserCode" value="${altinn.systemUserCode}" />
-					<property name="serviceEdition" value="1" />
-				</bean>
-			</property>
-			<property name="leadTimeApost" value="2"/>
-			<property name="leadTimeBpost" value="2"/>
-			<property name="leadTimeRekommandert" value="1"/>
-			<property name="messageTemplateAssembly">
-				<bean class="no.kommune.bergen.soa.svarut.context.MessageTemplateAssembly">
-					<property name="subjectTemplate" value="${subjectTemplate}" />
-					<property name="bodyTemplate" value="${bodyTemplate}" />
-				</bean>
-			</property>
-			<property name="dispatchWindow" ref="altinnDispatchWindow"/>
-		</bean>
-
 		<bean id="norgeDotNoContext" class="no.kommune.bergen.soa.svarut.context.NorgeDotNoContext">
 			<property name="ldapContextSource" ref="contextSourceMinside" />
 			<property name="javaMailSender" ref="${java.mail.ref}" />

@@ -21,8 +21,8 @@ public class KunAltinn extends AbstractDispatcher  {
 	}
 
 	public void send( Forsendelse f ) {
-		altinnFacade.send( f );
-		forsendelsesArkiv.setSentAltinn( f.getId() );
+		int receiptId = altinnFacade.send( f );
+		forsendelsesArkiv.setSentAltinn( f.getId(), receiptId );
 		logger.info( String.format( "Successfully sent to Altinn. Id=%s, Org=%s, Navn=%s", f.getId(), f.getOrgnr(), f.getNavn() ) );
 	}
 
@@ -36,12 +36,9 @@ public class KunAltinn extends AbstractDispatcher  {
 	}
 
 	@Override
-	public void verify( Forsendelse f ) {
-		final String[] required = { f.getOrgnr(), f.getTittel() };
-		for (String field : required) {
-			if (field == null) {
-				throw new UserException( String.format( "Required fields are: orgnr, tittel. Received: orgnr=%s, tittel=%s.", f.getOrgnr(), f.getTittel() ) );
-			}
+	public void verify(Forsendelse f) {
+		if (f.getTittel() == null || (f.getOrgnr() == null && f.getFnr() == null)) {
+			throw new UserException(String.format("Required fields are: orgnr/fodselsnr, tittel. Received: orgnr=%s, fodselsnr=%s, tittel=%s.", f.getOrgnr(), f.getTittel(), f.getFnr()));
 		}
 	}
 
