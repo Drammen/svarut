@@ -285,10 +285,10 @@ public class ForsendelsesArkiv {
 		return list;
 	}
 
-	public void setSentAltinn(String id) {
+	public void setSentAltinn(String id, int receiptId) {
 		if (logger.isDebugEnabled()) logger.debug("setSentAltinn() id=" + id);
-		String sql = "UPDATE FORSENDELSESARKIV SET ALTINN_SENDT=SYSDATE WHERE ID=?";
-		jdbcTemplate.update(sql, new Object[]{id});
+		String sql = "UPDATE FORSENDELSESARKIV SET ALTINN_SENDT=SYSDATE, ALTINN_RECEIPT_ID=? WHERE ID=?";
+		jdbcTemplate.update(sql, new Object[]{receiptId, id});
 	}
 
 	public void setSentNorgeDotNo(String id) {

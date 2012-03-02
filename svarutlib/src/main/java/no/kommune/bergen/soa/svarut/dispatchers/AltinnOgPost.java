@@ -27,8 +27,8 @@ public class AltinnOgPost extends AbstractDispatcher {
 
 	@Override
 	public void send( Forsendelse f ) {
-		altinnFacade.send( f );
-		forsendelsesArkiv.setSentAltinn( f.getId() );
+		int receiptId = altinnFacade.send( f );
+		forsendelsesArkiv.setSentAltinn( f.getId(), receiptId);
 		logger.info( String.format( "Successfully sent to Altinn. Id=%s, Org=%s, Navn=%s", f.getId(), f.getOrgnr(), f.getNavn() ) );
 	}
 
@@ -44,12 +44,15 @@ public class AltinnOgPost extends AbstractDispatcher {
 
     @Override
 	public void verify( Forsendelse f ) {
-		final String[] required = { f.getOrgnr(), f.getNavn(), f.getPostnr(), f.getPoststed(), f.getTittel(), f.getMeldingsTekst() };
+		final String[] required = { f.getNavn(), f.getPostnr(), f.getPoststed(), f.getTittel(), f.getMeldingsTekst() };
 		for (String field : required) {
 			if (field == null) {
-				throw new UserException( String.format( "Required fields are: orgnr, navn,  postnr, poststed, tittel, meldingsTekst. Received: orgnr=%s, navn=%s, postnr=%s, poststed=%s, tittel=%s, meldingsTekst=%s.", f.getOrgnr(), f.getNavn(), f.getPostnr(), f.getPoststed(), f
+				throw new UserException( String.format( "Required fields are: orgnr, navn,  postnr, poststed, tittel, meldingsTekst. Received: navn=%s, postnr=%s, poststed=%s, tittel=%s, meldingsTekst=%s.", f.getNavn(), f.getPostnr(), f.getPoststed(), f
 						.getTittel(), f.getMeldingsTekst() ) );
 			}
+		}
+		if (f.getOrgnr() == null && f.getFnr() == null) {
+			throw new UserException( String.format( "Required fields are: orgnr/fodselsnr, tittel. Received: orgnr=%s, fodselsnr=%s, tittel=%s.", f.getOrgnr(), f.getTittel(), f.getFnr() ) );
 		}
 	}
 

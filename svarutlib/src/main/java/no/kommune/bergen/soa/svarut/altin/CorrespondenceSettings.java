@@ -1,17 +1,33 @@
 package no.kommune.bergen.soa.svarut.altin;
 
+import org.constretto.annotation.Configuration;
+import org.springframework.stereotype.Component;
+
 /** Holds context/configuration regarding Altinn message exchange */
+@Component
 public class CorrespondenceSettings {
-	private String notificationType = "Melding fra Bergen kommune";
-	private String fromAddress = "einarvalen@gmail.com";
+	@Configuration(expression = "altinn.notificationType")
+	private String notificationType;
+	@Configuration(expression = "altinn.fromAddress")
+	private String fromAddress;
+
 	private String languageCode = "1044";
-	private String serviceCode = "1268";
-	private String endpoint = "https://tt02.altinn.basefarm.net/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc";
-	private String systemUserName = ""; // Service login
-	private String systemPassword = ""; // Service login
-	private String systemUserCode = ""; // Service login
+	@Configuration(expression = "altinn.serviceCode")
+	private String serviceCode;
+
+	@Configuration(expression = "altinn.endpoint")
+	private String endpoint;
+
+	@Configuration(expression = "altinn.systemUserName")
+	private String systemUserName;
+	@Configuration(expression = "altinn.systemPassword")
+	private String systemPassword;
+	@Configuration(expression = "altinn.systemUserCode")
+	private String systemUserCode;
 	private String serviceEdition = "1";
+	@Configuration(expression = "altinn.subjectTemplate")
 	private String subjectTemplate = "";
+	@Configuration(expression = "altinn.bodyTemplate")
 	private String bodyTemplate = "";
 
 	public String getNotificationType() {

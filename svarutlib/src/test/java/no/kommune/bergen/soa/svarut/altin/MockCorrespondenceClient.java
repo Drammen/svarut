@@ -2,14 +2,11 @@ package no.kommune.bergen.soa.svarut.altin;
 
 import junit.framework.Assert;
 import no.altinn.schemas.serviceengine.formsengine._2009._10.TransportType;
-import no.altinn.schemas.services.serviceengine.correspondence._2009._10.ExternalContent;
-import no.altinn.schemas.services.serviceengine.correspondence._2009._10.InsertCorrespondence;
+import no.altinn.schemas.services.serviceengine.correspondence._2010._10.ExternalContentV2;
+import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2;
 import no.altinn.schemas.services.serviceengine.notification._2009._10.Notification;
 import no.altinn.schemas.services.serviceengine.notification._2009._10.ReceiverEndPoint;
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic;
-import no.kommune.bergen.soa.svarut.altin.CorrespondenceClient;
-import no.kommune.bergen.soa.svarut.altin.CorrespondenceMessage;
-import no.kommune.bergen.soa.svarut.altin.CorrespondenceSettings;
 
 import java.util.List;
 
@@ -28,11 +25,11 @@ public class MockCorrespondenceClient extends CorrespondenceClient {
 	}
 
 	@Override
-	protected int submitRequest( ICorrespondenceAgencyExternalBasic port, InsertCorrespondence request, CorrespondenceMessage message ) {
+	protected int submitRequest( ICorrespondenceAgencyExternalBasic port, InsertCorrespondenceV2 request, CorrespondenceMessage message ) {
 		Assert.assertEquals( settings.getServiceCode(), request.getServiceCode() );
 		Assert.assertEquals( settings.getServiceEdition(), request.getServiceEdition() );
 		Assert.assertEquals( message.getOrgNr(), request.getReportee() );
-		ExternalContent content = request.getContent();
+		ExternalContentV2 content = request.getContent();
 		Assert.assertEquals( message.getMessageTitle(), content.getMessageTitle() );
 		Assert.assertEquals( message.getMessageBody(), content.getMessageBody() );
 		Assert.assertEquals( message.getMessageSummary(), content.getMessageSummary() );
@@ -42,9 +39,7 @@ public class MockCorrespondenceClient extends CorrespondenceClient {
 		for (ReceiverEndPoint receiverEndPoint : receiverEndPoints) {
 			TransportType transportType = receiverEndPoint.getTransportType();
 			if (TransportType.EMAIL.equals( transportType )) {
-				Assert.assertEquals( message.getEmailToNotify(), receiverEndPoint.getReceiverAddress() );
 			} else if (TransportType.SMS.equals( transportType )) {
-				Assert.assertEquals( message.getSmsToNotify(), receiverEndPoint.getReceiverAddress() );
 			} else {
 				Assert.fail( "Unknown TransportType: " + transportType );
 			}
@@ -72,8 +67,6 @@ public class MockCorrespondenceClient extends CorrespondenceClient {
 	public static CorrespondenceMessage createMessage() {
 		CorrespondenceMessage message = new CorrespondenceMessage();
 		message.setOrgNr( "910558919" );
-		message.setSmsToNotify( "004795996325" );
-		message.setEmailToNotify( "einarvalen@gmail.com" );
 		message.setMessageSummary( "TestMessageSummary" );
 		message.setMessageTitle( "Meldings tittel" );
 		message.setMessageBody( "Meldingens tekst" );
