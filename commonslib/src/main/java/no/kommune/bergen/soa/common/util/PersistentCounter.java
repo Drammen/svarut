@@ -24,7 +24,7 @@ public class PersistentCounter {
 			counter++;
 			write( counter );
 		} catch (IOException e) {
-			throw new RuntimeException( "PerisetentCounter.increment() failed.", e );
+			throw new RuntimeException( "PersistentCounter.increment() failed.", e );
 		}
 	}
 
