@@ -18,7 +18,7 @@ public class MessageNotification {
 		this.notification.setNotificationType( settings.getNotificationType() );
 		this.notification.setShipmentDateTime( XMLDatatypeUtil.toXMLGregorianCalendar( Calendar.getInstance() ) );
 		add(TransportType.SMS, "");
-		//add(TransportType.EMAIL, "");
+		add(TransportType.EMAIL, "");
 		this.notification.setReceiverEndPoints( endPoints );
 		this.notifications.getNotification().add( notification );
 
