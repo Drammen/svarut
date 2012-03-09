@@ -140,6 +140,9 @@ public class JobController {
 
 	public void waitTillFinished() {
 		int total = 1;
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {}
 		while (total != 0) {
 			total = 0;
 			for (ThreadPoolExecutor executor : sendServices.values()) {
