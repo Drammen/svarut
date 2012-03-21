@@ -1,0 +1,95 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+	<soap:Body>
+		<InsertCorrespondenceBasicV2
+				xmlns:ns7="http://schemas.altinn.no/services/ServiceEngine/Correspondence/2010/10"
+				xmlns:ns4="http://schemas.altinn.no/services/ServiceEngine/Notification/2009/10"
+				xmlns="http://www.altinn.no/services/ServiceEngine/Correspondence/2009/10">
+			<systemUserName>BK_meldinger</systemUserName>
+			<systemPassword>UO6pXuIt</systemPassword>
+			<SystemUserCode>BK_meldinger
+			</SystemUserCode>
+			<ExternalShipmentReference>000000000445.pdf</ExternalShipmentReference>
+			<Correspondence>
+				<ns7:ServiceCode>1268</ns7:ServiceCode>
+				<ns7:ServiceEdition>1</ns7:ServiceEdition>
+				<ns7:Reportee>02035701829
+				</ns7:Reportee>
+				<ns7:Content>
+					<ns7:LanguageCode>1044</ns7:LanguageCode>
+					<ns7:MessageTitle>Tittel</ns7:MessageTitle>
+					<ns7:MessageSummary>Tittel</ns7:MessageSummary>
+					<ns7:MessageBody><![CDATA[<p>Meldingstekst</p> <b>Bekreftelse på at dokumentet er
+mottatt elektronisk.</b> <p> <a href="http://pweb01e-t.usrv.ubergenkom.no:7778/wsproxy/forsendelse?forsendelsesId=000000000445.pdf">Klikk her for å åpne dokumentet.</a>  Du bekrefter dermed at du har mottatt dokumentet. Dersom du ikke åpn
+er dokumentet vil det bli sendt som ordinær post. </p> <p> <a href="http://pweb01e-t.usrv.ubergenkom.no:7777/wsproxy/HjelpTilNedlasting?forsendelsesId=000000000445.pdf">Klikk her dersom du ikke klarer å åpne dokumentet.</a> </p>]]></ns7:MessageBody>
+					<ns7:Attachments xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+					<ns7:CustomMessageData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+				</ns7:Content>
+				<ns7:VisibleDateTime>2012-03-05T0
+					9:36:25.512+01:00
+				</ns7:VisibleDateTime>
+				<ns7:AllowSystemDeleteDateTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+				<ns7:ArchiveReference xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+				<ns7:ReplyOptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+				<ns7:Notifications>
+					<ns4:Notification>
+						<ns4:FromAddress>jarle.borsheim@bouvet.no</ns4:FromAddress>
+						<ns4:ShipmentDateTime>2012-03-05T09:36:25.513+01:00
+						</ns4:ShipmentDateTime>
+						<ns4:LanguageCode>1044</ns4:LanguageCode>
+						<ns4:NotificationType>Melding fra Bergen kommune</ns4:NotificationType>
+						<ns4:TextTokens xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+						<ns4:ReceiverEndPoints>
+							<ns4:ReceiverEndPoint>
+								<ns4:TransportType>SMS</ns4:TransportType>
+								<ns4:ReceiverAddress></ns4:ReceiverAddress>
+							</ns4:ReceiverEndPoint>
+							<ns4:ReceiverEndPoint>
+								<ns4:TransportType>Email</ns4:TransportType>
+								<ns4:ReceiverAddress></ns4:ReceiverAddress>
+							</ns4:ReceiverEndPoint>
+						</ns4:ReceiverEndPoints>
+					</ns4:Notification>
+				</ns7:Notifications>
+				<ns7:AllowForwarding xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+				<ns7:CaseID xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+			</Correspondence>
+		</InsertCorrespondenceBasicV2>
+	</soap:Body>
+</soap:Envelope>
+
+
+		Response:
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+<s:Body>
+	<s:Fault>
+		<faultcode>s:Client
+		</faultcode>
+		<faultstring xml:lang="nb-NO">An errror occurred</faultstring>
+		<detail>
+			<AltinnFault xmlns="http://www.altinn.no/services/common/fault/2009/10">
+				<AltinnErrorMessage>An error occured
+					: There was no endpoint listening at
+					http://tt02.altinn.basefarm.net:87/AltinnDataServices/UserProfileCRUDService tha
+					t could accept the message. This is often caused by an incorrect address or SOAP action. See
+					InnerException, if prese
+					nt, for more details.
+				</AltinnErrorMessage>
+				<AltinnExtendedErrorMessage>No information available
+				</AltinnExtendedErrorMessage>
+				<AltinnLocalizedErrorMessage>An error occured: There was no endpoint listening at
+					http://tt02.altinn.basefarm.n
+					et:87/AltinnDataServices/UserProfileCRUDService that could accept the message. This is often caused
+					by an incorrect a
+					ddress or SOAP action. See InnerException, if present, for more details.
+				</AltinnLocalizedErrorMessage>
+				<ErrorGuid>6e38
+					27e3-e5ad-4710-973d-42c04ca05988
+				</ErrorGuid>
+				<ErrorID>0</ErrorID>
+				<UserGuid>-no value-</UserGuid>
+				<UserId>0</UserId>
+			</AltinnFault>
+		</detail>
+	</s:Fault>
+</s:Body>
+</s:Envelope>

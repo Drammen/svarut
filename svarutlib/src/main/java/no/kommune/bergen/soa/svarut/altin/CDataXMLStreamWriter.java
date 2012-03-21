@@ -18,7 +18,6 @@ public class CDataXMLStreamWriter extends DelegatingXMLStreamWriter {
 	public void writeCharacters(String text) throws XMLStreamException {
 		boolean useCData = checkIfCDATAneededForCurrentElement();
 		if (useCData) {
-			System.out.println("WritingCData" + text);
 			super.writeCData(text);
 		}else {
 		super.writeCharacters(text);
