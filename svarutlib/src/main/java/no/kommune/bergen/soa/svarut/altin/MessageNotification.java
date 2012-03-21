@@ -17,24 +17,20 @@ public class MessageNotification {
 		this.notification.setLanguageCode( settings.getLanguageCode() );
 		this.notification.setNotificationType( settings.getNotificationType() );
 		this.notification.setShipmentDateTime( XMLDatatypeUtil.toXMLGregorianCalendar( Calendar.getInstance() ) );
-		this.notification.setReceiverEndPoints( endPoints );
-		this.notifications.getNotification().add( notification );
 		add(TransportType.SMS, "");
 		add(TransportType.EMAIL, "");
+		this.notification.setReceiverEndPoints( endPoints );
+		this.notifications.getNotification().add( notification );
+
+
 	}
 
 	private void add( TransportType transportType, String receiverAddress ) {
-		if (isOmitted( receiverAddress )) return;
 		ReceiverEndPoint receiverEndPoint = new ReceiverEndPoint();
 		receiverEndPoint.setReceiverAddress( "" );
 		receiverEndPoint.setTransportType( transportType );
 		endPoints.getReceiverEndPoint().add( receiverEndPoint );
 	}
-
-	private boolean isOmitted( String str ) {
-		return str == null || str.trim().isEmpty();
-	}
-
 	public NotificationBEList getNotifications() {
 		return notifications;
 	}
