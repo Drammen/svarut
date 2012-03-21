@@ -43,7 +43,7 @@ public class CorrespondenceClient {
 		InsertCorrespondenceV2 insertCorrespondence = new InsertCorrespondenceV2();
 		insertCorrespondence.setServiceCode( this.settings.getServiceCode() );
 		insertCorrespondence.setServiceEdition(this.settings.getServiceEdition());
-
+		insertCorrespondence.setAllowForwarding(false);
 		insertCorrespondence.setReportee( msg.getOrgNr() );
 		insertCorrespondence.setVisibleDateTime( XMLDatatypeUtil.toXMLGregorianCalendar( Calendar.getInstance() ) );
 		insertCorrespondence.setNotifications( createMessageNotification( msg ) );
