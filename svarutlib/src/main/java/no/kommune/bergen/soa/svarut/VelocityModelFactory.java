@@ -49,7 +49,7 @@ public class VelocityModelFactory {
 		model.put( "AVSENDER_POSTSTED", f.getAvsenderPoststed() );
 		model.put( "FORSENDELSES_MATE", f.getShipmentPolicy() );
 		model.put( "TITTEL", f.getTittel() );
-		model.put( "MELDING", f.getMeldingsTekst() );
+		model.put( "MELDING", f.getMeldingsTekst() != null? f.getMeldingsTekst() : " " );
 		model.put( "FILE", getDocumentFileName( f ) );
 		model.put( "URL", getUrl( JuridiskEnhetFactory.create( f ), f.getId() ) );
 		model.put( "Link", getUrl( JuridiskEnhetFactory.create( f ), f.getId() ) );
