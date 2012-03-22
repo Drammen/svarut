@@ -7,7 +7,8 @@ import javax.sql.DataSource;
  * legges
  */
 public class ArchiveContext {
-	private int retirementAgeIndays = 3650;
+
+	private int retirementAgeInDays = 3650;
 	private String tempDir = "/tmp", fileStorePath = "/tmp";
 	private DataSource dataSource;
 
@@ -17,16 +18,17 @@ public class ArchiveContext {
 
 	@Override
 	public String toString() {
-		return String.format( "{\n retirementAgeIndays=%s\n tempDir=%s\n fileStorePath=%s\n dataSource;=%s\n \n}", retirementAgeIndays, tempDir, fileStorePath, dataSource );
+		return String.format("{\n retirementAgeInDays=%s\n tempDir=%s\n fileStorePath=%s\n dataSource;=%s\n \n}", retirementAgeInDays, tempDir, fileStorePath, dataSource);
 	}
 
-	public int getRetirementAgeIndays() {
-		return retirementAgeIndays;
+	public int getRetirementAgeInDays() {
+		return retirementAgeInDays;
 	}
 
 	/** Når skal scavenger jobben fjerne forsendelser */
-	public void setRetirementAgeIndays( int retirementAgeIndays ) {
-		this.retirementAgeIndays = retirementAgeIndays;
+	@SuppressWarnings("JavaDoc")
+	public void setRetirementAgeInDays(int retirementAgeInDays) {
+		this.retirementAgeInDays = retirementAgeInDays;
 	}
 
 	public String getTempDir() {
@@ -42,6 +44,7 @@ public class ArchiveContext {
 	}
 
 	/** Dokument-delen av forsendelses-arkivet */
+	@SuppressWarnings("JavaDoc")
 	public void setFileStorePath( String fileStorePath ) {
 		this.fileStorePath = fileStorePath;
 	}
@@ -51,6 +54,7 @@ public class ArchiveContext {
 	}
 
 	/** Database-delen av forsendelses-arkivet */
+	@SuppressWarnings("JavaDoc")
 	public void setDataSource( DataSource dataSource ) {
 		this.dataSource = dataSource;
 	}

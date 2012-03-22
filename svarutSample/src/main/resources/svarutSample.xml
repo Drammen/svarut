@@ -102,7 +102,7 @@
 	</bean>   
 
 	<bean id="archiveContext" class="no.kommune.bergen.soa.svarut.context.ArchiveContext">
-		<property name="retirementAgeIndays" value="3650" />
+		<property name="retirementAgeInDays" value="3650" />
 		<property name="tempDir" value="/tmp" />
 		<property name="fileStorePath" value="${pdf.file.store.path}" />
 		<property name="dataSource" ref="dataSource" />

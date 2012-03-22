@@ -12,44 +12,48 @@ import no.kommune.bergen.soa.svarut.domain.Forsendelse;
 import no.kommune.bergen.soa.svarut.domain.JuridiskEnhet;
 import no.kommune.bergen.soa.svarut.domain.PrintReceipt;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Main business logic entry point */
 public class ServiceDelegateImpl implements ServiceDelegate {
-	static final Logger logger = Logger.getLogger( ServiceDelegateImpl.class );
+
+	private static final Logger logger = LoggerFactory.getLogger(ServiceDelegateImpl.class);
+
 	final ServiceContext serviceContext;
 	private final ForsendelsesArkiv forsendelsesArkiv;
 	private final DispatcherFactory dispatcherFactory;
-	private int retirementAgeIndays = 360 * 10;
+	private int retirementAgeInDays = 360 * 10;
 	private final PrintFacade printFacade;
 
 	public ServiceDelegateImpl( ServiceContext serviceContext, DispatchRateConfig rateConfig ) {
-		if (logger.isDebugEnabled()) logger.info( "serviceContext: " + serviceContext.toString() );
+		logger.info("serviceContext: {}", serviceContext);
 		this.serviceContext = serviceContext;
-		this.forsendelsesArkiv = serviceContext.getForsendelsesArkiv();
-		this.dispatcherFactory = new DispatcherFactory( this, serviceContext, rateConfig );
-		this.retirementAgeIndays = serviceContext.getArchiveContext().getRetirementAgeIndays();
+		forsendelsesArkiv = serviceContext.getForsendelsesArkiv();
+		dispatcherFactory = new DispatcherFactory( this, serviceContext, rateConfig );
+		retirementAgeInDays = serviceContext.getArchiveContext().getRetirementAgeInDays();
 		this.printFacade = serviceContext.getPrintFacade();
 	}
 
 	/** Aksepterer en forsendelse og lagrer den i forsendelsesarkivet. Returnerer forsendelsesId */
 	@Override
 	public String send( Forsendelse forsendelse, byte[] content ) {
-		logger.debug("Sending forsendelse : Tittel " + forsendelse.getTittel() + " email " + forsendelse.getEmail());
-		if (content == null || content.length < 1) throw new UserException( "Document content is empty" );
-		this.dispatcherFactory.getDispatcher( forsendelse ); // Verify that we have a dispatcher for this
+		logger.debug("Sending forsendelse : Tittel {} email {}", forsendelse.getTittel(), forsendelse.getEmail());
+		if (content == null || content.length < 1)
+			throw new UserException( "Document content is empty" );
+		dispatcherFactory.getDispatcher(forsendelse); // Verify that we have a dispatcher for this
 		String forsendelsesId = forsendelsesArkiv.save( forsendelse, new ByteArrayInputStream( content ) );
-		if (logger.isInfoEnabled()) logger.info( "Successfully saved. Id= " + forsendelsesId + ", Name=" + forsendelse.getNavn() );
+		logger.info("Successfully saved. Id={}, Name={}", forsendelsesId, forsendelse.getNavn());
 		return forsendelsesId;
 	}
 
 	/** Aksepterer en forsendelse og lagrer den i forsendelsesarkivet. Returnerer forsendelsesId */
 	@Override
 	public String send( Forsendelse forsendelse, InputStream inputStream ) {
-		logger.debug("Sending forsendelse : Tittel " + forsendelse.getTittel() + " email " + forsendelse.getEmail());
-		this.dispatcherFactory.getDispatcher( forsendelse ); // Verify that we have a dispatcher for this
+		logger.debug("Sending forsendelse : Tittel {} email {}", forsendelse.getTittel(), forsendelse.getEmail());
+		dispatcherFactory.getDispatcher(forsendelse); // Verify that we have a dispatcher for this
 		String forsendelsesId = forsendelsesArkiv.save( forsendelse, inputStream );
-		if (logger.isInfoEnabled()) logger.info( "Successfully saved. Id=" + forsendelsesId + ", Name=" + forsendelse.getNavn() );
+		logger.info("Successfully saved. Id={}, Name={}", forsendelsesId, forsendelse.getNavn());
 		return forsendelsesId;
 	}
 
@@ -164,8 +168,8 @@ public class ServiceDelegateImpl implements ServiceDelegate {
 	/** Fjerner forsendelser som er foreldet fra arkivet */
 	@Override
 	public void removeOld() {
-		logger.debug( "removeOld() start, retirementAgeIndays=" + this.retirementAgeIndays );
-		forsendelsesArkiv.removeOlderThan( this.retirementAgeIndays );
+		logger.debug("removeOld() start, retirementAgeInDays={}", retirementAgeInDays);
+		forsendelsesArkiv.removeOlderThan(retirementAgeInDays);
 		forsendelsesArkiv.removeUnreachable( 365 * 10 );
 		this.serviceContext.getPdfGenerator().removeOldTempFiles( 1000 * 60 * 60 * 2 );
 		logger.debug( "removeOld() end" );
@@ -185,6 +189,7 @@ public class ServiceDelegateImpl implements ServiceDelegate {
 	}
 
 	/** Returns a Map as a comma separated list of key value pairs */
+	@SuppressWarnings("JavaDoc")
 	public static String toString( Map<?, ?> map ) {
 		StringBuilder sb = new StringBuilder();
 		for (Map.Entry<?, ?> entry : map.entrySet()) {
@@ -202,8 +207,9 @@ public class ServiceDelegateImpl implements ServiceDelegate {
 	}
 
 	/** Levetid for forsendelser i arkivet */
-	public void setRetirementAgeIndays( int retirementAgeIndays ) {
-		this.retirementAgeIndays = retirementAgeIndays;
+	@SuppressWarnings("JavaDoc")
+	public void setRetirementAgeInDays(int retirementAgeInDays) {
+		this.retirementAgeInDays = retirementAgeInDays;
 	}
 
 	/** Sjekk om det finnes forsendelser som mot formodning ikke er blitt behandlet av PrintServiceProvider */
@@ -214,27 +220,26 @@ public class ServiceDelegateImpl implements ServiceDelegate {
 
 	@Override
 	public void markMessageSendt( String forsendelsesId ) {
-		logger.debug( "Forsendelse " + forsendelsesId + " successfully sendt" );
+		logger.debug("Forsendelse {} successfully sendt", forsendelsesId);
 	}
 
 	@Override
 	public void markMessageSendFailed( String forsendelsesId, String msg ) {
-		logger.debug( "Forsendelse " + forsendelsesId + " failed: " + msg );
+		logger.debug("Forsendelse {} failed: {}", forsendelsesId, msg);
 	}
 
 	@Override
 	public void markMessageHandleUnreadCompleted( String forsendelsesId ) {
-		logger.debug( "Ulest forsendelse " + forsendelsesId + " successfully handled" );
+		logger.debug("Ulest forsendelse {} successfully handled", forsendelsesId);
 	}
 
 	@Override
 	public void markMessageHandleUnreadFailed( String forsendelsesId, String msg ) {
-		logger.debug( "Ulest forsendelse " + forsendelsesId + " failed: " + msg );
+		logger.debug("Ulest forsendelse {} failed: {}", forsendelsesId, msg);
 	}
 
 	@Override
 	public void markSendAlleForsendelserCalled() {
 		logger.debug( "markSendAlleForsendelserCalled()" );
 	}
-
 }

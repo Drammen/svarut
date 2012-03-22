@@ -8,8 +8,8 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -50,7 +50,7 @@ public class MailSender {
 	@SuppressWarnings("unused")
 	private void sendPlainMessage( final List<String> recipients, final String from, final String subject, final String body ) {
 		for (String to : recipients) {
-			logger.debug("Sending email to: %s from: %s subject: %s", new Object[]{to, from, subject});
+			logger.debug("Sending email to: {} from: {} subject: {}", new Object[]{to, from, subject});
 			if (to != null && to.length() != 0 && to.indexOf('@') > -1) {
 				SimpleMailMessage message = new SimpleMailMessage();
 				message.setFrom(from);
@@ -67,7 +67,7 @@ public class MailSender {
 		for (String recipient : recipients) {
 			final String to = recipient;
 			Assert.isTrue( to != null && to.length() != 0 && to.indexOf( '@' ) > -1 );
-			logger.debug("Sending email to: %s from: %s subject: %s", new Object[]{to, from, subject});
+			logger.debug("Sending email to: {} from: {} subject: {}", new Object[]{to, from, subject});
 			javaMailSender.send(new MimeMessagePreparator() {
 				@Override
 				public void prepare( MimeMessage mimeMessage ) throws MessagingException {
@@ -81,7 +81,7 @@ public class MailSender {
 					for (File attachment : attachments)
 						message.addAttachment( attachment.getName(), attachment );
 
-					logger.debug("Sending email: %s", subject);
+					logger.debug("Sending email: {}", subject);
 				}
 			} );
 		}
