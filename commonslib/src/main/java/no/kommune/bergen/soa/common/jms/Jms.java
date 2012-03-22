@@ -17,6 +17,17 @@ public class Jms {
 	private Queue writeQueue = null;
 	private Queue errorQueue = null;
 	private Queue deadLetterQueue = null;
+	private QueueConnectionFactory queueConnectionFactory = null;
+
+	@SuppressWarnings("unused")
+	public void sendResponse( Message messageReceived, String response ) throws JMSException {
+		Jms.sendResponse( jmsTemplate, messageReceived, response );
+	}
+
+	@SuppressWarnings("unused")
+	public String sendToWriteQueueWaitForResponse( final String msg ) throws JMSException {
+		return Jms.sendWaitForResponse( queueConnectionFactory, writeQueue, msg );
+	}
 
 	public Message receiveFromReadQueue() throws JMSException {
 		return Jms.receiveMessageFromQueue(jmsTemplate, readQueue);
@@ -27,7 +38,7 @@ public class Jms {
 	}
 
 	public String receiveTextMessageFromReadQueue() throws JMSException {
-		return Jms.receiveTextMessageFromQueue( jmsTemplate, readQueue );
+		return Jms.receiveTextMessageFromQueue(jmsTemplate, readQueue);
 	}
 
 	public void sendToWriteQueue( final Message msg ) {
@@ -67,25 +78,80 @@ public class Jms {
 	}
 
 	private static void send( final JmsTemplate jmsTemplate, final Queue queue, final String msg ) {
-		send( jmsTemplate, queue, new MessageCreator() {
+		send(jmsTemplate, queue, new MessageCreator() {
 			@Override
-			public Message createMessage( Session session ) throws JMSException {
+			public Message createMessage(Session session) throws JMSException {
 				logger.debug("Creating JMS message: {}", msg);
-				return session.createTextMessage( msg );
+				return session.createTextMessage(msg);
 			}
-		} );
+		});
 	}
 
-	private static void send( final JmsTemplate jmsTemplate, final Queue queue, final byte[] msg ) {
-		send( jmsTemplate, queue, new MessageCreator() {
+	private static void sendResponse( final JmsTemplate jmsTemplate, final Message messageReceived, final String response ) throws JMSException {
+		logger.debug( "sendResponse() start " );
+		Destination replyTo = messageReceived.getJMSReplyTo();
+		if (replyTo == null) {
+			logger.debug( "sendResponse() end - NO response sent" );
+			return;
+		}
+		jmsTemplate.send( replyTo, new MessageCreator() {
 			@Override
 			public Message createMessage( Session session ) throws JMSException {
-				logger.debug("Creating JMS message: {}", msg);
-				BytesMessage message = session.createBytesMessage();
-				message.writeBytes( msg );
+				TextMessage message = session.createTextMessage( response );
+				String correlationId = messageReceived.getJMSMessageID();
+				message.setJMSCorrelationID( correlationId );
+				logger.debug("Creating JMS message - JMSCorrelationID = '{}'", correlationId);
 				return message;
 			}
 		} );
+		logger.debug("sendResponse() end - response sent");
+	}
+
+	private static void send( final JmsTemplate jmsTemplate, final Queue queue, final byte[] msg ) {
+		send(jmsTemplate, queue, new MessageCreator() {
+			@Override
+			public Message createMessage(Session session) throws JMSException {
+				logger.debug("Creating JMS message: {}", msg);
+				BytesMessage message = session.createBytesMessage();
+				message.writeBytes(msg);
+				return message;
+			}
+		});
+	}
+
+	private static String sendWaitForResponse( final QueueConnectionFactory connectionFactory, final Queue writeQueue, final String msg ) throws JMSException {
+		QueueConnection connection = null;
+		QueueSession session = null;
+		QueueSender sender = null;
+		QueueReceiver receiver = null;
+		logger.debug( "sendWaitForResponse() start" );
+		try {
+			connection = connectionFactory.createQueueConnection();
+			connection.start();
+			session = connection.createQueueSession( false, Session.AUTO_ACKNOWLEDGE );
+			TextMessage message = session.createTextMessage();
+			message.setText( msg );
+			message.setJMSDestination( writeQueue );
+			TemporaryQueue temporaryQueue = session.createTemporaryQueue();
+			message.setJMSReplyTo( temporaryQueue );
+			sender = session.createSender( writeQueue );
+			sender.send( message );
+			String messageSelector = String.format( "JMSCorrelationID = '%s'", message.getJMSMessageID() );
+			receiver = session.createReceiver( temporaryQueue, messageSelector );
+			logger.debug("sendWaitForResponse() - Waiting for response messageSelector={}", messageSelector);
+			Message responseMessage = receiver.receive( 5000 );
+			if (responseMessage != null && responseMessage instanceof TextMessage) {
+				logger.debug( "sendWaitForResponse() - response received" );
+				return ((TextMessage) responseMessage).getText();
+			}
+		} finally {
+			if (connection != null) connection.close();
+			if (session != null) session.close();
+			if (sender != null) sender.close();
+			if (receiver != null) receiver.close();
+		}
+		logger.debug( "sendWaitForResponse() - no response found" );
+		return null;
 	}
 
 	private static void send( final JmsTemplate jmsTemplate, final Queue queue, final Message msg ) {
@@ -151,5 +217,16 @@ public class Jms {
 
 	public void setDeadLetterQueue( Queue deadLetterQueue ) {
 		this.deadLetterQueue = deadLetterQueue;
+	}
+
+	@SuppressWarnings("unused")
+	public void setQueueConnectionFactory( QueueConnectionFactory queueConnectionFactory ) {
+		this.queueConnectionFactory = queueConnectionFactory;
+		jmsTemplate = new JmsTemplate(queueConnectionFactory);
+	}
+
+	@SuppressWarnings("unused")
+	public Queue getReadQueue() {
+		return readQueue;
 	}
 }

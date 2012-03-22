@@ -90,4 +90,9 @@ public class MailSender {
 	public void setJavaMailSender( JavaMailSenderImpl javaMailSender ) {
 		this.javaMailSender = javaMailSender;
 	}
+
+	@SuppressWarnings("unused")
+	public JavaMailSenderImpl getJavaMailSender() {
+		return javaMailSender;
+	}
 }
