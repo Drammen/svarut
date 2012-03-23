@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 public class PrintFacade {
 	public final PdfGenerator pdfGenerator;
 	public final String frontPageTemplate;
-	private final PrintServiceProvider printserviceProvider;
+	private PrintServiceProvider printserviceProvider;
 	final Logger logger = Logger.getLogger( PrintFacade.class );
 	public final VelocityModelFactory modelFactory;
 
@@ -27,6 +27,14 @@ public class PrintFacade {
 		this.frontPageTemplate = frontPageTemplate;
 		this.printserviceProvider = printserviceProvider;
 		this.modelFactory = modelFactory;
+	}
+
+	public PrintServiceProvider getPrintserviceProvider() {
+		return printserviceProvider;
+	}
+
+	public void setPrintserviceProvider(PrintServiceProvider printserviceProvider) {
+		this.printserviceProvider = printserviceProvider;
 	}
 
 	/** Oversender fosendelse og dokument med forside til PrintServiceProvider */
