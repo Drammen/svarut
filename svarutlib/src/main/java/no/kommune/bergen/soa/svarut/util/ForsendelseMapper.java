@@ -117,6 +117,7 @@ public class ForsendelseMapper {
 		status.setAntallSider( f.getAntallSider() );
 		status.setAntallSiderPostlagt( f.getAntallSiderPostlagt() );
 		status.setSendtAltinn(XMLDatatypeUtil.toXMLGregorianCalendar(f.getAltinn() ));
+		status.setKonteringkode(f.getKonteringkode());
 		return status;
 	}
 

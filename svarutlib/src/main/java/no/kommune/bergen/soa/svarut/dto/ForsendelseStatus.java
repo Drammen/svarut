@@ -20,7 +20,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 		"tidspunktPostlagt",
 		"antallSider",
     	"antallSiderPostlagt",
-    	"sendtAltinn"
+    	"sendtAltinn",
+    	"konteringkode"
 })
 public class ForsendelseStatus {
 
@@ -46,6 +47,7 @@ public class ForsendelseStatus {
     protected XMLGregorianCalendar sendtAltinn;
 	protected int antallSider;
 	protected int antallSiderPostlagt;
+	protected String konteringkode;
 
 	/**
 	 * Gets the value of the id property.
@@ -255,6 +257,20 @@ public class ForsendelseStatus {
 	 */
 	public void setAntallSiderPostlagt(int value) {
 		this.antallSiderPostlagt = value;
+	}
+
+	/**
+	 * Gets the value of the konteringkode property.
+	 */
+	public String getKonteringkode() {
+		return konteringkode;
+	}
+
+	/**
+	 * Sets the value of the konteringkode property.
+	 */
+	public void setKonteringkode(String konteringkode) {
+		this.konteringkode = konteringkode;
 	}
 
 }
