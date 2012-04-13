@@ -22,12 +22,12 @@ public class PdfTemplateParser {
 	public PdfTemplateParser( Map<String, String> model, String velocityMacro ) {
 		this.model = model;
 		this.velocityMacro = velocityMacro;
-		font = new Font( Font.FontFamily.TIMES_ROMAN, 10 );
-		bFont = new Font( Font.FontFamily.TIMES_ROMAN, 10, Font.BOLD );
-		linkFont = new Font( Font.FontFamily.TIMES_ROMAN, 10f, Font.UNDERLINE, BaseColor.BLUE );
-		h1Font = new Font( Font.FontFamily.TIMES_ROMAN, 10, Font.BOLD );
+		font = new Font( Font.FontFamily.TIMES_ROMAN, 12 );
+		bFont = new Font( Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD );
+		linkFont = new Font( Font.FontFamily.TIMES_ROMAN, 12f, Font.UNDERLINE, BaseColor.BLUE );
+		h1Font = new Font( Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD );
 		f1Font = new Font( Font.FontFamily.TIMES_ROMAN, 8 );
-		f2Font = new Font( Font.FontFamily.TIMES_ROMAN, 10 );
+		f2Font = new Font( Font.FontFamily.TIMES_ROMAN, 12 );
 	}
 
 	public Element[] getElements() {
