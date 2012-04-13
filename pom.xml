@@ -5,7 +5,7 @@
 	<groupId>no.kommune.bergen.svarut</groupId>
 	<artifactId>svarut-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>2.3</version>
+	<version>3.0</version>
 	<name>SvarUt Parent</name>
 
 	<build>
@@ -49,9 +49,33 @@
 		<cxf.version>2.4.2</cxf.version>
 		<constretto.version>1.1.2</constretto.version>
 		<spring.version>3.0.6.RELEASE</spring.version>
-		<log4j.version>1.2.16</log4j.version>
-		<jetty.version>8.0.0.v20110901</jetty.version>
+		<jetty.version>8.1.0.v20120127</jetty.version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>log4j-over-slf4j</artifactId>
+				<version>1.6.4</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jcl-over-slf4j</artifactId>
+				<version>1.6.4</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>1.6.4</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<modules>
 		<!-- Web services med stubs-prosjekter -->

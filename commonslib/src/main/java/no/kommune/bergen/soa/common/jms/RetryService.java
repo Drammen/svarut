@@ -31,6 +31,7 @@ public class RetryService implements JobCommand {
 	 *
 	 * @throws Exception
 	 */
+	@Override
 	public void service() throws Exception {
 		if (logger.isDebugEnabled()) logger.debug( "service start." );
 		String messageSelector = "JMSTimestamp < " + System.currentTimeMillis();

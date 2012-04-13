@@ -9,12 +9,14 @@
 	<parent>
 		<groupId>no.kommune.bergen.svarut</groupId>
 		<artifactId>svarut-parent</artifactId>
-		<version>2.3</version>
+		<version>3.0</version>
 	</parent>
 	<name>${project.artifactId}</name>
 	<description>SvarUt Lib-prosjekt</description>
 	<properties>
 		<maven.pmd.rulesetfiles>${basedir}/pmd.xml</maven.pmd.rulesetfiles>
+		<logbackVersion>1.0.0</logbackVersion>
+		<slf4jVersion>1.6.4</slf4jVersion>
 	</properties>
 	<build>
 		<finalName>${project.artifactId}</finalName>
@@ -149,21 +151,22 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.easymock</groupId>
 			<artifactId>easymockclassextension</artifactId>
 			<version>2.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.dbunit</groupId>
-			<artifactId>dbunit</artifactId>
-			<version>2.4.7</version>
-			<scope>test</scope>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>log4j-over-slf4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>

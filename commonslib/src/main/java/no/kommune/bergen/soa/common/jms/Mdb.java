@@ -28,6 +28,7 @@ public class Mdb implements MessageListener, ExceptionListener {
 	 *
 	 * @see javax.jms.MessageListener#onMessage(javax.jms.Message)
 	 */
+	@Override
 	public void onMessage( Message message ) {
 		try {
 			serviceInvoker.invoke( message );
@@ -40,6 +41,7 @@ public class Mdb implements MessageListener, ExceptionListener {
 		}
 	}
 
+	@Override
 	public void onException( JMSException e ) {
 		logger.error( "onException() was called!", e );
 	}
