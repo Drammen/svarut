@@ -24,10 +24,10 @@ public class PdfTemplateParser {
 		this.velocityMacro = velocityMacro;
 		font = new Font( Font.FontFamily.TIMES_ROMAN, 12 );
 		bFont = new Font( Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD );
-		linkFont = new Font( Font.FontFamily.TIMES_ROMAN, 10f, Font.UNDERLINE, BaseColor.BLUE );
-		h1Font = new Font( Font.FontFamily.TIMES_ROMAN, 10, Font.BOLD );
+		linkFont = new Font( Font.FontFamily.TIMES_ROMAN, 12f, Font.UNDERLINE, BaseColor.BLUE );
+		h1Font = new Font( Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD );
 		f1Font = new Font( Font.FontFamily.TIMES_ROMAN, 8 );
-		f2Font = new Font( Font.FontFamily.TIMES_ROMAN, 10 );
+		f2Font = new Font( Font.FontFamily.TIMES_ROMAN, 12 );
 	}
 
 	public Element[] getElements() {
@@ -81,6 +81,23 @@ public class PdfTemplateParser {
 			} else {
 				p.add( value );
 			}
+		}
+		Pattern links = Pattern.compile("http(s)?://([\\w+?\\.\\w+])+([a-zA-Z0-9\\~\\!\\@\\#\\$\\%\\^\\&amp;\\*\\(\\)_\\-\\=\\+\\\\\\/\\?\\.\\:\\;\\'\\,]*)?");
+		Matcher linkmatcher = links.matcher( paragraphMacro );
+		while(linkmatcher.find()){
+			int to = linkmatcher.start();
+			String s = paragraphMacro.substring( from, to );
+			p.add( s );
+			from = linkmatcher.end();
+
+			String key = paragraphMacro.substring(to,from);
+			if(key.endsWith(".")){
+				from -= 1;
+				key = paragraphMacro.substring(to,from);
+			}
+			Anchor a = new Anchor( key, linkFont );
+			a.setReference(key);
+			p.add( a );
 		}
 		p.add( paragraphMacro.substring( from ) );
 		return p;
