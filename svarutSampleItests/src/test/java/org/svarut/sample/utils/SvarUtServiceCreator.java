@@ -1,14 +1,14 @@
 package org.svarut.sample.utils;
 
-import no.kommune.bergen.svarut.v1.SvarUtService;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
-
-import javax.ws.rs.HttpMethod;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import no.kommune.bergen.svarut.v1.SvarUtService;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 
 
 public class SvarUtServiceCreator {

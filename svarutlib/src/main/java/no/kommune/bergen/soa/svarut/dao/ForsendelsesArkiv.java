@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import no.kommune.bergen.soa.common.calendar.BusinessCalendar;
-import no.kommune.bergen.soa.common.calendar.PresentDayBusinessCalendarForNorway;
 import no.kommune.bergen.soa.common.exception.UserException;
 import no.kommune.bergen.soa.svarut.domain.Fodselsnr;
 import no.kommune.bergen.soa.svarut.domain.Forsendelse;
@@ -26,10 +25,10 @@ import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class ForsendelsesArkiv {
-	final Logger logger = Logger.getLogger(ForsendelsesArkiv.class);
+	private final Logger logger = Logger.getLogger(ForsendelsesArkiv.class);
 	FileStore fileStore;
 	JdbcTemplate jdbcTemplate;
-	private int failedToPrintAlertWindowStartDay = 4, failedToPrintAlertWindowEndDay = 14;
+	private int failedToPrintAlertWindowStartDay = 2, failedToPrintAlertWindowEndDay = 10;
 
 	public ForsendelsesArkiv(FileStore fileStore, JdbcTemplate jdbcTemplate) {
 		this.fileStore = fileStore;
@@ -344,12 +343,9 @@ public class ForsendelsesArkiv {
 
 	public void remove(String id) {
 		logger.info("Removing forsendelse: " + id);
-		/* Take this back when fix verified in prod. -- Einar  { */
-		//String sql = "DELETE FROM FORSENDELSESARKIV WHERE ID=?";
-		//jdbcTemplate.update( sql, new Object[] { id } );
-		//fileStore.remove( id );
-		this.stop( id );
-		/* Take this back when fix verified in prod. -- Einar } */
+		String sql = "DELETE FROM FORSENDELSESARKIV WHERE ID=?";
+		jdbcTemplate.update( sql, new Object[] { id } );
+		fileStore.remove( id );
 	}
 
 	Timestamp calculateTimeLimit(long days) {
@@ -445,6 +441,17 @@ public class ForsendelsesArkiv {
 		jdbcTemplate.update(sql, new Object[]{id});
 	}
 
+	public void updateSentToPrint(String forsendelsesId, Date sentPrintDate) {
+		if (forsendelsesId == null || forsendelsesId.length() == 0) {
+			throw new RuntimeException("Nonexisting forsendelse: " + forsendelsesId);
+		}
+		String sql = "UPDATE FORSENDELSESARKIV SET UTSKREVET=? WHERE ID=?";
+		int rowsUpdatedCount = jdbcTemplate.update(sql, new Object[]{sentPrintDate, forsendelsesId});
+		if (rowsUpdatedCount != 1) {
+			throw new RuntimeException("Nonexisting forsendelse: " + forsendelsesId);
+		}
+	}
+
 	/**
 	 * benyttes i.f.m tilbakerapportering av status fra PrintServiceProvider
 	 */
@@ -464,30 +471,11 @@ public class ForsendelsesArkiv {
 	 * Finn forsendelser som mot formodning ikke er sendt i posten av PrintserviceProvider
 	 */
 	public List<String> retrieveFailedToPrint() {
+		Date failedToPrintAlertWindowStart = BusinessCalendar.getPreviousWorkday(failedToPrintAlertWindowStartDay);
+		Date failedToPrintAlertWindowEnd = BusinessCalendar.getPreviousWorkday(failedToPrintAlertWindowEndDay);
 		final String sql = "SELECT ID FROM FORSENDELSESARKIV WHERE UTSKREVET IS NOT NULL AND TIDSPUNKTPOSTLAGT IS NULL AND UTSKREVET <= ? AND UTSKREVET >= ?";
-		final List<String> ids = new ArrayList<String>();
-		long now = System.currentTimeMillis();
-		BusinessCalendar businessCalendar = PresentDayBusinessCalendarForNorway.getInstance();
-		Date failedToPrintAlertWindowStart = failedToPrintAlertWindowStart( now, this.failedToPrintAlertWindowStartDay, businessCalendar );
-		Date failedToPrintAlertWindowEnd = failedToPrintAlertWindowStart( now, this.failedToPrintAlertWindowEndDay, businessCalendar );
 		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, new Object[]{failedToPrintAlertWindowStart, failedToPrintAlertWindowEnd});
-		if (rows != null) {
-			for (Map<String, Object> row : rows) {
-				if (row == null) continue;
-				Object id = row.get("ID");
-				if (id != null && id instanceof String) ids.add((String) id);
-			}
-		}
-		return ids;
-	}
-
-	static Date failedToPrintAlertWindowStart( long now, int failedToPrintAlertWindowStartDay, BusinessCalendar businessCalendar ) {
-		Date date = new Date( now - failedToPrintAlertWindowStartDay * 1000L * 60 * 60 * 24 );
-		return businessCalendar.previousWorkday( date );
-	}
-
-	static Date failedToPrintAlertWindowEnd( long now, int failedToPrintAlertWindowEndDay, BusinessCalendar businessCalendar ) {
-		return new Date( now - failedToPrintAlertWindowEndDay * 1000L * 60 * 60 * 24 );
+		return getIdList(rows);
 	}
 
 	/**
@@ -518,5 +506,17 @@ public class ForsendelsesArkiv {
 			throw new RuntimeException("Nonexisting forsendelse: " + forsendelse.getId());
 		}
 		forsendelse.setNesteForsok(nesteforsok);
+	}
+
+	private List<String> getIdList(List<Map<String, Object>> rows) {
+		final List<String> ids = new ArrayList<String>();
+		if (rows != null) {
+			for (Map<String, Object> row : rows) {
+				if (row == null) continue;
+				Object id = row.get("ID");
+				if (id != null && id instanceof String) ids.add((String) id);
+			}
+		}
+		return ids;
 	}
 }

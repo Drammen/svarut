@@ -212,6 +212,11 @@ public class ServiceDelegateImpl implements ServiceDelegate {
 		this.retirementAgeInDays = retirementAgeInDays;
 	}
 
+	@Override
+	public void updateSentToPrint(String forsendelsesId, Date sentPrintDate){
+		forsendelsesArkiv.updateSentToPrint(forsendelsesId, sentPrintDate);
+	}
+
 	/** Sjekk om det finnes forsendelser som mot formodning ikke er blitt behandlet av PrintServiceProvider */
 	@Override
 	public List<String> retrieveFailedToPrint() {

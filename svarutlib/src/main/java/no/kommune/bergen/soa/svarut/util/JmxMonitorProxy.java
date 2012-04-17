@@ -164,7 +164,7 @@ public class JmxMonitorProxy implements ServiceDelegate, no.kommune.bergen.soa.u
 
 	@Override
 	public void remove( String id ) {
-	//Should not be implemented
+		serviceDelegate.remove(id);
 	}
 
 	@Override
@@ -277,6 +277,11 @@ public class JmxMonitorProxy implements ServiceDelegate, no.kommune.bergen.soa.u
 	@Override
 	public void importPrintStatements() {
 		this.serviceDelegate.importPrintStatements();
+	}
+
+	@Override
+	public void updateSentToPrint(String forsendelsesId, Date sentPrintDate){
+		serviceDelegate.updateSentToPrint(forsendelsesId, sentPrintDate);
 	}
 
 	@Override

@@ -2,9 +2,11 @@ package org.svarut.sample.rest;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -139,6 +141,14 @@ public class SvarUtSampleServiceRest {
 			logger.error( "retrieveIgnored() has problems", e );
 			throw e;
 		}
+	}
+
+	@POST
+	@Path("/updateSentToPrint/{forsendelsesId}/{dateInMillisec}")
+	@Produces("text/plain")
+	public String updateSentToPrint(@PathParam("forsendelsesId") String forsendelsesId, @PathParam("dateInMillisec") String dateInMillisec) {
+		serviceDelegate.updateSentToPrint(forsendelsesId, new Date(Long.parseLong(dateInMillisec)));
+		return "OK";
 	}
 
 	@GET
