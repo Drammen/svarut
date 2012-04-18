@@ -141,10 +141,5 @@
 			<artifactId>joda-time</artifactId>
 			<version>2.1</version>
 		</dependency>
-		<dependency>
-			<groupId>no.kommune.bergen.svarut</groupId>
-			<artifactId>svarutSample</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 	</dependencies>
 </project>
