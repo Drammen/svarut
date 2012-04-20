@@ -7,6 +7,7 @@ import java.util.List;
 import no.kommune.bergen.soa.svarut.ServiceDelegate;
 import no.kommune.bergen.soa.svarut.domain.Forsendelse;
 import no.kommune.bergen.soa.svarut.domain.JuridiskEnhet;
+import no.kommune.bergen.soa.util.OppsynJmx;
 
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedOperationParameter;
@@ -20,18 +21,19 @@ import org.springframework.jmx.export.annotation.ManagedResource;
  * @author einar
  */
 @ManagedResource(objectName = "bean:name=JmxMonitorProxy", description = "Svarbrev monitor", log = true, logFile = "jmx.log", currencyTimeLimit = 15, persistPolicy = "OnUpdate", persistPeriod = 200, persistLocation = "jmx", persistName = "SvarbrevJmxMonitorProxy")
-public class JmxMonitorProxy implements ServiceDelegate, no.kommune.bergen.soa.util.OppsynJmx {
-	final ServiceDelegate serviceDelegate;
+public class JmxMonitorProxy implements ServiceDelegate, OppsynJmx {
+
+	private final ServiceDelegate serviceDelegate;
 	final InvocationRecord dispatchIr = new InvocationRecord( "dispatch" );
 	final InvocationRecord printUnreadIr = new InvocationRecord( "printUnread" );
-	final InvocationRecord printIr = new InvocationRecord( "print" );
-	final InvocationRecord removeOldIr = new InvocationRecord( "removeOld" );
-	final InvocationRecord retrieveIr = new InvocationRecord( "retrieve" );
-	final InvocationRecord retrieveContentIr = new InvocationRecord( "retrieveContent" );
-	final InvocationRecord retrieveContentNoAuthorizationIr = new InvocationRecord( "retrieveContentNoAuthorization" );
-	final InvocationRecord retrieveForPersonIr = new InvocationRecord( "retrieveForPerson" );
-	final InvocationRecord sendIr = new InvocationRecord( "send" );
-	final InvocationRecord[] invocationRecords = { dispatchIr, printUnreadIr, printIr, removeOldIr, retrieveIr, retrieveContentIr, sendIr, retrieveForPersonIr };
+	private final InvocationRecord printIr = new InvocationRecord( "print" );
+	private final InvocationRecord removeOldIr = new InvocationRecord( "removeOld" );
+	private final InvocationRecord retrieveIr = new InvocationRecord( "retrieve" );
+	private final InvocationRecord retrieveContentIr = new InvocationRecord( "retrieveContent" );
+	private final InvocationRecord retrieveContentNoAuthorizationIr = new InvocationRecord( "retrieveContentNoAuthorization" );
+	private final InvocationRecord retrieveForPersonIr = new InvocationRecord( "retrieveForPerson" );
+	private final InvocationRecord sendIr = new InvocationRecord( "send" );
+	private final InvocationRecord[] invocationRecords = { dispatchIr, printUnreadIr, printIr, removeOldIr, retrieveIr, retrieveContentIr, sendIr, retrieveForPersonIr };
 
 	public JmxMonitorProxy( ServiceDelegate serviceDelegate ) {
 		this.serviceDelegate = serviceDelegate;
@@ -48,7 +50,6 @@ public class JmxMonitorProxy implements ServiceDelegate, no.kommune.bergen.soa.u
 		retrieveContentIr.addPolicy( new MaxAcceptableFailureRate( .10 ) );
 		retrieveForPersonIr.addPolicy( new MaxAcceptableFailureRate( .10 ) );
 		sendIr.addPolicy( new MaxAcceptableFailureRate( .02 ) );
-
 	}
 
 	@ManagedOperation(description = "Health check of all entries")
@@ -73,7 +74,6 @@ public class JmxMonitorProxy implements ServiceDelegate, no.kommune.bergen.soa.u
 		} else {
 			return "WARNING:" + sb.toString();
 		}
-
 	}
 
 	@ManagedOperation(description = "Produces an invocation report")
@@ -83,7 +83,7 @@ public class JmxMonitorProxy implements ServiceDelegate, no.kommune.bergen.soa.u
 
 	@ManagedOperation(description = "Rapport fra forsendelses arkiv")
 	public String statisticsReport() {
-		String str = this.serviceDelegate.statistics();
+		String str = serviceDelegate.statistics();
 		return str.replace( ',', '\n' );
 	}
 
@@ -110,32 +110,32 @@ public class JmxMonitorProxy implements ServiceDelegate, no.kommune.bergen.soa.u
 
 	@Override
 	public void confirm( String id ) {
-		this.serviceDelegate.confirm( id );
+		serviceDelegate.confirm( id );
 	}
 
 	@Override
 	public void dispatch() {
 		try {
-			this.serviceDelegate.dispatch();
-			this.dispatchIr.recordSuccess();
+			serviceDelegate.dispatch();
+			dispatchIr.recordSuccess();
 		} catch (RuntimeException e) {
-			this.dispatchIr.recordException( e.getMessage() );
+			dispatchIr.recordException( e.getMessage() );
 			throw e;
 		}
 	}
 
 	@Override
 	public String getUrl( JuridiskEnhet juridiskEnhet, String id ) {
-		return this.serviceDelegate.getUrl( juridiskEnhet, id );
+		return serviceDelegate.getUrl( juridiskEnhet, id );
 	}
 
 	@Override
 	public void print( String id ) {
 		try {
-			this.serviceDelegate.print( id );
-			this.printIr.recordSuccess();
+			serviceDelegate.print( id );
+			printIr.recordSuccess();
 		} catch (RuntimeException e) {
-			this.printIr.recordException( e.getMessage() );
+			printIr.recordException( e.getMessage() );
 			throw e;
 		}
 	}
@@ -143,10 +143,10 @@ public class JmxMonitorProxy implements ServiceDelegate, no.kommune.bergen.soa.u
 	@Override
 	public void printUnread() {
 		try {
-			this.serviceDelegate.printUnread();
-			this.printUnreadIr.recordSuccess();
+			serviceDelegate.printUnread();
+			printUnreadIr.recordSuccess();
 		} catch (RuntimeException e) {
-			this.printUnreadIr.recordException( e.getMessage() );
+			printUnreadIr.recordException( e.getMessage() );
 			throw e;
 		}
 	}
@@ -154,10 +154,10 @@ public class JmxMonitorProxy implements ServiceDelegate, no.kommune.bergen.soa.u
 	@Override
 	public void removeOld() {
 		try {
-			this.serviceDelegate.removeOld();
-			this.removeOldIr.recordSuccess();
+			serviceDelegate.removeOld();
+			removeOldIr.recordSuccess();
 		} catch (RuntimeException e) {
-			this.removeOldIr.recordException( e.getMessage() );
+			removeOldIr.recordException( e.getMessage() );
 			throw e;
 		}
 	}
@@ -170,11 +170,11 @@ public class JmxMonitorProxy implements ServiceDelegate, no.kommune.bergen.soa.u
 	@Override
 	public Forsendelse retrieve( String id, JuridiskEnhet juridiskEnhet ) {
 		try {
-			Forsendelse f = this.serviceDelegate.retrieve( id, juridiskEnhet );
-			this.retrieveIr.recordSuccess();
+			Forsendelse f = serviceDelegate.retrieve( id, juridiskEnhet );
+			retrieveIr.recordSuccess();
 			return f;
 		} catch (RuntimeException e) {
-			this.retrieveIr.recordException( e.getMessage() );
+			retrieveIr.recordException( e.getMessage() );
 			throw e;
 		}
 	}
@@ -182,11 +182,11 @@ public class JmxMonitorProxy implements ServiceDelegate, no.kommune.bergen.soa.u
 	@Override
 	public InputStream retrieveContent( String id, JuridiskEnhet juridiskEnhet ) {
 		try {
-			InputStream is = this.serviceDelegate.retrieveContent( id, juridiskEnhet );
-			this.retrieveContentIr.recordSuccess();
+			InputStream is = serviceDelegate.retrieveContent( id, juridiskEnhet );
+			retrieveContentIr.recordSuccess();
 			return is;
 		} catch (RuntimeException e) {
-			this.retrieveContentIr.recordException( e.getMessage() );
+			retrieveContentIr.recordException( e.getMessage() );
 			throw e;
 		}
 	}
@@ -194,28 +194,28 @@ public class JmxMonitorProxy implements ServiceDelegate, no.kommune.bergen.soa.u
 	@Override
 	public InputStream retrieveContentNoAuthorization( String id ) {
 		try {
-			InputStream is = this.serviceDelegate.retrieveContentNoAuthorization( id );
-			this.retrieveContentNoAuthorizationIr.recordSuccess();
+			InputStream is = serviceDelegate.retrieveContentNoAuthorization( id );
+			retrieveContentNoAuthorizationIr.recordSuccess();
 			return is;
 		} catch (RuntimeException e) {
-			this.retrieveContentNoAuthorizationIr.recordException( e.getMessage() );
+			retrieveContentNoAuthorizationIr.recordException( e.getMessage() );
 			throw e;
 		}
 	}
 
 	@Override
 	public String retrieveStatus( String id ) {
-		return this.serviceDelegate.retrieveStatus( id );
+		return serviceDelegate.retrieveStatus( id );
 	}
 
 	@Override
 	public String send( Forsendelse forsendelse, byte[] content ) {
 		try {
-			String id = this.serviceDelegate.send( forsendelse, content );
-			this.sendIr.recordSuccess();
+			String id = serviceDelegate.send( forsendelse, content );
+			sendIr.recordSuccess();
 			return id;
 		} catch (RuntimeException e) {
-			this.sendIr.recordException( e.getMessage() );
+			sendIr.recordException( e.getMessage() );
 			throw e;
 		}
 	}
@@ -223,60 +223,60 @@ public class JmxMonitorProxy implements ServiceDelegate, no.kommune.bergen.soa.u
 	@Override
 	public String send( Forsendelse forsendelse, InputStream inputStream ) {
 		try {
-			String id = this.serviceDelegate.send( forsendelse, inputStream );
-			this.sendIr.recordSuccess();
+			String id = serviceDelegate.send( forsendelse, inputStream );
+			sendIr.recordSuccess();
 			return id;
 		} catch (RuntimeException e) {
-			this.sendIr.recordException( e.getMessage() );
+			sendIr.recordException( e.getMessage() );
 			throw e;
 		}
 	}
 
 	@Override
 	public void setUnread( String id ) {
-		this.serviceDelegate.setUnread( id );
+		serviceDelegate.setUnread( id );
 	}
 
 	@Override
 	public void stop( String id ) {
-		this.serviceDelegate.stop( id );
+		serviceDelegate.stop( id );
 	}
 
 	@Override
 	public String statistics() {
-		return this.serviceDelegate.statistics();
+		return serviceDelegate.statistics();
 	}
 
 	@Override
 	public List<Forsendelse> retrieveList( JuridiskEnhet juridiskEnhet ) {
 		try {
-			List<Forsendelse> f = this.serviceDelegate.retrieveList( juridiskEnhet );
-			this.retrieveForPersonIr.recordSuccess();
+			List<Forsendelse> f = serviceDelegate.retrieveList( juridiskEnhet );
+			retrieveForPersonIr.recordSuccess();
 			return f;
 		} catch (RuntimeException e) {
-			this.retrieveIr.recordException( e.getMessage() );
+			retrieveIr.recordException( e.getMessage() );
 			throw e;
 		}
 	}
 
 	@Override
 	public List<Forsendelse> retrieveStatus( String[] ids ) {
-		return this.serviceDelegate.retrieveStatus( ids );
+		return serviceDelegate.retrieveStatus( ids );
 	}
 
 	@Override
 	public List<Forsendelse> retrieveStatus( Date fromAndIncluding, Date toNotIncluding ) {
-		return this.serviceDelegate.retrieveStatus( fromAndIncluding, toNotIncluding );
+		return serviceDelegate.retrieveStatus( fromAndIncluding, toNotIncluding );
 	}
 
 	@Override
 	public List<Forsendelse> retrieveIgnored() {
-		return this.serviceDelegate.retrieveIgnored();
+		return serviceDelegate.retrieveIgnored();
 	}
 
 	@Override
 	public void importPrintStatements() {
-		this.serviceDelegate.importPrintStatements();
+		serviceDelegate.importPrintStatements();
 	}
 
 	@Override
@@ -286,7 +286,7 @@ public class JmxMonitorProxy implements ServiceDelegate, no.kommune.bergen.soa.u
 
 	@Override
 	public List<String> retrieveFailedToPrint() {
-		return this.serviceDelegate.retrieveFailedToPrint();
+		return serviceDelegate.retrieveFailedToPrint();
 	}
 
 	@Override
@@ -318,5 +318,4 @@ public class JmxMonitorProxy implements ServiceDelegate, no.kommune.bergen.soa.u
 		printIr.recordSuccess();
 		serviceDelegate.markSendAlleForsendelserCalled();
 	}
-
 }
