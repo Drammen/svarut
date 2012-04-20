@@ -7,22 +7,22 @@ import org.junit.Test;
 public class BusinessCalendarTest {
 
 	@Test
-	public void testShouldHandle0PreviusWorkday(){
+	public void testShouldHandle0PreviousWorkday(){
 		Assert.assertEquals( "2012-03-01", CalendarHelper.formatAsDate( BusinessCalendar.getPreviousWorkday( CalendarHelper.toDate( 2012, 3, 1 ), 0 ) ) );
 	}
 
 	@Test
-	public void testShouldHandle1PreviusWorkday(){
+	public void testShouldHandle1PreviousWorkday(){
 		Assert.assertEquals( "2012-02-29", CalendarHelper.formatAsDate( BusinessCalendar.getPreviousWorkday( CalendarHelper.toDate( 2012, 3, 1 ), 1 ) ) );
 	}
 
 	@Test
-	public void testShouldHandle2PreviusWorkday(){
+	public void testShouldHandle2PreviousWorkday(){
 		Assert.assertEquals( "2012-02-28", CalendarHelper.formatAsDate( BusinessCalendar.getPreviousWorkday( CalendarHelper.toDate( 2012, 3, 1 ), 2 ) ) );
 	}
 
 	@Test
-	public void testShouldHandle10PreviusWorkday(){
+	public void testShouldHandle10PreviousWorkday(){
 		Assert.assertEquals( "2012-02-16", CalendarHelper.formatAsDate( BusinessCalendar.getPreviousWorkday( CalendarHelper.toDate( 2012, 3, 1 ), 10 ) ) );
 	}
 
@@ -60,5 +60,4 @@ public class BusinessCalendarTest {
 	public void testShouldHandleLeapYearDay() {
 		Assert.assertEquals( "2012-02-29", CalendarHelper.formatAsDate( BusinessCalendar.getPreviousWorkday( CalendarHelper.toDate( 2012, 3, 2 ), 2 ) ) );
 	}
-
 }
