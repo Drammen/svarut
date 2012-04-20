@@ -1,5 +1,6 @@
 package org.svarut.sample;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
@@ -7,7 +8,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import junit.framework.Assert;
 import no.kommune.bergen.svarut.v1.Adresse123;
 import no.kommune.bergen.svarut.v1.Forsendelse;
 import no.kommune.bergen.svarut.v1.ForsendelseStatus;
@@ -16,12 +16,9 @@ import no.kommune.bergen.svarut.v1.ShipmentPolicy;
 import no.kommune.bergen.svarut.v1.SvarUtService;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.joda.time.DateTime;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.svarut.sample.utils.Constants;
 import org.svarut.sample.utils.ForsendelseUtil;
@@ -30,7 +27,6 @@ import org.svarut.sample.utils.SvarUtServiceCreator;
 public class PrintProviderTest {
 
 	private SvarUtService service = SvarUtServiceCreator.getService();
-	private String forsendelsesId;
 
 	@Test
 	public void sjekkApostForsendelse() throws InterruptedException {
@@ -38,18 +34,18 @@ public class PrintProviderTest {
 
 		String forsendelsesId = service.send(null, rq);
 		SvarUtServiceCreator.waitTillFinishedWorking();
-		List<ForsendelseStatus> status = service.retrieveStatus(null, Arrays.asList(new String[]{forsendelsesId}));
+		List<ForsendelseStatus> status = service.retrieveStatus(null, Arrays.asList(forsendelsesId));
 		assertNotNull(status.get(0).getSendtBrevpost());
 	}
 
 	@Test
 	public void testShouldSendAForsendelsesAndCheckThatFailedToPrintIsNotEmpty() throws Exception{
-		forsendelsesId = service.send(null, getForsendelsesRequestData());
+		String forsendelsesId = service.send(null, getForsendelsesRequestData());
 		SvarUtServiceCreator.waitTillFinishedWorking();
-		service.retrieveStatus(null, Arrays.asList(new String[]{forsendelsesId}));
+		service.retrieveStatus(null, Arrays.asList(forsendelsesId));
 		String responsString = getFailedToPrintString();
-		Assert.assertEquals("FailedToPrintId-list should be empty.", "[]", responsString);
-	
+		assertEquals("FailedToPrintId-list should be empty.", "[]", responsString);
+
 		DateTime dateTime = new DateTime();
 		dateTime = dateTime.minusDays(8);
 		Date date = dateTime.toDate();
@@ -57,22 +53,21 @@ public class PrintProviderTest {
 		PostMethod methodUpdatePrinted = new PostMethod(Constants.webContainer + "/service/rest/forsendelsesservice/updateSentToPrint/"+ forsendelsesId +"/"+date.getTime());
 		HttpClient client = new HttpClient();
 		int resultUpdatePrinted = client.executeMethod(methodUpdatePrinted);
-		Assert.assertEquals("Http response for UpdatePrinted should be 200.", 200 , resultUpdatePrinted);
-	
-		service.retrieveStatus(null, Arrays.asList(new String[]{forsendelsesId}));
+		assertEquals("Http response for UpdatePrinted should be 200.", 200, resultUpdatePrinted);
+
+		service.retrieveStatus(null, Arrays.asList(forsendelsesId));
 		String respons = getFailedToPrintString();
-		Assert.assertEquals("Response should contain one item wich failed to print", "["+forsendelsesId+"]", respons);
+		assertEquals("Response should contain one item which failed to print", "[" + forsendelsesId + "]", respons);
 
 		service.deleteForsendelse(null, forsendelsesId);
 	}
 
-	private String getFailedToPrintString() throws IOException, HttpException {
+	private String getFailedToPrintString() throws IOException {
 		HttpClient client = new HttpClient();
 		GetMethod methodFailedToPrint = new GetMethod(Constants.webContainer + "/service/rest/forsendelsesservice/retrieve/failedToPrint");
 		int result = client.executeMethod(methodFailedToPrint);
-		Assert.assertEquals("Http response for FailedToPrint should be 200.", 200 , result);
-		String responsString = methodFailedToPrint.getResponseBodyAsString();
-		return responsString;
+		assertEquals("Http response for FailedToPrint should be 200.", 200, result);
+		return methodFailedToPrint.getResponseBodyAsString();
 	}
 
 	private ForsendelsesRq getForsendelsesRequestData() {
@@ -99,5 +94,4 @@ public class PrintProviderTest {
 		adresse.setPoststed("LagtINord");
 		return adresse;
 	}
-
 }
