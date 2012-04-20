@@ -11,8 +11,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Request;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
@@ -26,20 +24,19 @@ import no.kommune.bergen.soa.svarut.dto.ForsendelseStatusRest;
 import no.kommune.bergen.soa.svarut.util.ForsendelseMapper;
 import no.kommune.bergen.soa.util.XMLDatatypeUtil;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Rest (Jax-rs) service */
 @Path("/forsendelsesservice")
 public class SvarUtSampleServiceRest {
-	final Logger logger = Logger.getLogger( SvarUtSampleServiceRest.class );
+
+	private static final Logger logger = LoggerFactory.getLogger(SvarUtSampleServiceRest.class);
+
 	private final ServiceDelegate serviceDelegate;
 	private final ForsendelseMapper forsendelseMapper = new ForsendelseMapper();
 
 	private JobController controller;
-
-	public JobController getController() {
-		return controller;
-	}
 
 	public void setController(JobController controller) {
 		this.controller = controller;
@@ -52,21 +49,21 @@ public class SvarUtSampleServiceRest {
 	}
 
 	public SvarUtSampleServiceRest( ServiceDelegate service ) {
-		this.serviceDelegate = service;
+		serviceDelegate = service;
 	}
 
 	@GET
 	@Produces("text/plain;charset=UTF-8")
 	@Path("/statistikk")
 	public String statistics() {
-		return this.serviceDelegate.statistics();
+		return serviceDelegate.statistics();
 	}
 
 	@GET
 	@Path("/status/{id}")
 	@Produces("text/plain;charset=UTF-8")
 	public String retrieveStatus( @PathParam("id") String id ) {
-		return this.serviceDelegate.retrieveStatus( id ).replace( ',', '\n' );
+		return serviceDelegate.retrieveStatus( id ).replace( ',', '\n' );
 	}
 
 	@GET
@@ -103,15 +100,15 @@ public class SvarUtSampleServiceRest {
 	@Path("/print/{id}")
 	@Produces("text/plain;charset=UTF-8")
 	public String print( @PathParam("id") String id ) {
-		this.serviceDelegate.print( id );
-		return this.serviceDelegate.retrieveStatus( id ).replace( ',', '\n' );
+		serviceDelegate.print(id);
+		return serviceDelegate.retrieveStatus(id).replace(',', '\n');
 	}
 
 	@GET
 	@Path("/dispatch")
 	@Produces("text/plain;charset=UTF-8")
 	public String dispatch() {
-		this.serviceDelegate.dispatch();
+		serviceDelegate.dispatch();
 		return "Dispatch invoked";
 	}
 
@@ -119,7 +116,7 @@ public class SvarUtSampleServiceRest {
 	@Path("/retrieve/{juridiskEnhet}/{id}")
 	@Produces("text/xml")
 	public ForsendelseRest retrieve( @PathParam("id") String id, @PathParam("juridiskEnhet") String juridiskEnhet ) {
-		no.kommune.bergen.soa.svarut.dto.Forsendelse forsendelse = new ForsendelseMapper().toDto( this.serviceDelegate.retrieve( id, JuridiskEnhetFactory.create( juridiskEnhet ) ) );
+		no.kommune.bergen.soa.svarut.dto.Forsendelse forsendelse = new ForsendelseMapper().toDto(serviceDelegate.retrieve(id, JuridiskEnhetFactory.create(juridiskEnhet)));
 		ForsendelseRest result = new ForsendelseRest();
 		result.setForsendelse( forsendelse );
 		return result;
@@ -130,7 +127,7 @@ public class SvarUtSampleServiceRest {
 	@Produces("text/xml")
 	public ForsendelseStatusList retrieveIgnored() {
 		try {
-			List<Forsendelse> ignored = this.serviceDelegate.retrieveIgnored();
+			List<Forsendelse> ignored = serviceDelegate.retrieveIgnored();
 			ForsendelseStatusList forsendelseStatusList = new ForsendelseStatusList();
 			forsendelseStatusList.list = new ArrayList<ForsendelseStatus>();
 			for (Forsendelse f : ignored) {
@@ -156,7 +153,7 @@ public class SvarUtSampleServiceRest {
 	@Produces("text/plain")
 	public String retrieveFailedToPrint() {
 		try {
-			List<String> failedToPrint = this.serviceDelegate.retrieveFailedToPrint();
+			List<String> failedToPrint = serviceDelegate.retrieveFailedToPrint();
 			return failedToPrint.toString();
 		} catch (RuntimeException e) {
 			logger.error( "retrieveFailedToPrint() has problems", e );
@@ -166,27 +163,28 @@ public class SvarUtSampleServiceRest {
 
 	@GET
 	@Path("/start/importPrintStatements")
-	public void importPrintStatements() {
+	public String importPrintStatements() {
 		try {
-			this.serviceDelegate.importPrintStatements();
+			serviceDelegate.importPrintStatements();
 		} catch (RuntimeException e) {
 			logger.error( "importPrintStatements() has problems", e );
 			throw e;
 		}
+		return "importPrintStatements() succeeded";
 	}
 
 	@GET
 	@Path("/download/{juridiskEnhet}/{id}")
 	@Produces("application/pdf")
-	public InputStream retrieveContent( @Context Request rs, @PathParam("id") String id, @PathParam("juridiskEnhet") String juridiskEnhet ) {
-		return this.serviceDelegate.retrieveContent( id, JuridiskEnhetFactory.create( juridiskEnhet ) );
+	public InputStream retrieveContent(@PathParam("id") String id, @PathParam("juridiskEnhet") String juridiskEnhet) {
+		return serviceDelegate.retrieveContent(id, JuridiskEnhetFactory.create(juridiskEnhet));
 	}
 
 	@GET
 	@Path("/downloadNoAuthorization/{id}")
 	@Produces("application/pdf")
-	public InputStream retrieveContentNoAuthorization( @Context Request rs, @PathParam("id") String id ) {
-		return this.serviceDelegate.retrieveContentNoAuthorization( id );
+	public InputStream retrieveContentNoAuthorization(@PathParam("id") String id) {
+		return serviceDelegate.retrieveContentNoAuthorization(id);
 	}
 
 	@GET
@@ -196,5 +194,4 @@ public class SvarUtSampleServiceRest {
 		controller.waitTillFinished();
 		return "Done";
 	}
-
 }
