@@ -27,7 +27,7 @@ public class ServiceDelegateImpl implements ServiceDelegate {
 	private final PrintFacade printFacade;
 
 	public ServiceDelegateImpl( ServiceContext serviceContext, DispatchRateConfig rateConfig ) {
-		logger.info("serviceContext: {}", serviceContext);
+		logger.debug("serviceContext: {}", serviceContext);
 		this.serviceContext = serviceContext;
 		forsendelsesArkiv = serviceContext.getForsendelsesArkiv();
 		dispatcherFactory = new DispatcherFactory( this, serviceContext, rateConfig );
