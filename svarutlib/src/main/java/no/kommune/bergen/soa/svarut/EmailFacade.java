@@ -35,14 +35,14 @@ public class EmailFacade {
 		File[] attachments = createAttachments( f, model );
 		String bodyTemplate = hasAttachments( attachments ) ? this.bodyTemplate : this.bodyTemplateNoAttachment;
 		String body = templateEngine.merge( model, bodyTemplate );
-		String to = (isNorgeDotNo( f )) ? String.format( toTemplate, fnr ) : f.getEmail();
+		String to = (isAltinn( f )) ? String.format( toTemplate, fnr ) : f.getEmail();
 		String replyTo = (f.getReplyTo() == null) ? this.replyTo : f.getReplyTo();
 		mailSender.sendEmail( to, replyTo, subject, body, attachments );
 	}
 
-	private boolean isNorgeDotNo( Forsendelse f ) {
+	private boolean isAltinn( Forsendelse f ) {
 		String shipmentPolicy = f.getShipmentPolicy();
-		return shipmentPolicy != null && shipmentPolicy.contains( "NorgeDotNo" );
+		return shipmentPolicy != null && shipmentPolicy.contains( "Altinn" );
 	}
 
 	private boolean hasAttachments( File[] attachments ) {

@@ -12,9 +12,7 @@ import no.kommune.bergen.soa.svarut.dispatchers.AltinnOgPost;
 import no.kommune.bergen.soa.svarut.dispatchers.EmailOgPost;
 import no.kommune.bergen.soa.svarut.dispatchers.KunAltinn;
 import no.kommune.bergen.soa.svarut.dispatchers.KunEmail;
-import no.kommune.bergen.soa.svarut.dispatchers.KunNorgeDotNo;
 import no.kommune.bergen.soa.svarut.dispatchers.KunPost;
-import no.kommune.bergen.soa.svarut.dispatchers.NorgeDotNoOgPost;
 import no.kommune.bergen.soa.svarut.domain.Forsendelse;
 
 import org.apache.log4j.Logger;
@@ -49,9 +47,7 @@ public class JobController {
 		serviceMap.put(EmailOgPost.class, getNewExecutor());
 		serviceMap.put(KunAltinn.class, getNewExecutor());
 		serviceMap.put(KunEmail.class, getNewExecutor());
-		serviceMap.put(KunNorgeDotNo.class, getNewExecutor());
 		serviceMap.put(KunPost.class, getNewExecutor());
-		serviceMap.put(NorgeDotNoOgPost.class, getNewExecutor());
 
 		return serviceMap;
 	}

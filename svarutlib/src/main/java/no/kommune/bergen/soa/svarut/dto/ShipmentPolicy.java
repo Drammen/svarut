@@ -16,16 +16,6 @@ public enum ShipmentPolicy {
 	KUN_BPOST("KunBpost"),
 	@XmlEnumValue("KunRekommandert")
 	KUN_REKOMMANDERT("KunRekommandert"),
-	@XmlEnumValue("KunNorgeDotNo")
-	KUN_NORGE_DOT_NO("KunNorgeDotNo"),
-	@XmlEnumValue("KunNorgeDotNoAttachDocumet")
-	KUN_NORGE_DOT_NO_ATTACH_DOCUMET("KunNorgeDotNoAttachDocumet"),
-	@XmlEnumValue("NorgeDotNoOgApost")
-	NORGE_DOT_NO_OG_APOST("NorgeDotNoOgApost"),
-	@XmlEnumValue("NorgeDotNoOgBpost")
-	NORGE_DOT_NO_OG_BPOST("NorgeDotNoOgBpost"),
-	@XmlEnumValue("NorgeDotNoOgRekommandert")
-	NORGE_DOT_NO_OG_REKOMMANDERT("NorgeDotNoOgRekommandert"),
 	@XmlEnumValue("KunAltinn")
 	KUN_ALTINN("KunAltinn"),
 	@XmlEnumValue("AltinnOgApost")

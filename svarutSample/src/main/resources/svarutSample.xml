@@ -41,26 +41,6 @@
 		</property>
 	</bean>
 	
-	<bean id="javaMailSenderImplMinside" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-		<property name="protocol" value="smtps" />
-		<property name="username" value="${smtp.authId.minside}" />
-		<property name="password" value="${smtp.authPw.minside}" />
-		<property name="defaultEncoding" value="utf-8" />
-		<property name="port" value="${smtp.port}" />
-		<property name="javaMailProperties">
-			<props>
-				<prop key="mail.smtps.host">${smtp.host.minside}</prop>
-				<prop key="mail.smtp.starttls.enable">true</prop>
-				<prop key="mail.smtp.auth">true</prop>
-				<prop key="mail.smtps.auth">true</prop>
-				<prop key="mail.smtp.socketFactory.port">465</prop>
-				<prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory"</prop>
-				<prop key="mail.smtp.socketFactory.fallback">false</prop>
-				<prop key="mail.debug">false</prop>
-			</props>
-		</property>
-	</bean>
-	
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 		<property name="host" value="${smtp.host}" />
 		<property name="port" value="${smtp.port}" />
@@ -108,27 +88,6 @@
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 
-		<bean id="norgeDotNoContext" class="no.kommune.bergen.soa.svarut.context.NorgeDotNoContext">
-			<property name="ldapContextSource" ref="contextSourceMinside" />
-			<property name="javaMailSender" ref="${java.mail.ref}" />
-			<property name="leadTimeApost" value="2"/>
-			<property name="leadTimeBpost" value="2"/>
-			<property name="leadTimeRekommandert" value="1"/>
-			<property name="ldapFilterTemplate" value="${ldap.filter.template.minside}" />
-			<property name="messageTemplateAssembly">
-				<bean class="no.kommune.bergen.soa.svarut.context.MessageTemplateAssembly">
-					<property name="subjectTemplate" value="${subjectTemplate}" />
-					<property name="bodyTemplate" value="${bodyTemplate}" />
-					<property name="bodyTemplateNoAttachment" value="${bodyTemplateNoAttachment}" />
-					<property name="replyTo" value="info.avd@bergen.kommune.no" />
-					<property name="toTemplate" value="%s@innbygger.norge.no" />
-					<property name="pdfTemplate" value="${pdfTemplate}" />
-				</bean>
-			</property>
-			<property name="dispatchWindow" ref="norgeNoDispatchWindow"/>
-		</bean>
-
 	<import resource="classpath:jmx.xml" />
-
 </beans>
 
