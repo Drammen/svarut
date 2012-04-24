@@ -14,10 +14,12 @@ import javax.annotation.Resource;
 @Component("altinnContext")
 public class AltinnContext {
 
+
 	@Autowired
 	private CorrespondenceSettings correspondenceSettings;
 
 	private long leadTimeApost = 2, leadTimeBpost = 2, leadTimeRekommandert = 1;
+	private MessageTemplateAssembly messageTemplateAssembly;
 
 	@Resource(name = "altinnDispatchWindow")
 	private DispatchWindow dispatchWindow;
@@ -63,11 +65,19 @@ public class AltinnContext {
 		this.leadTimeRekommandert = leadTimeRekommandert;
 	}
 
-    public DispatchWindow getDispatchWindow() {
-        return dispatchWindow;
-    }
+	public DispatchWindow getDispatchWindow() {
+		return dispatchWindow;
+	}
 
-    public void setDispatchWindow(DispatchWindow dispatchWindow) {
-        this.dispatchWindow = dispatchWindow;
-    }
+	public void setDispatchWindow(DispatchWindow dispatchWindow) {
+		this.dispatchWindow = dispatchWindow;
+	}
+
+	public MessageTemplateAssembly getMessageTemplateAssembly() {
+			return messageTemplateAssembly;
+	}
+
+	public void setMessageTemplateAssembly( MessageTemplateAssembly messageTemplateAssembly ) {
+		this.messageTemplateAssembly = messageTemplateAssembly;
+	}
 }
