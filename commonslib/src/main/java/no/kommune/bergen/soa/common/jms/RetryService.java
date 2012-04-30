@@ -4,7 +4,8 @@ import javax.jms.Message;
 
 import no.kommune.bergen.soa.common.job.JobCommand;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Service to retry processing of a message that failed. When processing of a message is unsuccessful, The message is enqueued for
@@ -15,11 +16,13 @@ import org.apache.log4j.Logger;
  * @author einar
  */
 public class RetryService implements JobCommand {
-	private static Logger logger = Logger.getLogger( RetryService.class );
+
+	private static final Logger logger = LoggerFactory.getLogger(RetryService.class);
+
 	private final Jms jms;
-	/** Maximum number of attempts for successful SKjema processing. */
+	/** Maximum number of attempts for successful Skjema processing. */
 	private int maxRetries = 3;
-	private static final String retryCounterPropertyName = "RetryCounter";
+	private static final String RETRY_COUNTER_PROPERTY_NAME = "RetryCounter";
 
 	public RetryService( Jms jms ) {
 		this.jms = jms;
@@ -33,31 +36,29 @@ public class RetryService implements JobCommand {
 	 */
 	@Override
 	public void service() throws Exception {
-		if (logger.isDebugEnabled()) logger.debug( "service start." );
+		logger.debug("service start.");
 		String messageSelector = "JMSTimestamp < " + System.currentTimeMillis();
 		while (true) {
-			Message message = null;
-			message = jms.receiveSelectedFromReadQueue( messageSelector );
+			Message message = jms.receiveSelectedFromReadQueue(messageSelector);
 			if (message == null) return;
 			try {
 				retry( message );
 			} catch (RuntimeException e) {
 				logger.warn( "RetryQueueHandler.service() failed", e );
 				jms.sendToErrorQueue( message );
-				if (logger.isDebugEnabled()) logger.debug( "sentTo deadLetterQueue: " + message );
-				//				}
+				logger.debug("sentTo deadLetterQueue: {}", message);
 			}
 		}
 	}
 
 	/** Dispatch message for retry if set maximum number of attempts are not exhausted */
 	private void retry( Message message ) {
-		if (logger.isDebugEnabled()) logger.debug( "Will examine msg for retry. Msg : " + message );
+		logger.debug("Will examine msg for retry. Msg : {}", message);
 		if (isRetryOkThenIncrementCounter( message )) {
-			if (logger.isInfoEnabled()) logger.info( "Message will be retried: " + message );
+			logger.info("Message will be retried: {}", message);
 			jms.sendToWriteQueue( message );
 		} else {
-			if (logger.isInfoEnabled()) logger.info( "Message will NOT be retried: " + message );
+			logger.info("Message will NOT be retried: {}", message);
 			jms.sendToErrorQueue( message );
 		}
 	}
@@ -66,17 +67,16 @@ public class RetryService implements JobCommand {
 	private boolean isRetryOkThenIncrementCounter( Message message ) {
 		try {
 			int count = 0;
-			if (message.propertyExists( this.retryCounterPropertyName )) {
-				count = message.getIntProperty( this.retryCounterPropertyName );
+			if (message.propertyExists(RETRY_COUNTER_PROPERTY_NAME)) {
+				count = message.getIntProperty(RETRY_COUNTER_PROPERTY_NAME);
 			}
 			boolean isRetryOk = count < maxRetries;
-			if (logger.isDebugEnabled())
-				logger.debug( "isRetryOk: " + isRetryOk + " retry cont: " + count + " max retries: " + maxRetries );
+			logger.debug("isRetryOk: {} retry cont: {} max retries: {}", new Object[]{isRetryOk, count, maxRetries});
 			if (isRetryOk) {
 				count++;
-				logger.debug( this.retryCounterPropertyName + ":" + count );
+				logger.debug("{}:{}", RETRY_COUNTER_PROPERTY_NAME, count);
 				message.clearProperties();
-				message.setIntProperty( this.retryCounterPropertyName, count );
+				message.setIntProperty(RETRY_COUNTER_PROPERTY_NAME, count);
 			}
 			return isRetryOk;
 		} catch (Exception e) {
@@ -88,5 +88,4 @@ public class RetryService implements JobCommand {
 	public void setMaxRetries( int maxRetries ) {
 		this.maxRetries = maxRetries;
 	}
-
 }
