@@ -5,7 +5,7 @@
 	<groupId>no.kommune.bergen.svarut</groupId>
 	<artifactId>svarut-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>3.2-SNAPSHOT</version>
+	<version>3.2</version>
 	<name>SvarUt Parent</name>
 
 	<build>
