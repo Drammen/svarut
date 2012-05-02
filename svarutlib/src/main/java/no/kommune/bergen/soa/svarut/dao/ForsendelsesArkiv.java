@@ -149,7 +149,7 @@ public class ForsendelsesArkiv {
 	 * Let etter forsendeser som mot formodning ikke er blitt behandlet
 	 */
 	public List<Forsendelse> retrieveIgnored() {
-		String sql = "SELECT * FROM FORSENDELSESARKIV WHERE UTSKREVET IS NULL AND (NORGEDOTNO IS NULL OR ALTINN_SENDT IS NULL) AND EPOST_SENDT IS NULL AND STOPPET IS NULL AND SENDT < (SYSDATE - 1)";
+		String sql = "SELECT * FROM FORSENDELSESARKIV WHERE UTSKREVET IS NULL AND NORGEDOTNO IS NULL AND ALTINN_SENDT IS NULL AND EPOST_SENDT IS NULL AND STOPPET IS NULL AND SENDT < (SYSDATE - 1)";
 		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
 		List<Forsendelse> forsendelser = new ArrayList<Forsendelse>();
 		for (Map<String, Object> row : rows) {
