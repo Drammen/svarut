@@ -5,6 +5,7 @@ import no.kommune.bergen.soa.svarut.AltinnFacade;
 import no.kommune.bergen.soa.svarut.DispatchPolicy;
 import no.kommune.bergen.soa.svarut.PrintFacade;
 import no.kommune.bergen.soa.svarut.ServiceDelegate;
+import no.kommune.bergen.soa.svarut.altin.AltinnException;
 import no.kommune.bergen.soa.svarut.dao.ForsendelsesArkiv;
 import no.kommune.bergen.soa.svarut.domain.Forsendelse;
 import no.kommune.bergen.soa.svarut.domain.PrintReceipt;
@@ -27,9 +28,14 @@ public class AltinnOgPost extends AbstractDispatcher {
 
 	@Override
 	public void send( Forsendelse f ) {
-		int receiptId = altinnFacade.send( f );
-		forsendelsesArkiv.setSentAltinn( f.getId(), receiptId);
-		logger.info( String.format( "Successfully sent to Altinn. Id=%s, Org=%s, Navn=%s", f.getId(), f.getOrgnr(), f.getNavn() ) );
+		try{
+			int receiptId = altinnFacade.send( f );
+			forsendelsesArkiv.setSentAltinn( f.getId(), receiptId);
+			logger.info( String.format( "Successfully sent to Altinn. Id=%s, Org=%s, Navn=%s", f.getId(), f.getOrgnr(), f.getNavn() ) );
+		} catch(AltinnException e){
+			logger.warn("Altinn failed " + e.getMessage() + " Sending to print", e);
+			sendToPrint(f);
+		}
 	}
 
 	@Override
@@ -37,9 +43,13 @@ public class AltinnOgPost extends AbstractDispatcher {
 		long sent = f.getSendt().getTime();
 		long now = System.currentTimeMillis();
 		if (sent + getDispatchPolicy().getLeadTimeBeforePrintInMilliseconds(f) < now) {
-			PrintReceipt printReceipt = printFacade.print( f );
-			forsendelsesArkiv.setPrinted( f.getId(), printReceipt );
+			sendToPrint(f);
 		}
+	}
+
+	private void sendToPrint(Forsendelse f) {
+		PrintReceipt printReceipt = printFacade.print( f );
+		forsendelsesArkiv.setPrinted( f.getId(), printReceipt );
 	}
 
     @Override

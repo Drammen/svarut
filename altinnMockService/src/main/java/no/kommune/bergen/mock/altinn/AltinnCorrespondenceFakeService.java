@@ -1,5 +1,10 @@
 package no.kommune.bergen.mock.altinn;
 
+
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class AltinnCorrespondenceFakeService extends HttpServlet {
-	final static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger( AltinnCorrespondenceFakeService.class );
+	final static Logger logger = LoggerFactory.getLogger(AltinnCorrespondenceFakeService.class);
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -23,6 +28,8 @@ public class AltinnCorrespondenceFakeService extends HttpServlet {
 		BufferedReader responseBufferedReader = null;
 		boolean isWdslRequest = (request.getParameter( "wsdl" ) != null || request.getParameter( "WSDL" ) != null);
 		String operation = (isWdslRequest ? "CorrespondenceAgencyExternalBasic.wsdl" : "CorrespondenceAgencyExternalBasic.soap.response");
+		String postedData = IOUtils.toString(request.getInputStream());
+		if(postedData.contains("111111111")) operation = "AltinnFaultMessage.response";
 		logger.info( "Operation=" + operation );
 		try {
 			responseInputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream( operation );
