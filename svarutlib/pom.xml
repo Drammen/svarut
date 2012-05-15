@@ -13,7 +13,6 @@
 	</parent>
 	<name>${project.artifactId}</name>
 	<description>SvarUt Lib-prosjekt</description>
-    <version>${project.parent.version}</version>
 	<properties>
 		<maven.pmd.rulesetfiles>${basedir}/pmd.xml</maven.pmd.rulesetfiles>
 		<logbackVersion>1.0.0</logbackVersion>

@@ -16,11 +16,15 @@ import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
 
 /** Altinn Correspondence service client */
 public class CorrespondenceClient {
+
+	private static Logger log = LoggerFactory.getLogger(CorrespondenceClient.class);
 	private final CorrespondenceSettings settings;
 
 	public CorrespondenceClient( CorrespondenceSettings settings ) {
@@ -87,16 +91,17 @@ public class CorrespondenceClient {
 		try {
 			response = port.insertCorrespondenceBasicV2( this.settings.getSystemUserName(), this.settings.getSystemPassword(), this.settings.getSystemUserCode(), msg.getExternalReference(), request );
 			if(!ReceiptStatusEnum.OK.equals(response.getReceiptStatusCode())){
-				throw new RuntimeException("Status was not ok: receiptID " + response.getReceiptId() + " status " + response.getReceiptStatusCode() );
+				throw new AltinnException("Status was not ok: receiptID " + response.getReceiptId() + " status " + response.getReceiptStatusCode() );
 			}
 		} catch (ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage e) {
-			throw new RuntimeException( getAltinFaultMessage( e ), e );
+			throw new AltinnException( getAltinFaultMessage( e ), e );
 		}
 		return response.getReceiptId();
 	}
 
 	private String getAltinFaultMessage( ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage f ) {
 		AltinnFault faultMessage = f.getFaultInfo();
+		log.info("Error id:" + faultMessage.getErrorID() + "Error: " + faultMessage.getAltinnErrorMessage());
 		return faultMessage.getAltinnErrorMessage();
 	}
 
