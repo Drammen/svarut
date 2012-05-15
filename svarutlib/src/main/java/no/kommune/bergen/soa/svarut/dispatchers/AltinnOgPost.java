@@ -33,7 +33,7 @@ public class AltinnOgPost extends AbstractDispatcher {
 			forsendelsesArkiv.setSentAltinn( f.getId(), receiptId);
 			logger.info( String.format( "Successfully sent to Altinn. Id=%s, Org=%s, Navn=%s", f.getId(), f.getOrgnr(), f.getNavn() ) );
 		} catch(AltinnException e){
-			logger.warn("Altinn failed " + e.getMessage() + " Sending to print", e);
+			logger.warn("Altinn failed for " + f.getId() + " feil: " + e.getMessage() + " Sending to print", e);
 			sendToPrint(f);
 		}
 	}
