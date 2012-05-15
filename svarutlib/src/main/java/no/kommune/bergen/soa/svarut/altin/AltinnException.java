@@ -6,4 +6,8 @@ public class AltinnException extends RuntimeException{
 	public AltinnException(String altinFaultMessage, ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage e) {
 		super(altinFaultMessage, e);
 	}
+
+	public AltinnException(String s) {
+		super(s);
+	}
 }

@@ -91,7 +91,7 @@ public class CorrespondenceClient {
 		try {
 			response = port.insertCorrespondenceBasicV2( this.settings.getSystemUserName(), this.settings.getSystemPassword(), this.settings.getSystemUserCode(), msg.getExternalReference(), request );
 			if(!ReceiptStatusEnum.OK.equals(response.getReceiptStatusCode())){
-				throw new RuntimeException("Status was not ok: receiptID " + response.getReceiptId() + " status " + response.getReceiptStatusCode() );
+				throw new AltinnException("Status was not ok: receiptID " + response.getReceiptId() + " status " + response.getReceiptStatusCode() );
 			}
 		} catch (ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage e) {
 			throw new AltinnException( getAltinFaultMessage( e ), e );

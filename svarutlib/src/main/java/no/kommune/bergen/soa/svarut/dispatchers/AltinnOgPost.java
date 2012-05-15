@@ -10,11 +10,11 @@ import no.kommune.bergen.soa.svarut.dao.ForsendelsesArkiv;
 import no.kommune.bergen.soa.svarut.domain.Forsendelse;
 import no.kommune.bergen.soa.svarut.domain.PrintReceipt;
 
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AltinnOgPost extends AbstractDispatcher {
 
-	final Logger logger = Logger.getLogger( AltinnOgPost.class );
+	final org.slf4j.Logger logger = LoggerFactory.getLogger(AltinnOgPost.class);
 	final PrintFacade printFacade;
 	final AltinnFacade altinnFacade;
 
@@ -33,7 +33,8 @@ public class AltinnOgPost extends AbstractDispatcher {
 			forsendelsesArkiv.setSentAltinn( f.getId(), receiptId);
 			logger.info( String.format( "Successfully sent to Altinn. Id=%s, Org=%s, Navn=%s", f.getId(), f.getOrgnr(), f.getNavn() ) );
 		} catch(AltinnException e){
-			logger.warn("Altinn failed for " + f.getId() + " feil: " + e.getMessage() + " Sending to print", e);
+			logger.warn("Altinn failed for " + f.getId() + " feil: " + e.getMessage(), e);
+			logger.info("Sending {} to Print", f.getId());
 			sendToPrint(f);
 		}
 	}
