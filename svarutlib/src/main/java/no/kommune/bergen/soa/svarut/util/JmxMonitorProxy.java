@@ -1,6 +1,7 @@
 package no.kommune.bergen.soa.svarut.util;
 
 import java.io.InputStream;
+import java.security.AccessControlException;
 import java.util.Date;
 import java.util.List;
 
@@ -185,7 +186,9 @@ public class JmxMonitorProxy implements ServiceDelegate, OppsynJmx {
 			InputStream is = serviceDelegate.retrieveContent( id, juridiskEnhet );
 			retrieveContentIr.recordSuccess();
 			return is;
-		} catch (RuntimeException e) {
+		}   catch(AccessControlException ace){
+			throw ace;
+		}	catch (RuntimeException e) {
 			retrieveContentIr.recordException( e.getMessage() );
 			throw e;
 		}
