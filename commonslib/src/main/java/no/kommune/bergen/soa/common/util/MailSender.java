@@ -8,7 +8,9 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -17,44 +19,47 @@ import org.springframework.util.Assert;
 
 public class MailSender {
 
-	static final Logger logger = Logger.getLogger( MailSender.class );
-	JavaMailSenderImpl javaMailSender = null;
-	String encoding = "UTF-8";
+	private static final Logger logger = LoggerFactory.getLogger(MailSender.class);
+
+	private static final String MAIL_ENCODING = "UTF-8";
+	private static final File[] EMPTY_ATTACHMENTS = new File[0];
+
+	private JavaMailSenderImpl javaMailSender = null;
 
 	/** Send an email to a single recipient. */
+	@SuppressWarnings("JavaDoc")
 	public void sendEmail( final String to, final String from, final String subject, final String body, final File[] attachments ) {
 		List<String> recipient = new ArrayList<String>();
 		recipient.add( to );
 
-		if (null != attachments && attachments.length > 0) {
+		if (attachments != null && attachments.length > 0)
 			sendMimeMessage( recipient, from, subject, body, attachments );
-		} else {
-			final File[] emptyAttachments = new File[0];
-			sendMimeMessage( recipient, from, subject, body, emptyAttachments);
-		}
+		else
+			sendMimeMessage( recipient, from, subject, body, EMPTY_ATTACHMENTS);
 	}
 
 	/** Send an email to a list of recipients. */
+	@SuppressWarnings({"unused", "JavaDoc"})
 	public void sendEmail( final List<String> recipients, final String from, final String subject, final String body, final File[] attachments ) {
-		if (null != attachments && attachments.length > 0) {
+		if (attachments != null && attachments.length > 0)
 			sendMimeMessage( recipients, from, subject, body, attachments );
-		} else {
-			final File[] emptyAttachments = new File[0];
-			sendMimeMessage( recipients, from, subject, body, emptyAttachments );
-		}
+		else
+			sendMimeMessage( recipients, from, subject, body, EMPTY_ATTACHMENTS );
 	}
 
 	@SuppressWarnings("unused")
 	private void sendPlainMessage( final List<String> recipients, final String from, final String subject, final String body ) {
 		for (String to : recipients) {
-			if (logger.isDebugEnabled()) logger.debug( "Sending email to:" + to + " from:" + from + " subject:" + subject );
-			Assert.isTrue( to != null && to.length() != 0 && to.indexOf( '@' ) > -1 );
-			SimpleMailMessage message = new SimpleMailMessage();
-			message.setFrom( from );
-			message.setTo( to.split( "," ) );
-			message.setSubject( subject );
-			message.setText( body );
-			this.javaMailSender.send( message );
+			logger.debug("Sending email to: {} from: {} subject: {}", new Object[]{to, from, subject});
+			if (to != null && to.length() != 0 && to.indexOf('@') > -1) {
+				SimpleMailMessage message = new SimpleMailMessage();
+				message.setFrom(from);
+				message.setTo(to.split(","));
+				message.setSubject(subject);
+				message.setText(body);
+				javaMailSender.send(message);
+			} else
+				throw new IllegalArgumentException("Bad email to address(es). Email to: " + to);
 		}
 	}
 
@@ -62,21 +67,21 @@ public class MailSender {
 		for (String recipient : recipients) {
 			final String to = recipient;
 			Assert.isTrue( to != null && to.length() != 0 && to.indexOf( '@' ) > -1 );
-			if (logger.isDebugEnabled()) logger.debug( "Sending email to:" + to + " from:" + from + " subject:" + subject );
-			this.javaMailSender.send( new MimeMessagePreparator() {
+			logger.debug("Sending email to: {} from: {} subject: {}", new Object[]{to, from, subject});
+			javaMailSender.send(new MimeMessagePreparator() {
 				@Override
 				public void prepare( MimeMessage mimeMessage ) throws MessagingException {
-					MimeMessageHelper message = null;
-					message = new MimeMessageHelper( mimeMessage, MimeMessageHelper.MULTIPART_MODE_MIXED, encoding );
+					MimeMessageHelper message;
+					message = new MimeMessageHelper(mimeMessage, MimeMessageHelper.MULTIPART_MODE_MIXED, MAIL_ENCODING);
 					message.setFrom( from );
 					message.setTo( InternetAddress.parse( to ) );
 					message.setSubject( subject );
 					message.setText( body, false );
 
-					for (File attachment : attachments) {
+					for (File attachment : attachments)
 						message.addAttachment( attachment.getName(), attachment );
-					}
-					if (logger.isDebugEnabled()) logger.debug( "Sending email: " + subject );
+
+					logger.debug("Sending email: {}", subject);
 				}
 			} );
 		}
@@ -86,11 +91,8 @@ public class MailSender {
 		this.javaMailSender = javaMailSender;
 	}
 
+	@SuppressWarnings("unused")
 	public JavaMailSenderImpl getJavaMailSender() {
-		return this.javaMailSender;
-	}
-
-	public void setEncoding( String encoding ) {
-		this.encoding = encoding;
+		return javaMailSender;
 	}
 }

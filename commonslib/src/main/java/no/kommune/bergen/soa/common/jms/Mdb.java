@@ -5,7 +5,8 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Message Driven Bean. Upon onMessage() invocation, Will attempt to invoke serviceInvoker.invoke(message). Messages that cause
@@ -13,10 +14,12 @@ import org.apache.log4j.Logger;
  * other exceptions to jms.errorQueue.
  */
 public class Mdb implements MessageListener, ExceptionListener {
-	static final Logger logger = Logger.getLogger( Mdb.class );
+
+	private static final Logger logger = LoggerFactory.getLogger(Mdb.class);
+
 	/** The actual executing business service. */
-	private ServiceInvoker serviceInvoker = null;;
-	private Jms jms = null;;
+	private final ServiceInvoker serviceInvoker;
+	private final Jms jms;
 
 	public Mdb( Jms jms, ServiceInvoker serviceInvoker ) {
 		this.serviceInvoker = serviceInvoker;
@@ -45,5 +48,4 @@ public class Mdb implements MessageListener, ExceptionListener {
 	public void onException( JMSException e ) {
 		logger.error( "onException() was called!", e );
 	}
-
 }

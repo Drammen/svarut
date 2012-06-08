@@ -1,66 +1,55 @@
 package no.kommune.bergen.soa.common.calendar;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
-/**
- * For å holde oversikt over arbeidsdager og fridager.
- *
- * @author einarvalen@gmail.com
- */
+import org.joda.time.LocalDate;
+
+import de.jollyday.Holiday;
+import de.jollyday.HolidayCalendar;
+import de.jollyday.HolidayManager;
+import de.jollyday.util.CalendarUtil;
+
 public class BusinessCalendar {
-	private static final HashMap<Integer,Set<Date>> leave = new HashMap<Integer, Set<Date>>();
 
-	public BusinessCalendar() {
+	private static HolidayManager holidayManager = HolidayManager.getInstance(HolidayCalendar.NORWAY);
+
+	public static Date getPreviousWorkday(int workdays){
+		return getPreviousWorkday(new Date(), workdays);
 	}
 
-	private boolean isWithinBounds( Date date ) {
-		return true;
-	}
-
-	public Date nextWorkday( Date date ) {
-		Date d = CalendarHelper.addDays( date, 1 );
-		while (isDayOff( d )) {
-			d = CalendarHelper.addDays( d, 1 );
+	public static Date getPreviousWorkday(Date date, int workdays){
+		date = getFirstPreviousWorkday(date);
+		for(int i=workdays; i>0; i--){
+			date = getFirstPreviousWorkday(CalendarHelper.addDays( date, -1 ));
 		}
-		return d;
+		return date;
 	}
 
-	public Date previousWorkday( Date date ) {
-		Date d = CalendarHelper.addDays( date, -1 );
-		while (isDayOff( d )) {
-			d = CalendarHelper.addDays( d, -1 );
+	private static Date getFirstPreviousWorkday(Date date) {
+		while (isDayOff( date )) {
+			date = CalendarHelper.addDays( date, -1 );
 		}
-		return d;
+		return date;
 	}
 
-	public Date nextDayOff( Date date ) {
-		Date d = CalendarHelper.addDays( date, 1 );
-		while (isWorkday( d )) {
-			d = CalendarHelper.addDays( d, 1 );
+	private static boolean isDayOff( Date date ) {
+		LocalDate localDate = new LocalDate(date);
+		boolean isHoliday = isHoliday(localDate);
+		boolean isWeekend = CalendarUtil.isWeekend(localDate);
+		return isHoliday || isWeekend;
+	}
+
+	private static boolean isHoliday(LocalDate localDate) {
+		//This workaround is reported to the jollyday team and can be changed to holidayManager.isHoliday(...) when they fix it in jollyday version 0.5.0
+		Set<Holiday> holidays = holidayManager.getHolidays(localDate.getYear());
+		for (Holiday h : holidays) {
+			LocalDate holidayDate = h.getDate();
+			if(holidayDate.isEqual(localDate)){
+				return true;
+			}
 		}
-		return d;
-	}
-
-	public Date previousDayOff( Date date ) {
-		Date d = CalendarHelper.addDays( date, -1 );
-		while (isWorkday( d )) {
-			d = CalendarHelper.addDays( d, -1 );
-		}
-		return d;
-	}
-
-	public boolean isWorkday( Date date ) {
-		return !isDayOff( date );
-	}
-
-	public boolean isDayOff( Date date ) {
-		int year = CalendarHelper.newCalendar(date).get(Calendar.YEAR);
-		Set<Date> dates = leave.get(year);
-		if(dates == null) {
-			dates =new NorwegianBankHolidays(year);
-			leave.put(year, dates );
-		}
-		return dates.contains( CalendarHelper.clearTimePart(date) );
+		return false;
 	}
 
 }

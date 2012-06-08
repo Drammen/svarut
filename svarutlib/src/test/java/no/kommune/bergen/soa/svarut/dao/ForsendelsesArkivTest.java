@@ -21,7 +21,6 @@ import java.util.Map;
 import junit.framework.Assert;
 import no.kommune.bergen.soa.common.calendar.BusinessCalendar;
 import no.kommune.bergen.soa.common.calendar.CalendarHelper;
-import no.kommune.bergen.soa.common.calendar.PresentDayBusinessCalendarForNorway;
 import no.kommune.bergen.soa.common.pdf.PdfGeneratorImpl;
 import no.kommune.bergen.soa.svarut.JdbcHelper;
 import no.kommune.bergen.soa.svarut.ServiceContext;
@@ -41,7 +40,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ForsendelsesArkivTest {
-	private static final BusinessCalendar businessCalendar = PresentDayBusinessCalendarForNorway.getInstance();
+
 	public static final String fnr = "12345678901";
 	public static final String orgnr = "987654321";
 	private static final String navn = "navn";
@@ -60,9 +59,8 @@ public class ForsendelsesArkivTest {
 	private static final String tittel = "tittel";
 	private static final String melding = "melding";
 	private static final String appid = "appid";
-	ForsendelsesArkiv forsendelsesArkiv;
+	private ForsendelsesArkiv forsendelsesArkiv;
 	public static final String testPdf = "test.pdf";
-	static PdfGeneratorImpl pdfGenerator = new PdfGeneratorImpl( "target" );
 
 	@Before
 	public void init() {
@@ -73,7 +71,7 @@ public class ForsendelsesArkivTest {
 	public static ForsendelsesArkiv createForsendesesArkiv() {
 		JdbcHelper jdbcHelper = new JdbcHelper();
 		jdbcHelper.createTable( "FORSENDELSESARKIV" );
-		FileStore fileStore = new FileStore( "target", pdfGenerator );
+		FileStore fileStore = new FileStore("target", new PdfGeneratorImpl("target"));
 		return new ForsendelsesArkiv( fileStore, jdbcHelper.getJdbcTemplate() );
 	}
 
@@ -88,12 +86,12 @@ public class ForsendelsesArkivTest {
 		int numberOfDays = 3;
 		Forsendelse f = createOldForsendelse( numberOfDays );
 		assertNotNull( f );
-		assertEquals( 0, this.forsendelsesArkiv.retrieveYoungerThan( 0, null ).size() );
-		assertEquals( 0, this.forsendelsesArkiv.retrieveYoungerThan( 1, null ).size() );
-		assertEquals( 0, this.forsendelsesArkiv.retrieveYoungerThan( 2, null ).size() );
-		assertEquals( 0, this.forsendelsesArkiv.retrieveYoungerThan( 3, null ).size() );
-		assertEquals( 1, this.forsendelsesArkiv.retrieveYoungerThan( 4, null ).size() );
-		assertEquals( 1, this.forsendelsesArkiv.retrieveYoungerThan( 5, null ).size() );
+		assertEquals(0, forsendelsesArkiv.retrieveYoungerThan(0, null).size());
+		assertEquals(0, forsendelsesArkiv.retrieveYoungerThan(1, null).size());
+		assertEquals(0, forsendelsesArkiv.retrieveYoungerThan(2, null).size());
+		assertEquals(0, forsendelsesArkiv.retrieveYoungerThan(3, null).size());
+		assertEquals(1, forsendelsesArkiv.retrieveYoungerThan(4, null).size());
+		assertEquals(1, forsendelsesArkiv.retrieveYoungerThan(5, null).size());
 	}
 
 	@Test
@@ -101,19 +99,18 @@ public class ForsendelsesArkivTest {
 		for (int numberOfDays = 0; numberOfDays < 4; numberOfDays++) {
 			createOldForsendelse( numberOfDays );
 		}
-		assertEquals( 0, this.forsendelsesArkiv.retrieveYoungerThan( 0, null ).size() );
-		assertEquals( 1, this.forsendelsesArkiv.retrieveYoungerThan( 1, null ).size() );
-		assertEquals( 2, this.forsendelsesArkiv.retrieveYoungerThan( 2, null ).size() );
-		assertEquals( 3, this.forsendelsesArkiv.retrieveYoungerThan( 3, null ).size() );
-		assertEquals( 4, this.forsendelsesArkiv.retrieveYoungerThan( 4, null ).size() );
-		assertEquals( 4, this.forsendelsesArkiv.retrieveYoungerThan( 5, null ).size() );
+		assertEquals(0, forsendelsesArkiv.retrieveYoungerThan(0, null).size());
+		assertEquals(1, forsendelsesArkiv.retrieveYoungerThan(1, null).size());
+		assertEquals(2, forsendelsesArkiv.retrieveYoungerThan(2, null).size());
+		assertEquals(3, forsendelsesArkiv.retrieveYoungerThan(3, null).size());
+		assertEquals(4, forsendelsesArkiv.retrieveYoungerThan(4, null).size());
+		assertEquals(4, forsendelsesArkiv.retrieveYoungerThan(5, null).size());
 	}
 
 	private Forsendelse createOldForsendelse( int numberOfDays ) {
-		int variant = numberOfDays;
-		String id = forsendelsesArkiv.save( createForsendelse( variant ), getTestDocument() );
+		String id = forsendelsesArkiv.save(createForsendelse(numberOfDays), getTestDocument());
 		assertNotNull( id );
-		this.forsendelsesArkiv.jdbcTemplate.update( "UPDATE FORSENDELSESARKIV SET SENDT=? WHERE ID=?", new Object[] { daysAgo( numberOfDays ), id }, new int[] { Types.DATE, Types.VARCHAR } );
+		forsendelsesArkiv.jdbcTemplate.update("UPDATE FORSENDELSESARKIV SET SENDT=? WHERE ID=?", new Object[]{daysAgo(numberOfDays), id}, new int[]{Types.DATE, Types.VARCHAR});
 		return forsendelsesArkiv.retrieve( id );
 	}
 
@@ -156,8 +153,7 @@ public class ForsendelsesArkivTest {
 	}
 
 	public static int getVariant( Forsendelse f ) {
-		int variant = Integer.parseInt( f.getNavn().substring( navn.length() ) );
-		return variant;
+		return Integer.parseInt(f.getNavn().substring(navn.length()));
 	}
 
 	@Test
@@ -320,100 +316,10 @@ public class ForsendelsesArkivTest {
 
 	@Test
 	public void failedToPrintAlertWindowStartDayOverWeekend() {
-		long now = CalendarHelper.toDate( 2011, 11, 14 ).getTime();
-		int failedToPrintAlertWindowStartDay = 0;
-		Date failedToPrintAlertWindowStart = ForsendelsesArkiv.failedToPrintAlertWindowStart( now, failedToPrintAlertWindowStartDay, businessCalendar );
+		Date now = CalendarHelper.toDate( 2011, 11, 14 );
+		int failedToPrintAlertWindowStartDay = 1;
+		Date failedToPrintAlertWindowStart = BusinessCalendar.getPreviousWorkday( now, failedToPrintAlertWindowStartDay );
 		Assert.assertEquals( "2011-11-11", CalendarHelper.formatAsDate( failedToPrintAlertWindowStart ) );
-	}
-
-	@Test
-	public void retrieveFailedToPrint() {
-		String id = storeNewForsendelse();
-		forsendelsesArkiv.setFailedToPrintAlertWindowStartDay( dayCountSincePreviousBusinessDay() );
-		forsendelsesArkiv.setFailedToPrintAlertWindowEndDay( 10 );
-		assertFalse( isInFailedToPrintList( id, forsendelsesArkiv.retrieveFailedToPrint() ) );
-		PrintReceipt printReceipt = newPrintReceipt();
-		forsendelsesArkiv.setPrinted( id, printReceipt );
-		assertFalse( isInFailedToPrintList( id, forsendelsesArkiv.retrieveFailedToPrint() ) );
-		forsendelsesArkiv.setFailedToPrintAlertWindowStartDay( -1 - dayCountUntilNextBusinessDay() );
-		if (businessCalendar.isDayOff( new Date() )) {
-			assertFalse( isInFailedToPrintList( id, forsendelsesArkiv.retrieveFailedToPrint() ) );
-		} else {
-			assertTrue( isInFailedToPrintList( id, forsendelsesArkiv.retrieveFailedToPrint() ) );
-		}
-	}
-
-	private int dayCountSincePreviousBusinessDay() {
-		Date d = CalendarHelper.addDays( new Date(), -1 );
-		int i = 0;
-		while (businessCalendar.isDayOff( d )) {
-			d = CalendarHelper.addDays( d, -1 );
-			i++;
-		}
-		return i;
-	}
-
-	private int dayCountUntilNextBusinessDay() {
-		Date d = CalendarHelper.addDays( new Date(), 1 );
-		int i = 0;
-		while (businessCalendar.isDayOff( d )) {
-			d = CalendarHelper.addDays( d, 1 );
-			i++;
-		}
-		return i;
-	}
-
-	@Test
-	public void failedToPrintAlertWindowStartDayNextDay() {
-		final int failedToPrintAlertWindowStartDay = 0, failedToPrintAlertWindowEndDay = 15;
-		for (int i = 0; i < 20; i++) {
-			Date today = CalendarHelper.toDate( 2011, 11, 10 + i );
-			Date startOfWindow = ForsendelsesArkiv.failedToPrintAlertWindowStart( today.getTime(), failedToPrintAlertWindowStartDay, businessCalendar );
-			Date endOfWindow = ForsendelsesArkiv.failedToPrintAlertWindowEnd( today.getTime(), failedToPrintAlertWindowEndDay, businessCalendar );
-			verifyWindowCalculation( failedToPrintAlertWindowStartDay, failedToPrintAlertWindowEndDay, today, startOfWindow, endOfWindow );
-			verifyTodayIsOutsideWindow( today, startOfWindow, endOfWindow );
-		}
-	}
-
-	private void verifyWindowCalculation( final int failedToPrintAlertWindowStartDay, final int failedToPrintAlertWindowEndDay, Date today, Date startOfWindow, Date endOfWindow ) {
-		Date expectedEndOfWindow = calculateExpectedEndOfWindow( today, failedToPrintAlertWindowEndDay );
-		Date expectedStartOfWindow = calculateExpectedStartOfWindow( today, failedToPrintAlertWindowStartDay );
-		//System.out.printf( "Today=%s, ..WHERE UTSKREVET<=%s AND UTSKREVET>=%s\n", fmt( today ), fmt( startOfWindow ), fmt( endOfWindow ) );
-		Assert.assertEquals( fmt( expectedEndOfWindow ), fmt( endOfWindow ) );
-		Assert.assertEquals( fmt( expectedStartOfWindow ), fmt( startOfWindow ) );
-	}
-
-	private void verifyTodayIsOutsideWindow( Date today, Date startOfWindow, Date endOfWindow ) {
-		String msg = String.format( "%s is inside window [%s,%s]", fmt( today ), fmt( startOfWindow ), fmt( endOfWindow ) );
-		Assert.assertTrue( msg, !isBetween( today, startOfWindow, endOfWindow ) );
-	}
-
-	private boolean isBetween( Date date, Date startOfWindow, Date endOfWindow ) {
-		int compareToStartOfWindow = date.compareTo( startOfWindow );
-		int compareToEndOfWindow = date.compareTo( endOfWindow );
-		System.out.printf( "[%s (%s) %s] - ", fmt( startOfWindow ), fmt( date ), fmt( endOfWindow ) );
-		System.out.printf( "compareToStartOfWindow=%s, compareToEndOfWindow=%s\n", compareToStartOfWindow, compareToEndOfWindow );
-		if ((compareToStartOfWindow == 0 || compareToStartOfWindow == -1) && compareToEndOfWindow == 1) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	private String fmt( Date date ) {
-		return CalendarHelper.formatAsDate( date );
-	}
-
-	private Date calculateExpectedStartOfWindow( Date todaysDate, int failedToPrintAlertWindowStartDay ) {
-		Date d = CalendarHelper.addDays( todaysDate, -(1 + failedToPrintAlertWindowStartDay) );
-		while (!businessCalendar.isWorkday( d )) {
-			d = CalendarHelper.addDays( d, -1 );
-		}
-		return d;
-	}
-
-	private Date calculateExpectedEndOfWindow( Date todaysDate, int failedToPrintAlertWindowEndDay ) {
-		return CalendarHelper.addDays( todaysDate, -failedToPrintAlertWindowEndDay );
 	}
 
 	@Test
@@ -436,13 +342,6 @@ public class ForsendelsesArkivTest {
 		printReceipt.setPrintId( "MyPrintId" );
 		printReceipt.setPageCount( 123 );
 		return printReceipt;
-	}
-
-	private boolean isInFailedToPrintList( String id, List<String> list ) {
-		for (String idFailedToPrint : list) {
-			if (id.equals( idFailedToPrint )) return true;
-		}
-		return false;
 	}
 
 	private String storeNewForsendelse() {
@@ -513,7 +412,6 @@ public class ForsendelsesArkivTest {
 	}
 
 	public static InputStream getTestDocument() {
-
 		return FilHenter.getFileAsInputStream( testPdf );
 	}
 
@@ -533,7 +431,5 @@ public class ForsendelsesArkivTest {
 
 		List<String> forsendelser2 = forsendelsesArkiv.readUnsent( new ShipmentPolicy[] { ShipmentPolicy.fromValue( f.getShipmentPolicy() ) } );
 		assertTrue( forsendelser2.contains( f2.getId() ) );
-
 	}
-
 }

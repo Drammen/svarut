@@ -51,6 +51,8 @@ public interface ServiceDelegate {
 
 	List<Forsendelse> retrieveIgnored();
 
+	void updateSentToPrint(String forsendelsesId, Date sentPrintDate);
+
 	List<String> retrieveFailedToPrint();
 
 	void markMessageSendt( String forsendelsesId );

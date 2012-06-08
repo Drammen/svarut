@@ -312,7 +312,7 @@ public class ServiceDelegateImplTest {
 			ids[i] = service.send( ForsendelsesArkivTest.createForsendelse( i ), ForsendelsesArkivTest.getTestDocument() );
 		}
 		assertTrue( service.statistics().indexOf( "SENDT=" + count ) > -1 );
-		service.setRetirementAgeIndays( -1 );
+		service.setRetirementAgeInDays(-1);
 		service.removeOld();
 		assertTrue( service.statistics().indexOf( "SENDT=" + count ) > -1 );
 		for (String id : ids) {

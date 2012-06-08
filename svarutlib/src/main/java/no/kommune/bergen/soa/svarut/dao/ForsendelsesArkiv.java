@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import no.kommune.bergen.soa.common.calendar.BusinessCalendar;
-import no.kommune.bergen.soa.common.calendar.PresentDayBusinessCalendarForNorway;
 import no.kommune.bergen.soa.common.exception.UserException;
 import no.kommune.bergen.soa.svarut.domain.Fodselsnr;
 import no.kommune.bergen.soa.svarut.domain.Forsendelse;
@@ -22,14 +21,17 @@ import no.kommune.bergen.soa.svarut.domain.PrintReceipt;
 import no.kommune.bergen.soa.svarut.domain.Printed;
 import no.kommune.bergen.soa.svarut.dto.ShipmentPolicy;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class ForsendelsesArkiv {
-	final Logger logger = Logger.getLogger(ForsendelsesArkiv.class);
+
+	private static final Logger logger = LoggerFactory.getLogger(ForsendelsesArkiv.class);
+
 	FileStore fileStore;
 	JdbcTemplate jdbcTemplate;
-	private int failedToPrintAlertWindowStartDay = 4, failedToPrintAlertWindowEndDay = 14;
+	private int failedToPrintAlertWindowStartDay = 2, failedToPrintAlertWindowEndDay = 10;
 
 	public ForsendelsesArkiv(FileStore fileStore, JdbcTemplate jdbcTemplate) {
 		this.fileStore = fileStore;
@@ -43,8 +45,7 @@ public class ForsendelsesArkiv {
 			logger.warn( "Message text is longer than 4000 characters. Truncated!" );
 		}
 		Integer orgnr = (f.getOrgnr() == null) ? null : new Integer(f.getOrgnr());
-		if (logger.isDebugEnabled())
-			logger.debug("Inserting id = " + filename + " fodselsnr = " + f.getFnr() + " orgnr = " + orgnr);
+		logger.debug("Inserting id = {} fodselsnr = {} orgnr = {}", new Object[]{filename, f.getFnr(), orgnr});
 		String sql = "INSERT  INTO FORSENDELSESARKIV (SENDT, ID, FODSELSNR, NAVN, ADRESSE1, ADRESSE2, ADRESSE3, POSTNR, POSTSTED, LAND, "
 				+ "AVSENDER_NAVN, AVSENDER_ADRESSE1, AVSENDER_ADRESSE2, AVSENDER_ADRESSE3, AVSENDER_POSTNR, AVSENDER_POSTSTED, TITTEL, MELDING, APPID, PRINT_ID, ORGNR, FORSENDELSES_MATE, EPOST, REPLY_TO, PRINT_FARGE, ANSVARSSTED, KONTERINGKODE) "
 				+ "VALUES (SYSDATE, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?)";
@@ -74,7 +75,7 @@ public class ForsendelsesArkiv {
 			int value = jdbcTemplate.queryForInt(sql);
 			return String.format("%012d", value);
 		} catch (Exception e) {
-			logger.warn(String.format("Problems executing sql. Exception: %s, Sql:%s", e.getMessage(), sql));
+			logger.warn("Problems executing sql. Exception: {}, Sql: {}", e.getMessage(), sql);
 		}
 		UUID uuid = UUID.randomUUID();
 		return uuid.toString();
@@ -87,19 +88,9 @@ public class ForsendelsesArkiv {
 		return filename;
 	}
 
-	public Map<String, Object> countRows() {
-		String sql = "SELECT COUNT(ID) FROM FORSENDELSESARKIV";
-		return jdbcTemplate.queryForMap(sql, null);
-	}
-
-	public Map<String, Object> retrieveAnyRow() {
-		String sql = "SELECT * FROM FORSENDELSESARKIV";
-		return jdbcTemplate.queryForMap( sql, null );
-	}
-
 	public Map<String, Object> retrieveRow(String id) {
 		String sql = "SELECT * FROM FORSENDELSESARKIV WHERE ID=?";
-		return jdbcTemplate.queryForMap(sql, new Object[]{id});
+		return jdbcTemplate.queryForMap(sql, id);
 	}
 
 	public List<Forsendelse> retrieveRows( Date fromAndIncluding, Date toNotIncluding ) {
@@ -177,14 +168,13 @@ public class ForsendelsesArkiv {
 		for (Map<String, Object> row : rows) {
 			forsendelser.add(createForsendelse(row));
 		}
-		if (logger.isDebugEnabled())
-			logger.debug("Finding forsendelser for JuridiskEnhet " + juridiskEnhetValue + " found " + forsendelser.size());
+		logger.debug("Finding forsendelser for JuridiskEnhet {} found {}", juridiskEnhetValue, forsendelser.size());
 		return forsendelser;
 	}
 
 	public Forsendelse retrieve(String id) {
 		String sql = "SELECT * FROM FORSENDELSESARKIV WHERE ID=?";
-		Map<?, ?> row = jdbcTemplate.queryForMap(sql, new Object[]{id});
+		Map<?, ?> row = jdbcTemplate.queryForMap(sql, id);
 		return createForsendelse(row);
 	}
 
@@ -220,7 +210,7 @@ public class ForsendelsesArkiv {
 		f.setShipmentPolicy((String) row.get("FORSENDELSES_MATE"));
 		f.setEmail((String) row.get("EPOST"));
 		f.setReplyTo((String) row.get("REPLY_TO"));
-		f.setPrintFarge(row.get("PRINT_FARGE").equals("1") ? true : false);
+		f.setPrintFarge(row.get("PRINT_FARGE").equals("1"));
 		f.setTidspunktPostlagt(toDate(row.get("TIDSPUNKTPOSTLAGT")));
 		f.setAntallSider(toInt(row.get("ANTALLSIDER")));
 		f.setAntallSiderPostlagt(toInt(row.get("ANTALLSIDERPOSTLAGT")));
@@ -272,7 +262,6 @@ public class ForsendelsesArkiv {
 		return convertListOfIds(queryResponse);
 	}
 
-	@SuppressWarnings("unchecked")
 	private List<String> convertListOfIds(List<?> queryResponse) {
 		List<String> list = new ArrayList<String>();
 		for (Object map : queryResponse) {
@@ -287,39 +276,38 @@ public class ForsendelsesArkiv {
 	}
 
 	public void setSentAltinn(String id, int receiptId) {
-		if (logger.isDebugEnabled()) logger.debug("setSentAltinn() id=" + id);
+		logger.debug("setSentAltinn() id={}", id);
 		String sql = "UPDATE FORSENDELSESARKIV SET ALTINN_SENDT=SYSDATE, ALTINN_RECEIPT_ID=? WHERE ID=?";
-		jdbcTemplate.update(sql, new Object[]{receiptId, id});
+		jdbcTemplate.update(sql, receiptId, id);
 	}
 
 	public void setSentNorgeDotNo(String id) {
-		if (logger.isDebugEnabled()) logger.debug("setSentNorgeDotNo() id=" + id);
+		logger.debug("setSentNorgeDotNo() id={}", id);
 		String sql = "UPDATE FORSENDELSESARKIV SET NORGEDOTNO=SYSDATE WHERE ID=?";
-		jdbcTemplate.update(sql, new Object[]{id});
+		jdbcTemplate.update(sql, id);
 	}
 
 	public void setSentEmail(String id) {
-		if (logger.isDebugEnabled()) logger.debug("setSentEmail() id=" + id);
+		logger.debug("setSentEmail() id={}", id);
 		String sql = "UPDATE FORSENDELSESARKIV SET EPOST_SENDT=SYSDATE WHERE ID=?";
-		jdbcTemplate.update(sql, new Object[]{id});
+		jdbcTemplate.update(sql, id);
 	}
 
 	public void setPrinted(String id, PrintReceipt printReceipt) {
 		String sql = "UPDATE FORSENDELSESARKIV SET UTSKREVET=SYSDATE,STOPPET=SYSDATE,PRINT_ID=?,ANTALLSIDER=? WHERE ID=?";
-		if (logger.isDebugEnabled())
-			logger.debug(String.format("Updating: %s, setting print_id = %s, antallSider= %s", id, printReceipt.getPrintId(), printReceipt.getPageCount()));
-		jdbcTemplate.update(sql, new Object[]{printReceipt.getPrintId(), printReceipt.getPageCount(), id});
+		logger.debug("Updating: {}, setting print_id = {}, antallSider = {}", new Object[]{id, printReceipt.getPrintId(), printReceipt.getPageCount()});
+		jdbcTemplate.update(sql, printReceipt.getPrintId(), printReceipt.getPageCount(), id);
 	}
 
 	public void confirm(String id) { // Was read
 		String sql = "UPDATE FORSENDELSESARKIV SET LEST=SYSDATE,STOPPET=SYSDATE WHERE LEST IS NULL AND ID=?";
-		logger.info(String.format("Forsendelse ID=%s, was read", id));
+		logger.info("Forsendelse ID={}, was read", id);
 		jdbcTemplate.update(sql, new Object[]{id}, new int[]{java.sql.Types.VARCHAR});
 	}
 
 	public void setUnread(String id) {
 		String sql = "UPDATE FORSENDELSESARKIV SET LEST=NULL, STOPPET=NULL WHERE ID=?";
-		jdbcTemplate.update(sql, new Object[]{id});
+		jdbcTemplate.update(sql, id);
 	}
 
 	/**
@@ -333,7 +321,7 @@ public class ForsendelsesArkiv {
 		String msg = String.format("Unable to authorize JuridiskEnhet=%s for access to forsendelsesid=%s.", juridiskEnhetValue, id);
 		Object[] args = new Object[]{id, juridiskEnhetValue};
 		int[] types = new int[]{java.sql.Types.VARCHAR, java.sql.Types.CHAR};
-		int count = 0;
+		int count;
 		try {
 			count = jdbcTemplate.queryForInt(sql, args, types);
 		} catch (Exception e) {
@@ -343,13 +331,10 @@ public class ForsendelsesArkiv {
 	}
 
 	public void remove(String id) {
-		logger.info("Removing forsendelse: " + id);
-		/* Take this back when fix verified in prod. -- Einar  { */
-		//String sql = "DELETE FROM FORSENDELSESARKIV WHERE ID=?";
-		//jdbcTemplate.update( sql, new Object[] { id } );
-		//fileStore.remove( id );
-		this.stop( id );
-		/* Take this back when fix verified in prod. -- Einar } */
+		logger.info("Removing forsendelse: {}", id);
+		String sql = "DELETE FROM FORSENDELSESARKIV WHERE ID=?";
+		jdbcTemplate.update( sql, id);
+		fileStore.remove( id );
 	}
 
 	Timestamp calculateTimeLimit(long days) {
@@ -364,14 +349,14 @@ public class ForsendelsesArkiv {
 	public int removeOlderThan(long days) {
 		Timestamp timestamp = calculateTimeLimit(days);
 		String sql = "SELECT ID FROM FORSENDELSESARKIV WHERE STOPPET IS NOT NULL AND STOPPET<?";
-		List<String> list = convertListOfIds(jdbcTemplate.queryForList(sql, new Object[]{timestamp}));
+		List<String> list = convertListOfIds(jdbcTemplate.queryForList(sql, timestamp));
 		int count = 0;
 		for (String id : list) {
 			try {
 				remove(id);
 				count++;
 			} catch (RuntimeException e) {
-				logger.warn(String.format("Probems removing old entry. Id:%s Exception: %s", id, e.getMessage()));
+				logger.warn(String.format("Problems removing old entry. Id:%s Exception: %s", id, e.getMessage()));
 			}
 		}
 		return count;
@@ -383,19 +368,18 @@ public class ForsendelsesArkiv {
 	public int removeUnreachable(long days) {
 		Timestamp timestamp = calculateTimeLimit(days);
 		String sql = "SELECT ID FROM FORSENDELSESARKIV WHERE FODSELSNR IS NULL AND ORGNR IS NULL AND STOPPET<?";
-		List<String> list = convertListOfIds(jdbcTemplate.queryForList(sql, new Object[]{timestamp}));
+		List<String> list = convertListOfIds(jdbcTemplate.queryForList(sql, timestamp));
 		int count = 0;
 		for (String id : list) {
 			try {
 				remove(id);
 				count++;
 			} catch (RuntimeException e) {
-				logger.warn(String.format("Probems removing unreachable entry. Id:%s Exception: %s", id, e.getMessage()));
+				logger.warn("Problems removing unreachable entry. Id: {} Exception: {}", id, e.getMessage());
 			}
 		}
 		return count;
 	}
-
 
 	/**
 	 * Return liste med forsendelses-ider for et sett shipment-policyer
@@ -413,7 +397,7 @@ public class ForsendelsesArkiv {
 			}
 			sql = sql.substring(0, sql.length() - 1) + ")";
 		}
-		List<?> list = jdbcTemplate.queryForList(sql, new Object[]{timestamp});
+		List<?> list = jdbcTemplate.queryForList(sql, timestamp);
 		return convertListOfIds(list);
 	}
 
@@ -440,9 +424,20 @@ public class ForsendelsesArkiv {
 	 * Forsendelsen tas ut av all videre behandling
 	 */
 	public void stop(String id) {
-		if (logger.isInfoEnabled()) logger.info("Stopping forsendelse " + id);
+		logger.info("Stopping forsendelse {}", id);
 		String sql = "UPDATE FORSENDELSESARKIV SET STOPPET=SYSDATE WHERE ID=?";
-		jdbcTemplate.update(sql, new Object[]{id});
+		jdbcTemplate.update(sql, id);
+	}
+
+	public void updateSentToPrint(String forsendelsesId, Date sentPrintDate) {
+		if (forsendelsesId == null || forsendelsesId.length() == 0) {
+			throw new RuntimeException("Nonexisting forsendelse: " + forsendelsesId);
+		}
+		String sql = "UPDATE FORSENDELSESARKIV SET UTSKREVET=? WHERE ID=?";
+		int rowsUpdatedCount = jdbcTemplate.update(sql, sentPrintDate, forsendelsesId);
+		if (rowsUpdatedCount != 1) {
+			throw new RuntimeException("Nonexisting forsendelse: " + forsendelsesId);
+		}
 	}
 
 	/**
@@ -454,7 +449,7 @@ public class ForsendelsesArkiv {
 			throw new RuntimeException("Nonexisting forsendelse: " + forsendelsesId);
 		}
 		String sql = "UPDATE FORSENDELSESARKIV SET ANTALLSIDERPOSTLAGT=?, TIDSPUNKTPOSTLAGT=? WHERE ID=?";
-		int rowsUpdatedCount = jdbcTemplate.update(sql, new Object[]{printed.getAntallSiderPostlagt(), printed.getTidspunktPostlagt(), forsendelsesId});
+		int rowsUpdatedCount = jdbcTemplate.update(sql, printed.getAntallSiderPostlagt(), printed.getTidspunktPostlagt(), forsendelsesId);
 		if (rowsUpdatedCount != 1) {
 			throw new RuntimeException("Nonexisting forsendelse: " + forsendelsesId);
 		}
@@ -464,30 +459,11 @@ public class ForsendelsesArkiv {
 	 * Finn forsendelser som mot formodning ikke er sendt i posten av PrintserviceProvider
 	 */
 	public List<String> retrieveFailedToPrint() {
+		Date failedToPrintAlertWindowStart = BusinessCalendar.getPreviousWorkday(failedToPrintAlertWindowStartDay);
+		Date failedToPrintAlertWindowEnd = BusinessCalendar.getPreviousWorkday(failedToPrintAlertWindowEndDay);
 		final String sql = "SELECT ID FROM FORSENDELSESARKIV WHERE UTSKREVET IS NOT NULL AND TIDSPUNKTPOSTLAGT IS NULL AND UTSKREVET <= ? AND UTSKREVET >= ?";
-		final List<String> ids = new ArrayList<String>();
-		long now = System.currentTimeMillis();
-		BusinessCalendar businessCalendar = PresentDayBusinessCalendarForNorway.getInstance();
-		Date failedToPrintAlertWindowStart = failedToPrintAlertWindowStart( now, this.failedToPrintAlertWindowStartDay, businessCalendar );
-		Date failedToPrintAlertWindowEnd = failedToPrintAlertWindowStart( now, this.failedToPrintAlertWindowEndDay, businessCalendar );
-		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, new Object[]{failedToPrintAlertWindowStart, failedToPrintAlertWindowEnd});
-		if (rows != null) {
-			for (Map<String, Object> row : rows) {
-				if (row == null) continue;
-				Object id = row.get("ID");
-				if (id != null && id instanceof String) ids.add((String) id);
-			}
-		}
-		return ids;
-	}
-
-	static Date failedToPrintAlertWindowStart( long now, int failedToPrintAlertWindowStartDay, BusinessCalendar businessCalendar ) {
-		Date date = new Date( now - failedToPrintAlertWindowStartDay * 1000L * 60 * 60 * 24 );
-		return businessCalendar.previousWorkday( date );
-	}
-
-	static Date failedToPrintAlertWindowEnd( long now, int failedToPrintAlertWindowEndDay, BusinessCalendar businessCalendar ) {
-		return new Date( now - failedToPrintAlertWindowEndDay * 1000L * 60 * 60 * 24 );
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, failedToPrintAlertWindowStart, failedToPrintAlertWindowEnd);
+		return getIdList(rows);
 	}
 
 	/**
@@ -506,17 +482,26 @@ public class ForsendelsesArkiv {
 
 	/**
 	 * Marker en forsendelse som  feilet i forsendelsesarkivet.
-	 *
-	 * @param forsendelse
-	 * @param nesteforsok
 	 */
 	public void markForsendelseFailed(Forsendelse forsendelse, Date nesteforsok) {
 		String sql = "UPDATE FORSENDELSESARKIV SET NESTE_FORSOK=? WHERE ID=?";
 
-		int rowsUpdatedCount = jdbcTemplate.update(sql, new Object[]{nesteforsok, forsendelse.getId()});
+		int rowsUpdatedCount = jdbcTemplate.update(sql, nesteforsok, forsendelse.getId());
 		if (rowsUpdatedCount != 1) {
 			throw new RuntimeException("Nonexisting forsendelse: " + forsendelse.getId());
 		}
 		forsendelse.setNesteForsok(nesteforsok);
+	}
+
+	private List<String> getIdList(List<Map<String, Object>> rows) {
+		final List<String> ids = new ArrayList<String>();
+		if (rows != null) {
+			for (Map<String, Object> row : rows) {
+				if (row == null) continue;
+				Object id = row.get("ID");
+				if (id != null && id instanceof String) ids.add((String) id);
+			}
+		}
+		return ids;
 	}
 }

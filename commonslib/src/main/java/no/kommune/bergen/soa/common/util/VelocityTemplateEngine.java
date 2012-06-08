@@ -2,38 +2,29 @@ package no.kommune.bergen.soa.common.util;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
 public class VelocityTemplateEngine implements TemplateEngine {
-	static final Logger logger = Logger.getLogger( VelocityTemplateEngine.class );
+
+	private static final Logger logger = LoggerFactory.getLogger(VelocityTemplateEngine.class);
+
+	private static final String VELOCITY_ENGINE_ENCODING = "UTF-8";
+
 	private VelocityEngine velocityEngine = null;
-	private String encoding = "UTF-8";
 
 	@Override
 	public String merge( Map<String, String> data, String templateLocation ) {
-		String result = VelocityEngineUtils.mergeTemplateIntoString( this.velocityEngine, templateLocation, encoding, data );
-		if (result.indexOf( "${" ) > -1) {
-			logger.warn( "Unsubstituted velocity macro in string: " + result );
-		}
-		return result;
-	}
+		String result = VelocityEngineUtils.mergeTemplateIntoString(this.velocityEngine, templateLocation, VELOCITY_ENGINE_ENCODING, data);
+		if (result.contains("${"))
+			logger.warn("Unsubstituted velocity macro in string: {}", result);
 
-	public VelocityEngine getVelocityEngine() {
-		return velocityEngine;
+		return result;
 	}
 
 	public void setVelocityEngine( VelocityEngine velocityEngine ) {
 		this.velocityEngine = velocityEngine;
 	}
-
-	public String getEncoding() {
-		return encoding;
-	}
-
-	public void setEncoding( String encoding ) {
-		this.encoding = encoding;
-	}
-
 }
