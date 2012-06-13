@@ -5,7 +5,7 @@
 	<artifactId>commonslib</artifactId>
 	<packaging>jar</packaging>
 	<name>LIB - ${project.artifactId}</name>
-	<description>Felles kode</description> 
+	<description>Felles kode</description>
 	<parent>
 		<groupId>no.kommune.bergen.svarut</groupId>
 		<artifactId>svarut-parent</artifactId>
