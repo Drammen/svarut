@@ -1,6 +1,5 @@
 package no.kommune.bergen.soa.svarut;
 
-import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
 import static org.easymock.classextension.EasyMock.createStrictMock;
@@ -45,7 +44,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 //ID, FODSELSNR, NAVN, ADRESSE1, ADRESSE2, ADRESSE3, POSTNR, POSTSTED, LAND, TITTEL, MELDING, LEST, SENDT, NORGEDOTNO, UTSKREVET
 public class ServiceDelegateImplTest {
 	private ServiceContext serviceContext;
-	private LdapFacade ldapFacadeMock;
 	private PrintFacade printFacadeMock;
 	private ServiceDelegateImpl service;
 	private boolean mailSenderCalled = false;
@@ -63,15 +61,12 @@ public class ServiceDelegateImplTest {
 		ApplicationContext context = new ClassPathXmlApplicationContext( "applicationContext.xml" );
 		this.serviceContext = (ServiceContext)context.getBean( "serviceContext" );
 		this.serviceContext.verify();
-		this.ldapFacadeMock = createStrictMock( LdapFacade.class );
-		this.serviceContext.emailFacadeNorgeDotNoDocumentAlert.mailSender = mockMailSender;
 		this.serviceContext.emailFacade.mailSender = mockMailSender;
-		this.serviceContext.ldapFacade = ldapFacadeMock;
 		this.printFacadeMock = createStrictMock( PrintFacade.class );
 		this.serviceContext.printFacade = this.printFacadeMock;
-		this.serviceContext.getNorgeDotNoContext().setLeadTimeApost( -1L );
+		this.serviceContext.getAltinnContext().setLeadTimeApost( -1L );
 		this.serviceContext.verify();
-		this.service = new ServiceDelegateImpl( this.serviceContext , new DispatchRateConfig(0,0,0,0));
+		this.service = new ServiceDelegateImpl( this.serviceContext , new DispatchRateConfig(0,0,0));
 		this.mailSenderCalled = false;
 	}
 
@@ -169,26 +164,7 @@ public class ServiceDelegateImplTest {
 		}
 	}
 
-	@Test
-	public void sendNorgeDotNo() {
-		int variant = 1;
-		Forsendelse forsendelse = ForsendelsesArkivTest.createForsendelse( variant );
-		forsendelse.setShipmentPolicy( ShipmentPolicy.NORGE_DOT_NO_OG_APOST.value());
-		String fnr = forsendelse.getFnr();
-		String forsendesesId = service.send( forsendelse, ForsendelsesArkivTest.getTestDocument() );
-		String statusBefore = service.retrieveStatus( forsendesesId );
-		expect( ldapFacadeMock.lookup( eq( fnr ) ) ).andReturn( true );
-		replay( ldapFacadeMock );
-		service.dispatch();
-		verify( ldapFacadeMock );
-		String status = service.retrieveStatus( forsendesesId );
-		assertFalse( status.indexOf( "NORGEDOTNO=null" ) > -1 );
-		assertTrue( status.indexOf( "UTSKREVET=null" ) > -1 );
-		assertTrue( status.indexOf( "FODSELSNR=" + fnr ) > -1 );
-		assertTrue( this.mailSenderCalled );
-		assertFalse( status.equals( statusBefore ) );
-	}
-
+	/** Tester at forsendelser merket kun email ikke sendes til Altinn */
 	@Test
 	public void sendEmail() {
 		int variant = 1;
@@ -204,7 +180,7 @@ public class ServiceDelegateImplTest {
 		String status = service.retrieveStatus( forsendesesId );
 		assertFalse( status.indexOf( "EPOST_SENDT=null" ) > -1 );
 		assertTrue( status.indexOf( "LEST=null" ) > -1 );
-		assertTrue( status.indexOf( "NORGEDOTNO=null" ) > -1 );
+		assertTrue( status.indexOf( "ALTINN_SENDT=null" ) > -1 );
 		assertTrue( status.indexOf( "UTSKREVET=null" ) > -1 );
 		assertFalse( status.indexOf( "STOPPET=null" ) > -1 );
 		assertTrue( status.indexOf( "FORSENDELSES_MATE=KunEmail" ) > -1 );
@@ -214,6 +190,7 @@ public class ServiceDelegateImplTest {
 		assertFalse( status.equals( statusBefore ) );
 	}
 
+	/** Tester at forsendelser merket kun email (uten vedlegg) ikke sendes til Altinn */
 	@Test
 	public void sendEmailNoAttachment() {
 		mockMailSender.includeAttachent = false;
@@ -232,7 +209,7 @@ public class ServiceDelegateImplTest {
 		String status = service.retrieveStatus( forsendesesId );
 		assertFalse( status.indexOf( "EPOST_SENDT=null" ) > -1 );
 		assertTrue( status.indexOf( "LEST=null" ) > -1 );
-		assertTrue( status.indexOf( "NORGEDOTNO=null" ) > -1 );
+		assertTrue( status.indexOf( "ALTINN_SENDT=null" ) > -1 );
 		assertTrue( status.indexOf( "UTSKREVET=null" ) > -1 );
 		assertFalse( status.indexOf( "STOPPET=null" ) > -1 );
 		assertTrue( status.indexOf( "FORSENDELSES_MATE=KunEmail" ) > -1 );
@@ -242,6 +219,7 @@ public class ServiceDelegateImplTest {
 		assertFalse( status.equals( statusBefore ) );
 	}
 
+	/** Tester at forsendelser merket kun A-post ikke sendes til Altinn */
 	@Test
 	public void sendPrint() {
 		int variant = 1;
@@ -253,7 +231,7 @@ public class ServiceDelegateImplTest {
 		service.dispatch();
 		verify( printFacadeMock );
 		String status = service.retrieveStatus( forsendesesId );
-		assertTrue( status.indexOf( "NORGEDOTNO=null" ) > -1 );
+		assertTrue( status.indexOf( "ALTINN_SENDT=null" ) > -1 );
 		assertFalse( status.indexOf( "UTSKREVET=null" ) > -1 );
 		assertFalse( this.mailSenderCalled );
 	}

@@ -29,13 +29,6 @@
 		<property name="placeholderPrefix" value="$texts{" />
 	</bean>
 
-	<bean id="contextSourceMinside" class="org.springframework.ldap.core.support.LdapContextSource">
-		<property name="url" value="${ldap.url.minside}" />
-		<property name="base" value="${ldap.baseDn.minside}" />
-		<property name="userDn" value="${ldap.userName.minside}" />
-		<property name="password" value="${ldap.password.minside}" />
-	</bean>
-
 	<bean id="velocityEngineFactoryBean" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
 		<property name="velocityPropertiesMap">
 			<map>
@@ -55,9 +48,8 @@
 
     <bean id="rateConfig" class="no.kommune.bergen.soa.svarut.DispatchRateConfig">
         <constructor-arg index="0" value="${dispatchrate.altinn}" />
-        <constructor-arg index="1" value="${dispatchrate.norgedotno}" />
-        <constructor-arg index="2" value="${dispatchrate.epost}" />
-        <constructor-arg index="3" value="${dispatchrate.post}" />
+        <constructor-arg index="1" value="${dispatchrate.epost}" />
+        <constructor-arg index="2" value="${dispatchrate.post}" />
     </bean>
 
     <bean id="altinnDispatchWindow" class="no.kommune.bergen.soa.svarut.util.DispatchWindow">
@@ -65,13 +57,6 @@
         <constructor-arg index="1" value="${dispatchwindow.altinn.startminute}" type="int"/>
         <constructor-arg index="2" value="${dispatchwindow.altinn.stophour}" type="int"/>
         <constructor-arg index="3" value="${dispatchwindow.altinn.stopminute}" type="int"/>
-    </bean>
-
-    <bean id="norgeNoDispatchWindow" class="no.kommune.bergen.soa.svarut.util.DispatchWindow">
-        <constructor-arg index="0" value="${dispatchwindow.norgeno.starthour}" type="int"/>
-        <constructor-arg index="1" value="${dispatchwindow.norgeno.startminute}" type="int"/>
-        <constructor-arg index="2" value="${dispatchwindow.norgeno.stophour}" type="int"/>
-        <constructor-arg index="3" value="${dispatchwindow.norgeno.stopminute}" type="int"/>
     </bean>
 
     <bean id="emailDispatchWindow" class="no.kommune.bergen.soa.svarut.util.DispatchWindow">
@@ -104,19 +89,6 @@
 				<property name="bodyTemplate" value="$texts{bodyTemplate}" />
 			</bean>
 		</property>
-		<property name="leadTimeApost" value="2"/>
-		<property name="leadTimeBpost" value="2"/>
-		<property name="leadTimeRekommandert" value="1"/>
-        <property name="dispatchWindow" ref="altinnDispatchWindow"/>
-	</bean>
-
-	<bean id="norgeDotNoContext" class="no.kommune.bergen.soa.svarut.context.NorgeDotNoContext">
-		<property name="ldapContextSource" ref="contextSourceMinside" />
-		<property name="javaMailSender" ref="mailSender" />
-		<property name="leadTimeApost" value="2"/>
-		<property name="leadTimeBpost" value="2"/>
-		<property name="leadTimeRekommandert" value="1"/>
-		<property name="ldapFilterTemplate" value="${ldap.filter.template.minside}" />
 		<property name="messageTemplateAssembly">
 			<bean class="no.kommune.bergen.soa.svarut.context.MessageTemplateAssembly">
 				<property name="subjectTemplate" value="$texts{subjectTemplate}" />
@@ -127,7 +99,10 @@
 				<property name="pdfTemplate" value="$texts{pdfTemplate}" />
 			</bean>
 		</property>
-        <property name="dispatchWindow" ref="norgeNoDispatchWindow"/>
+		<property name="leadTimeApost" value="2"/>
+		<property name="leadTimeBpost" value="2"/>
+		<property name="leadTimeRekommandert" value="1"/>
+		<property name="dispatchWindow" ref="altinnDispatchWindow"/>
 	</bean>
 
 	<bean id="emailContext" class="no.kommune.bergen.soa.svarut.context.EmailContext">
@@ -174,12 +149,11 @@
 
 	<bean id="serviceContext" class="no.kommune.bergen.soa.svarut.ServiceContext">
 		<constructor-arg index="0" ref="velocityEngineFactoryBean" />
-		<constructor-arg index="1" ref="norgeDotNoContext" /> 
-		<constructor-arg index="2" ref="altinnContext" />
-		<constructor-arg index="3" ref="emailContext" />
-		<constructor-arg index="4" ref="printContext" />
-		<constructor-arg index="5" ref="downloadContext" />
-        <constructor-arg index="6" ref="archiveContext" />
+		<constructor-arg index="1" ref="altinnContext" />
+		<constructor-arg index="2" ref="emailContext" />
+		<constructor-arg index="3" ref="printContext" />
+		<constructor-arg index="4" ref="downloadContext" />
+        <constructor-arg index="5" ref="archiveContext" />
 	</bean>
 
 	<bean id="serviceDelegate" class="no.kommune.bergen.soa.svarut.util.JmxMonitorProxy">

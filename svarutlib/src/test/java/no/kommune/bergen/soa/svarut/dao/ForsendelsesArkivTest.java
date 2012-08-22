@@ -1,6 +1,6 @@
 package no.kommune.bergen.soa.svarut.dao;
 
-import static no.kommune.bergen.soa.svarut.dto.ShipmentPolicy.NORGE_DOT_NO_OG_APOST;
+import static no.kommune.bergen.soa.svarut.dto.ShipmentPolicy.ALTINN_OG_APOST;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -40,7 +40,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ForsendelsesArkivTest {
-
+	private static final int MOCK_RECEIPT_ID = 123456;
 	public static final String fnr = "12345678901";
 	public static final String orgnr = "987654321";
 	private static final String navn = "navn";
@@ -181,7 +181,7 @@ public class ForsendelsesArkivTest {
 		forsendelsesArkiv.setPrinted( ids[0], printReceipt );
 		list = forsendelsesArkiv.readUnsent( null );
 		assertEquals( variants.length - 1, list.size() );
-		forsendelsesArkiv.setSentNorgeDotNo( ids[1] );
+		forsendelsesArkiv.setSentAltinn(ids[1], MOCK_RECEIPT_ID);
 		list = forsendelsesArkiv.readUnsent( null );
 		assertEquals( variants.length - 2, list.size() );
 	}
@@ -381,7 +381,7 @@ public class ForsendelsesArkivTest {
 		f.setTittel( tittel + variant );
 		f.setMeldingsTekst( melding + variant );
 		f.setAppid( appid + variant );
-		f.setShipmentPolicy( NORGE_DOT_NO_OG_APOST.value() );
+		f.setShipmentPolicy( ALTINN_OG_APOST.value() );
 		return f;
 	}
 

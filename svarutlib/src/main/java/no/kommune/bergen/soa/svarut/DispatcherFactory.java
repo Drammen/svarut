@@ -26,7 +26,6 @@ public class DispatcherFactory {
 		this.serviceDelegate = serviceDelegate;
 		this.rateConfig = rateConfig;
 
-		setupDispatchersForNorgeDotNo();
 		setupDispatchersForEmail();
 		setupDispatchersForPost();
 		setupDispatchersForAltinn();
@@ -95,47 +94,6 @@ public class DispatcherFactory {
 				serviceContext.getForsendelsesArkiv(),
 				serviceContext.getEmailFacade(),
 				dispatchPolicyKunEpost));
-
-	}
-
-	private void setupDispatchersForNorgeDotNo() {
-
-		List<DispatchPolicyShipmentParams> paramsNorgeDotNoOgPost = new ArrayList<DispatchPolicyShipmentParams>();
-
-		paramsNorgeDotNoOgPost.add(new DispatchPolicyShipmentParams(NORGE_DOT_NO_OG_APOST, serviceContext.getNorgeDotNoContext().getLeadTimeApost()));
-		paramsNorgeDotNoOgPost.add(new DispatchPolicyShipmentParams(NORGE_DOT_NO_OG_BPOST, serviceContext.getNorgeDotNoContext().getLeadTimeBpost()));
-		paramsNorgeDotNoOgPost.add(new DispatchPolicyShipmentParams(NORGE_DOT_NO_OG_REKOMMANDERT, serviceContext.getNorgeDotNoContext().getLeadTimeRekommandert()));
-
-		DispatchPolicy dispatchPolicyNorgeDotNoOgPost = new DispatchPolicy();
-		dispatchPolicyNorgeDotNoOgPost.setMaxDispatchRate(rateConfig.getNorgedotno());
-		dispatchPolicyNorgeDotNoOgPost.setShipmentParams(paramsNorgeDotNoOgPost);
-		dispatchPolicyNorgeDotNoOgPost.setPrintWindowAgeIndays(serviceContext.getPrintContext().getPrintWindowAgeIndays());
-		dispatchPolicyNorgeDotNoOgPost.addDispatchWindow(serviceContext.getNorgeDotNoContext().getDispatchWindow());
-
-		dispatchers.add(new NorgeDotNoOgPost(
-				serviceDelegate,
-				serviceContext.getLdapFacade(),
-				serviceContext.getForsendelsesArkiv(),
-				serviceContext.getEmailFacadeNorgeDotNoDocumentAlert(),
-				serviceContext.getPrintFacade(),
-				dispatchPolicyNorgeDotNoOgPost));
-
-		DispatchPolicy dispatchPolicyKunNorgeDotNo = new DispatchPolicy();
-
-		List<DispatchPolicyShipmentParams> paramsKunNorgeDotNo = new ArrayList<DispatchPolicyShipmentParams>();
-		paramsKunNorgeDotNo.add(new DispatchPolicyShipmentParams(KUN_NORGE_DOT_NO, 0));
-		paramsKunNorgeDotNo.add(new DispatchPolicyShipmentParams(KUN_NORGE_DOT_NO_ATTACH_DOCUMET, 0));
-		dispatchPolicyKunNorgeDotNo.setShipmentParams(paramsKunNorgeDotNo);
-		dispatchPolicyKunNorgeDotNo.setPrintWindowAgeIndays(serviceContext.getPrintContext().getPrintWindowAgeIndays());
-		dispatchPolicyKunNorgeDotNo.addDispatchWindow(serviceContext.getNorgeDotNoContext().getDispatchWindow());
-
-		dispatchers.add(new KunNorgeDotNo(
-				serviceDelegate,
-				serviceContext.getLdapFacade(),
-				serviceContext.getForsendelsesArkiv(),
-				serviceContext.getEmailFacadeNorgeDotNoDocumentAlert(),
-				dispatchPolicyKunNorgeDotNo
-		));
 
 	}
 

@@ -25,9 +25,8 @@
 
 	<bean id="rateConfig" class="no.kommune.bergen.soa.svarut.DispatchRateConfig">
 		<constructor-arg index="0" value="${dispatchrate.altinn}"/>
-		<constructor-arg index="1" value="${dispatchrate.norgedotno}"/>
-		<constructor-arg index="2" value="${dispatchrate.epost}"/>
-		<constructor-arg index="3" value="${dispatchrate.post}"/>
+		<constructor-arg index="1" value="${dispatchrate.epost}"/>
+		<constructor-arg index="2" value="${dispatchrate.post}"/>
 	</bean>
 
 	<bean id="altinnDispatchWindow" class="no.kommune.bergen.soa.svarut.util.DispatchWindow">
@@ -35,13 +34,6 @@
 		<constructor-arg index="1" value="${dispatchwindow.altinn.startminute}" type="int"/>
 		<constructor-arg index="2" value="${dispatchwindow.altinn.stophour}" type="int"/>
 		<constructor-arg index="3" value="${dispatchwindow.altinn.stopminute}" type="int"/>
-	</bean>
-
-	<bean id="norgeNoDispatchWindow" class="no.kommune.bergen.soa.svarut.util.DispatchWindow">
-		<constructor-arg index="0" value="${dispatchwindow.norgeno.starthour}" type="int"/>
-		<constructor-arg index="1" value="${dispatchwindow.norgeno.startminute}" type="int"/>
-		<constructor-arg index="2" value="${dispatchwindow.norgeno.stophour}" type="int"/>
-		<constructor-arg index="3" value="${dispatchwindow.norgeno.stopminute}" type="int"/>
 	</bean>
 
 	<bean id="emailDispatchWindow" class="no.kommune.bergen.soa.svarut.util.DispatchWindow">
@@ -67,20 +59,11 @@
 	</bean>
 	<bean id="serviceContext" class="no.kommune.bergen.soa.svarut.ServiceContext">
 		<constructor-arg index="0" ref="velocityEngineFactoryBean"/>
-		<constructor-arg index="1" ref="norgeDotNoContext"/>
-		<constructor-arg index="2" ref="altinnContext"/>
-		<constructor-arg index="3" ref="emailContext"/>
-		<constructor-arg index="4" ref="printContext"/>
-		<constructor-arg index="5" ref="downloadContext"/>
-		<constructor-arg index="6" ref="archiveContext"/>
-	</bean>
-
-
-	<bean id="contextSourceMinside" class="org.springframework.ldap.core.support.LdapContextSource">
-		<property name="url" value="${ldap.url.minside}"/>
-		<property name="base" value="${ldap.baseDn.minside}"/>
-		<property name="userDn" value="${ldap.userName.minside}"/>
-		<property name="password" value="${ldap.password.minside}"/>
+		<constructor-arg index="1" ref="altinnContext"/>
+		<constructor-arg index="2" ref="emailContext"/>
+		<constructor-arg index="3" ref="printContext"/>
+		<constructor-arg index="4" ref="downloadContext"/>
+		<constructor-arg index="5" ref="archiveContext"/>
 	</bean>
 
 	<bean id="cronTriggerScavenge"

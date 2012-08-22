@@ -2,7 +2,7 @@
 
 Koden er organisert rundt fire sentrale klasser: Forsendelse, ServiceContext, ServiceDelegate og Dispatcher.
 
-* Forsendelse ineholder dokumentet som skal sendes i form av en pdf adresseinformasjon og ønsket ShipmentPolicy (NorgeDotNoOgApost, KunApost ...). 
+* Forsendelse ineholder dokumentet som skal sendes i form av en pdf adresseinformasjon og ønsket ShipmentPolicy (AltinnOgApost, KunApost ...).
   Dao-klassen ForsendelsesArkiv står for lagring og gjenfinning av Forsendelser.
 
 * Dispatcher (interface) - Det finnes mange dispatchers, og DispatcherFactory setter opp og leverer en som er egnet til gitt ShipmentPolicy for en Forsendelse. 
