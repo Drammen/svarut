@@ -95,7 +95,7 @@
 				<property name="bodyTemplate" value="$texts{bodyTemplate}" />
 				<property name="bodyTemplateNoAttachment" value="$texts{bodyTemplateNoAttachment}" />
 				<property name="replyTo" value="info.avd@bergen.kommune.no" />
-				<property name="toTemplate" value="%s@innbygger.norge.no" />
+				<property name="toTemplate" value="%s@altinn.no" />
 				<property name="pdfTemplate" value="$texts{pdfTemplate}" />
 			</bean>
 		</property>
