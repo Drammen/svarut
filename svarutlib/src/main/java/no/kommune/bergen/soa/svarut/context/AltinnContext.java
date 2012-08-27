@@ -25,8 +25,8 @@ public class AltinnContext {
 	private DispatchWindow dispatchWindow;
 
 	public void verify() {
-		if (correspondenceSettings == null) throw new RuntimeException( "Undefined field: correspondenceSettings" );
-		if (messageTemplateAssembly == null) throw new RuntimeException( "Undefined field: messageTemplateAssembly" );
+		if (correspondenceSettings == null) throw new RuntimeException( "Undefined field: correspondenceSettings in AltinnContext" );
+		if (messageTemplateAssembly == null) throw new RuntimeException( "Undefined field: messageTemplateAssembly in AltinnContext" );
 	}
 
 	@Override

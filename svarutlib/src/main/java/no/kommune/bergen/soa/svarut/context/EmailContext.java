@@ -14,8 +14,8 @@ public class EmailContext {
     private DispatchWindow dispatchWindow;
 
 	public void verify() {
-		if (javaMailSender == null) throw new RuntimeException( "Undefined field: javaMailSender" );
-		if (messageTemplateAssembly == null) throw new RuntimeException( "Undefined field: messageTemplateAssembly" );
+		if (javaMailSender == null) throw new RuntimeException( "Undefined field: javaMailSender in EmailContext" );
+		if (messageTemplateAssembly == null) throw new RuntimeException( "Undefined field: messageTemplateAssembly in EmailContext" );
 	}
 
 	@Override
