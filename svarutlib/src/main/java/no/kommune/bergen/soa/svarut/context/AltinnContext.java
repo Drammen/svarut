@@ -14,11 +14,12 @@ import javax.annotation.Resource;
 @Component("altinnContext")
 public class AltinnContext {
 
-
 	@Autowired
 	private CorrespondenceSettings correspondenceSettings;
 
 	private long leadTimeApost = 2, leadTimeBpost = 2, leadTimeRekommandert = 1;
+
+	@Autowired
 	private MessageTemplateAssembly messageTemplateAssembly;
 
 	@Resource(name = "altinnDispatchWindow")
