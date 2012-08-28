@@ -35,7 +35,7 @@ public class PrintProviderTest {
 		assertNotNull("ForsendelseId var null", forsendelsesId);
 		SvarUtServiceCreator.waitTillFinishedWorking();
 		List<ForsendelseStatus> status = service.retrieveStatus(null, Arrays.asList(forsendelsesId));
-		assertNotNull("Forsendelsen var null", status.get(0).getSendtBrevpost());
+		assertNotNull("Forsendelsen med Id " + forsendelsesId + " var null", status.get(0).getSendtBrevpost());
 	}
 
 	@Test
