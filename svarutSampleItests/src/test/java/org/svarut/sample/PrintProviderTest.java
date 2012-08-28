@@ -31,11 +31,11 @@ public class PrintProviderTest {
 	@Test
 	public void sjekkApostForsendelse() throws InterruptedException {
 		ForsendelsesRq rq = getForsendelsesRequestData();
-
 		String forsendelsesId = service.send(null, rq);
+		assertNotNull("ForsendelseId var null", forsendelsesId);
 		SvarUtServiceCreator.waitTillFinishedWorking();
 		List<ForsendelseStatus> status = service.retrieveStatus(null, Arrays.asList(forsendelsesId));
-		assertNotNull(status.get(0).getSendtBrevpost());
+		assertNotNull("Forsendelsen var null", status.get(0).getSendtBrevpost());
 	}
 
 	@Test
