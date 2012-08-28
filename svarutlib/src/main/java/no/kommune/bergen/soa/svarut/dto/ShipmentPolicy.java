@@ -33,7 +33,8 @@ public enum ShipmentPolicy {
 	@XmlEnumValue("EmailOgBpost")
 	EMAIL_OG_BPOST("EmailOgBpost"),
 	@XmlEnumValue("EmailOgRekommandert")
-	EMAIL_OG_REKOMMANDERT("EmailOgRekommandert");
+	EMAIL_OG_REKOMMANDERT("EmailOgRekommandert"),
+	UKJENT_FORELDET("Ukjent/Foreldet");
 	private final String value;
 
 	ShipmentPolicy(String v) {
@@ -50,6 +51,17 @@ public enum ShipmentPolicy {
 				return c;
 			}
 		}
+
+		/** Historiske/foreldede ShipmentPolicies */
+		if ("KUN_NORGE_DOT_NO".equals(v)
+				|| "NORGE_DOT_NO_OG_APOST".equals(v)
+				|| "NORGE_DOT_NO_OG_BPOST".equals(v)
+				|| "NORGE_DOT_NO_OG_REKOMMANDERT".endsWith(v)
+				|| "KUN_NORGE_DOT_NO_ATTACH_DOCUMET".equals(v)
+				|| "KUN_NORGE_DOT_NO_ATTACH_DOCUMENT".equals(v)) {
+			return UKJENT_FORELDET;
+		}
+
 		throw new UserException("Failed to convert string argument to ShipmentPolicy: " + v);
 	}
 
