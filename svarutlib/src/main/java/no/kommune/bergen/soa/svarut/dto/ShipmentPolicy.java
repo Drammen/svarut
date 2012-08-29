@@ -16,6 +16,16 @@ public enum ShipmentPolicy {
 	KUN_BPOST("KunBpost"),
 	@XmlEnumValue("KunRekommandert")
 	KUN_REKOMMANDERT("KunRekommandert"),
+	@XmlEnumValue("KunNorgeDotNo")
+	KUN_NORGE_DOT_NO("KunNorgeDotNo"),
+	@XmlEnumValue("KunNorgeDotNoAttachDocumet")
+	KUN_NORGE_DOT_NO_ATTACH_DOCUMET("KunNorgeDotNoAttachDocumet"),
+	@XmlEnumValue("NorgeDotNoOgApost")
+	NORGE_DOT_NO_OG_APOST("NorgeDotNoOgApost"),
+	@XmlEnumValue("NorgeDotNoOgBpost")
+	NORGE_DOT_NO_OG_BPOST("NorgeDotNoOgBpost"),
+	@XmlEnumValue("NorgeDotNoOgRekommandert")
+	NORGE_DOT_NO_OG_REKOMMANDERT("NorgeDotNoOgRekommandert"),
 	@XmlEnumValue("KunAltinn")
 	KUN_ALTINN("KunAltinn"),
 	@XmlEnumValue("AltinnOgApost")
@@ -33,8 +43,7 @@ public enum ShipmentPolicy {
 	@XmlEnumValue("EmailOgBpost")
 	EMAIL_OG_BPOST("EmailOgBpost"),
 	@XmlEnumValue("EmailOgRekommandert")
-	EMAIL_OG_REKOMMANDERT("EmailOgRekommandert"),
-	UKJENT_FORELDET("Ukjent/Foreldet");
+	EMAIL_OG_REKOMMANDERT("EmailOgRekommandert");
 	private final String value;
 
 	ShipmentPolicy(String v) {
@@ -50,16 +59,6 @@ public enum ShipmentPolicy {
 			if (c.value.equals(v)) {
 				return c;
 			}
-		}
-
-		/** Historiske/foreldede ShipmentPolicies */
-		if ("KUN_NORGE_DOT_NO".equals(v)
-				|| "NORGE_DOT_NO_OG_APOST".equals(v)
-				|| "NORGE_DOT_NO_OG_BPOST".equals(v)
-				|| "NORGE_DOT_NO_OG_REKOMMANDERT".endsWith(v)
-				|| "KUN_NORGE_DOT_NO_ATTACH_DOCUMET".equals(v)
-				|| "KUN_NORGE_DOT_NO_ATTACH_DOCUMENT".equals(v)) {
-			return UKJENT_FORELDET;
 		}
 
 		throw new UserException("Failed to convert string argument to ShipmentPolicy: " + v);
