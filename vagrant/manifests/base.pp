@@ -4,8 +4,15 @@ class lucid64 {
  }
 }
 class apt {
+  file { "/etc/apt/apt.conf.d/30proxy" :
+  	ensure => present,
+	content => 'Acquire::http { Proxy "http://85.19.187.23:8080"; };
+Acquire::https { Proxy "http://85.19.187.23:8080"; };'
+  }
+
   exec { "apt-update":
-    command => "/usr/bin/apt-get update"
+    command => "/usr/bin/apt-get update",
+	require => File["/etc/apt/apt.conf.d/30proxy"]
   }
 
   # Ensure apt-get update has been run before installing any packages
