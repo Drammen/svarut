@@ -6,8 +6,8 @@ class lucid64 {
 class apt {
   file { "/etc/apt/apt.conf.d/30proxy" :
   	ensure => present,
-	content => 'Acquire::http { Proxy "http://85.19.187.23:8080"; };
-Acquire::https { Proxy "http://85.19.187.23:8080"; };'
+	content => 'Acquire::http { Proxy "http://85.19.187.24:8080"; };
+Acquire::https { Proxy "http://85.19.187.24:8080"; };'
   }
 
   exec { "apt-update":
