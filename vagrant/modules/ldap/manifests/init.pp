@@ -4,6 +4,7 @@ class ldap  {
     ensure => directory,
 	group => 'openldap',
 	owner => 'openldap',
+	require => Package["slapd"],
     mode => 750,
   }
 
@@ -15,6 +16,7 @@ class ldap  {
     owner => "openldap",
     group => "openldap",
     mode => 0640, # this mode will also apply to files from the source directory
+	require => Package["slapd"],
     source => ['puppet:///modules/ldap/etc/ldap/slapd.d'],
   }
 
