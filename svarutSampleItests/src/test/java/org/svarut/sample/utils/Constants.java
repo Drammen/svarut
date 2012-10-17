@@ -11,12 +11,12 @@ public class Constants {
 	};
 
 	public static TargetServer targetServer = TargetServer.LOCALHOST; // LOCALHOST INTEGRATION ACCEPTANCE
-	public static String webContainer = "http://localhost:8080";
+	public static String webContainer = "http://localhost:9080";
 
 	static {
 		setup();
 		if (targetServer == TargetServer.LOCALHOST) {
-			webContainer = "http://localhost:8080";
+			webContainer = "http://localhost:9080";
 		} else if (targetServer == TargetServer.JENKINS) {
 			webContainer = "http://localhost:8099";
 		} else if (targetServer == TargetServer.ACCEPTANCE) {

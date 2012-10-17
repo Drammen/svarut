@@ -41,7 +41,7 @@ public class VelocityModelFactoryTest {
 	public void takesTwoArguments() {
 		boolean takesTwoArguments = velocityModelFactory.takesTwoArguments( "http://suse-oas-portal.iktfou.no:7778/wsproxy/forsendelse?forsendelsesId=%s" );
 		assertFalse( takesTwoArguments );
-		takesTwoArguments = velocityModelFactory.takesTwoArguments( "http://localhost:8080/forsendelse/service/rest/forsendelsesservice/download/%s/%s" );
+		takesTwoArguments = velocityModelFactory.takesTwoArguments( "http://localhost:9080/forsendelse/service/rest/forsendelsesservice/download/%s/%s" );
 		assertTrue( takesTwoArguments );
 	}
 
