@@ -20,7 +20,7 @@ import javax.xml.bind.Marshaller;
 
 import no.kommune.bergen.soa.svarut.domain.Forsendelse;
 import no.kommune.bergen.soa.svarut.dto.ForsendelseStatusRest;
-import no.kommune.bergen.soa.svarut.dto.ShipmentPolicy;
+import static no.kommune.bergen.soa.svarut.dto.ShipmentPolicy.ALTINN_OG_APOST;
 
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
@@ -139,7 +139,7 @@ public class SvarUtSampleServiceRestTest {
 		f.setTittel( tittel + variant );
 		f.setMeldingsTekst( melding + variant );
 		f.setAppid( appid + variant );
-		f.setShipmentPolicy( ShipmentPolicy.NORGE_DOT_NO_OG_APOST.value());
+		f.setShipmentPolicy( ALTINN_OG_APOST.value());
 		return f;
 	}
 

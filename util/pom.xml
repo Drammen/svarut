@@ -11,7 +11,7 @@
 	<parent>
 		<groupId>no.kommune.bergen.svarut</groupId>
 		<artifactId>svarut-parent</artifactId>
-		<version>4.0</version>
+		<version>5.0</version>
 	</parent>
 	<build>
 		<finalName>${project.artifactId}</finalName>

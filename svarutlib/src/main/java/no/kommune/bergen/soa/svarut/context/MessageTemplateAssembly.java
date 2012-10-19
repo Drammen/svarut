@@ -1,6 +1,9 @@
 package no.kommune.bergen.soa.svarut.context;
 
+import org.springframework.stereotype.Component;
+
 /** Holds Velocity templates for message production */
+@Component("messageTemplateAssembly")
 public class MessageTemplateAssembly {
 	private String subjectTemplate = "", bodyTemplate = "", bodyTemplateNoAttachment = "", replyTo = "", toTemplate = "", pdfTemplate = "";
 

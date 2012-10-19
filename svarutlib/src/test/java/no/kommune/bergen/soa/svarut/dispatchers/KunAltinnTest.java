@@ -37,7 +37,7 @@ public class KunAltinnTest {
 	}
 
 	@Test
-	public void verifyForsendlese() {
+	public void verifyForsendelse() {
 		Forsendelse f = new Forsendelse();
 		assertFalse( isOk( f ) );
 		f.setNavn( "asd" );

@@ -13,7 +13,6 @@ import no.kommune.bergen.soa.svarut.context.ArchiveContext;
 import no.kommune.bergen.soa.svarut.context.DownloadContext;
 import no.kommune.bergen.soa.svarut.context.EmailContext;
 import no.kommune.bergen.soa.svarut.context.MessageTemplateAssembly;
-import no.kommune.bergen.soa.svarut.context.NorgeDotNoContext;
 import no.kommune.bergen.soa.svarut.context.PrintContext;
 import no.kommune.bergen.soa.svarut.dao.FileStore;
 import no.kommune.bergen.soa.svarut.dao.ForsendelsesArkiv;
@@ -22,16 +21,13 @@ import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.ldap.core.ContextSource;
-import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 /** Holding tank for context */
 public class ServiceContext {
 	static final Logger logger = Logger.getLogger( ServiceContext.class );
 	final ForsendelsesArkiv forsendelsesArkiv;
-	LdapFacade ldapFacade;
-	final EmailFacade emailFacadeNorgeDotNoDocumentAlert, emailFacadeNorgeDotNoDocumentAttached, emailFacade;
+	final EmailFacade emailFacade;
 	PrintFacade printFacade;
 	final PdfGenerator pdfGenerator;
 	final VelocityModelFactory velocityModelFactory;
@@ -39,7 +35,6 @@ public class ServiceContext {
 	private final TemplateEngine templateEngine;
 	private final VelocityEngine velocityEngine;
 
-	private final NorgeDotNoContext norgeDotNoContext;
 	private final AltinnContext altinnContext;
 	private final EmailContext emailContext;
 	private final PrintContext printContext;
@@ -47,14 +42,12 @@ public class ServiceContext {
 	private final ArchiveContext archiveContext;
 
     public ServiceContext( VelocityEngine velocityEngine,
-                           NorgeDotNoContext norgeDotNoContext,
                            AltinnContext altinnContext,
                            EmailContext emailContext,
                            PrintContext printContext,
                            DownloadContext downloadContext,
                            ArchiveContext archiveContext) {
 		this.velocityEngine = velocityEngine;
-		this.norgeDotNoContext = norgeDotNoContext;
 		this.altinnContext = altinnContext;
 		this.emailContext = emailContext;
 		this.printContext = printContext;
@@ -65,9 +58,6 @@ public class ServiceContext {
 		this.velocityModelFactory = createVelocityModelFactory();
 		this.pdfGenerator = new SvarUtPdfGenerator( this.archiveContext.getTempDir() );
 		this.forsendelsesArkiv = createForsendelsesArkiv();
-		this.ldapFacade = createLdapFacade( this.norgeDotNoContext.getLdapContextSource(), this.norgeDotNoContext.getLdapFilterTemplate() );
-		this.emailFacadeNorgeDotNoDocumentAttached = createEmailFacadeDocumentAttached( this.norgeDotNoContext.getJavaMailSender(), this.norgeDotNoContext.getMessageTemplateAssembly() );
-		this.emailFacadeNorgeDotNoDocumentAlert = createEmailFacadeDocumentAlert( this.norgeDotNoContext.getJavaMailSender(), this.norgeDotNoContext.getMessageTemplateAssembly() );
 		this.emailFacade = createEmailFacadeDocumentAttached( this.emailContext.getJavaMailSender(), this.emailContext.getMessageTemplateAssembly() );
 		this.altinnFacade = createAltinnFacade( this.altinnContext.getCorrespondenceSettings() );
 		this.printFacade = createPrintFacade( this.printContext.getFrontPageTemplate(), this.printContext.getPrintServiceProvider() );
@@ -75,7 +65,6 @@ public class ServiceContext {
 	}
 
 	private void verifyParams() {
-		this.norgeDotNoContext.verify();
 		this.altinnContext.verify();
 		this.emailContext.verify();
 		this.printContext.verify();
@@ -133,12 +122,6 @@ public class ServiceContext {
 		return mailSender;
 	}
 
-	protected LdapFacade createLdapFacade( ContextSource ldapContextSource, String ldapFilterTemplate ) {
-		LdapTemplate ldapTemplate = new LdapTemplate( ldapContextSource );
-		LdapFacade ldapFacade = new LdapFacade( ldapTemplate, ldapFilterTemplate );
-		return ldapFacade;
-	}
-
 	protected ForsendelsesArkiv createForsendelsesArkiv() {
 		FileStore fileStore = new FileStore( this.archiveContext.getFileStorePath(), this.pdfGenerator );
 		JdbcTemplate jdbcTemplate = new JdbcTemplate( this.archiveContext.getDataSource() );
@@ -194,18 +177,6 @@ public class ServiceContext {
 		return forsendelsesArkiv;
 	}
 
-	public LdapFacade getLdapFacade() {
-		return ldapFacade;
-	}
-
-	public EmailFacade getEmailFacadeNorgeDotNoDocumentAlert() {
-		return emailFacadeNorgeDotNoDocumentAlert;
-	}
-
-	public EmailFacade getEmailFacadeNorgeDotNoDocumentAttached() {
-		return emailFacadeNorgeDotNoDocumentAttached;
-	}
-
 	public EmailFacade getEmailFacade() {
 		return emailFacade;
 	}
@@ -224,10 +195,6 @@ public class ServiceContext {
 
 	public AltinnFacade getAltinnFacade() {
 		return this.altinnFacade;
-	}
-
-	public NorgeDotNoContext getNorgeDotNoContext() {
-		return norgeDotNoContext;
 	}
 
 	public AltinnContext getAltinnContext() {

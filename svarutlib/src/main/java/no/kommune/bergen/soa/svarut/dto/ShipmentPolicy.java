@@ -60,6 +60,7 @@ public enum ShipmentPolicy {
 				return c;
 			}
 		}
+
 		throw new UserException("Failed to convert string argument to ShipmentPolicy: " + v);
 	}
 

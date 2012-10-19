@@ -3,7 +3,7 @@ package no.kommune.bergen.soa.svarut.util;
 import no.kommune.bergen.soa.common.pdf.PdfGeneratorImpl;
 import no.kommune.bergen.soa.svarut.dto.Adresse123;
 import no.kommune.bergen.soa.svarut.dto.Forsendelse;
-import no.kommune.bergen.soa.svarut.dto.ShipmentPolicy;
+import static no.kommune.bergen.soa.svarut.dto.ShipmentPolicy.ALTINN_OG_APOST;
 import no.kommune.bergen.soa.util.Files;
 import org.junit.Before;
 import org.junit.Test;
@@ -87,7 +87,7 @@ public class ForsendelseMapperTest {
 		f.setTittel( tittel + variant );
 		f.setMeldingsTekst( melding + variant );
 		f.setAppid( appid + variant );
-		f.setShipmentPolicy( ShipmentPolicy.NORGE_DOT_NO_OG_APOST.value());
+		f.setShipmentPolicy( ALTINN_OG_APOST.value());
 		f.setEmail( email );
 		f.setReplyTo( replyTo );
 		return f;
@@ -121,7 +121,7 @@ public class ForsendelseMapperTest {
 		forsendelse.setMeldingstekst( melding + variant );
 		forsendelse.setAvsenderadresse( avsenderAdresse );
 		forsendelse.setAppid( appid + variant );
-		forsendelse.setForsendelsesMate( ShipmentPolicy.NORGE_DOT_NO_OG_APOST );
+		forsendelse.setForsendelsesMate( ALTINN_OG_APOST );
 		forsendelse.setEpost( email );
 		forsendelse.setReplyTo( replyTo );
 		return forsendelse;

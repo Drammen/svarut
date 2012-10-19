@@ -19,11 +19,15 @@ public class AltinnContext {
 
 	private long leadTimeApost = 2, leadTimeBpost = 2, leadTimeRekommandert = 1;
 
+	@Autowired
+	private MessageTemplateAssembly messageTemplateAssembly;
+
 	@Resource(name = "altinnDispatchWindow")
 	private DispatchWindow dispatchWindow;
 
 	public void verify() {
-		if (correspondenceSettings == null) throw new RuntimeException( "Undefined field: correspondenceSettings" );
+		if (correspondenceSettings == null) throw new RuntimeException( "Undefined field: correspondenceSettings in AltinnContext" );
+		if (messageTemplateAssembly == null) throw new RuntimeException( "Undefined field: messageTemplateAssembly in AltinnContext" );
 	}
 
 	@Override
@@ -63,11 +67,19 @@ public class AltinnContext {
 		this.leadTimeRekommandert = leadTimeRekommandert;
 	}
 
-    public DispatchWindow getDispatchWindow() {
-        return dispatchWindow;
-    }
+	public DispatchWindow getDispatchWindow() {
+		return dispatchWindow;
+	}
 
-    public void setDispatchWindow(DispatchWindow dispatchWindow) {
-        this.dispatchWindow = dispatchWindow;
-    }
+	public void setDispatchWindow(DispatchWindow dispatchWindow) {
+		this.dispatchWindow = dispatchWindow;
+	}
+
+	public MessageTemplateAssembly getMessageTemplateAssembly() {
+			return messageTemplateAssembly;
+	}
+
+	public void setMessageTemplateAssembly( MessageTemplateAssembly messageTemplateAssembly ) {
+		this.messageTemplateAssembly = messageTemplateAssembly;
+	}
 }

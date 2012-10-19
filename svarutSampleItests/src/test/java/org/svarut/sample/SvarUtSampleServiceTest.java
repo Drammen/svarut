@@ -1,23 +1,33 @@
 package org.svarut.sample;
 
-import no.kommune.bergen.svarut.v1.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.svarut.sample.utils.SvarUtServiceCreator;
-
-import javax.activation.DataHandler;
-import javax.activation.URLDataSource;
-import javax.xml.ws.soap.SOAPFaultException;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import javax.activation.DataHandler;
+import javax.activation.URLDataSource;
+import javax.xml.ws.soap.SOAPFaultException;
+
+import no.kommune.bergen.svarut.v1.Adresse123;
+import no.kommune.bergen.svarut.v1.DokumentRs;
+import no.kommune.bergen.svarut.v1.Forsendelse;
+import no.kommune.bergen.svarut.v1.ForsendelseStatus;
+import no.kommune.bergen.svarut.v1.ForsendelsesRq;
+import no.kommune.bergen.svarut.v1.ShipmentPolicy;
+import no.kommune.bergen.svarut.v1.SvarUtService;
+import no.kommune.bergen.svarut.v1.UserContext;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.svarut.sample.utils.SvarUtServiceCreator;
 
 public class SvarUtSampleServiceTest {
 	private static final String fnr = "24035738572";
@@ -41,16 +51,16 @@ public class SvarUtSampleServiceTest {
 	@Test
 	public void sendInvalidRq() {
 		try {
-			String forsendelsesId = port.send(null, new ForsendelsesRq() );
-			fail( "Should not be reached! ForsendelsesId=" + forsendelsesId );
+			String forsendelsesId = port.send(null, new ForsendelsesRq());
+			fail("Should not be reached! ForsendelsesId=" + forsendelsesId);
 		} catch (Exception e) {
-			assertTrue( e instanceof SOAPFaultException );
-			assertEquals( "DataHandler is null", e.getMessage() );
+			assertTrue("Should give SOAPFaultException", e instanceof SOAPFaultException);
+			assertEquals("DataHandler is null", e.getMessage());
 		}
 	}
 
 	@Test
-	public void sendNorgeDotNoOgApost() throws Exception {
+	public void sendAltinnOgApost() throws Exception {
 		ForsendelsesRq forsendelseRq = createForsendelsesRq( 1 );
 		String forsendelsesId = port.send(null, forsendelseRq );
 		assertNotNull( forsendelsesId );
@@ -63,7 +73,7 @@ public class SvarUtSampleServiceTest {
 		assertNotNull(dataHandler.getInputStream().available());
 		SvarUtServiceCreator.waitTillFinishedWorking();
 		List<ForsendelseStatus> statuser = port.retrieveStatus(null, Arrays.asList(new String[]{forsendelser.get(0).getId()}));
-		assertNotNull("Ikkje sendt", statuser.get(0).getSendtNorgedotno());
+		assertNotNull("Ikkje sendt", statuser.get(0).getSendtAltinn());
 		//File file = new File( "target", rs.getFilnavn() );
 		//Files.writeToFile( file, dataHandler.getInputStream() );
 		//view( file );
@@ -102,7 +112,7 @@ public class SvarUtSampleServiceTest {
 		forsendelse.setMeldingstekst( melding + variant );
 		forsendelse.setEpost( epost );
 		rq.setForsendelse( forsendelse );
-		forsendelse.setForsendelsesMate( ShipmentPolicy.NORGE_DOT_NO_OG_APOST );
+		forsendelse.setForsendelsesMate( ShipmentPolicy.ALTINN_OG_APOST );
 		URL url = SvarUtSampleServiceTest.class.getResource( "/Undervisningsfritak.pdf" );
 		URLDataSource urldatasource = new URLDataSource( url );
 		DataHandler dataHandler = new DataHandler( urldatasource );
