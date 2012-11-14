@@ -15,7 +15,7 @@ public class KunAltinn extends AbstractDispatcher {
 
 	private static final long LEAD_TIME_BEFORE_STOP = 1000 * 60 * 60 * 24 * 5;
 
-	final AltinnFacade altinnFacade;
+	private final AltinnFacade altinnFacade;
 
 	public KunAltinn(ServiceDelegate serviceDelegate, ForsendelsesArkiv forsendelsesArkiv, AltinnFacade altinnFacade, DispatchPolicy dispatchPolicy) {
 		super(serviceDelegate, dispatchPolicy, forsendelsesArkiv);
