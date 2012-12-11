@@ -9,6 +9,8 @@ import org.apache.commons.io.IOUtils;
 import org.easymock.classextension.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -24,6 +26,8 @@ import static org.junit.Assert.*;
 
 //ID, FODSELSNR, NAVN, ADRESSE1, ADRESSE2, ADRESSE3, POSTNR, POSTSTED, LAND, TITTEL, MELDING, LEST, SENDT, NORGEDOTNO, UTSKREVET
 public class ServiceDelegateImplTest {
+
+	private static final Logger log = LoggerFactory.getLogger(ServiceDelegateImplTest.class);
 
 	private PrintFacade printFacadeMock;
 	private ServiceDelegateImpl service;
@@ -341,6 +345,9 @@ public class ServiceDelegateImplTest {
 			if (emailTo != null) assertEquals(emailTo, to);
 			if (emailReplyTo != null) assertEquals(emailReplyTo, from);
 			//PrintFacadeTest.view( attachments[0] );
+
+			log.info("Subject=" + subject);
+			log.info("Body=" + body);
 		}
 	}
 }

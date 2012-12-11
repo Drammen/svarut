@@ -14,7 +14,7 @@ public class DispatchPolicy {
 
     private List<DispatchWindow> dispatchWindows = new ArrayList<DispatchWindow>();
     private List<DispatchPolicyShipmentParams> shipmentParams = new ArrayList<DispatchPolicyShipmentParams>();
-    private long printWindowAgeIndays;
+    private long printWindowAgeInDays;
 
     public DispatchPolicy() {
     }
@@ -27,6 +27,7 @@ public class DispatchPolicy {
         this.maxDispatchRate = maxDispatchRate;
     }
 
+	@SuppressWarnings("unused")
     public List<DispatchWindow> getDispatchWindows() {
         return dispatchWindows;
     }
@@ -61,12 +62,12 @@ public class DispatchPolicy {
         return null;
     }
 
-    public long getPrintWindowAgeIndays() {
-        return printWindowAgeIndays;
+    public long getPrintWindowAgeInDays() {
+        return printWindowAgeInDays;
     }
 
-    public void setPrintWindowAgeIndays(long printWindowAgeIndays) {
-        this.printWindowAgeIndays = printWindowAgeIndays;
+    public void setPrintWindowAgeInDays(long printWindowAgeInDays) {
+        this.printWindowAgeInDays = printWindowAgeInDays;
     }
 
     public ShipmentPolicy[] getShipmentPolicies(){

@@ -49,7 +49,7 @@ public class DispatcherFactory {
 
 
 		dispatchPolicy.addDispatchWindow(serviceContext.getPrintContext().getDispatchWindow());
-		dispatchPolicy.setPrintWindowAgeIndays(serviceContext.getPrintContext().getPrintWindowAgeIndays());
+		dispatchPolicy.setPrintWindowAgeInDays(serviceContext.getPrintContext().getPrintWindowAgeInDays());
 
 		KunPost kunPost = new KunPost(
 				serviceDelegate,
@@ -70,7 +70,7 @@ public class DispatcherFactory {
 		DispatchPolicy dispatchPolicyEmailOgPost = new DispatchPolicy();
 		dispatchPolicyEmailOgPost.setShipmentParams(paramsEmailOgPost);
 		dispatchPolicyEmailOgPost.setMaxDispatchRate(rateConfig.getEpost());
-		dispatchPolicyEmailOgPost.setPrintWindowAgeIndays(serviceContext.getPrintContext().getPrintWindowAgeIndays());
+		dispatchPolicyEmailOgPost.setPrintWindowAgeInDays(serviceContext.getPrintContext().getPrintWindowAgeInDays());
 		dispatchPolicyEmailOgPost.addDispatchWindow(serviceContext.getEmailContext().getDispatchWindow());
 
 		dispatchers.add(new EmailOgPost(
@@ -86,7 +86,7 @@ public class DispatcherFactory {
 		DispatchPolicy dispatchPolicyKunEpost = new DispatchPolicy();
 		dispatchPolicyKunEpost.setMaxDispatchRate(rateConfig.getEpost());
 		dispatchPolicyKunEpost.setShipmentParams(paramsKunEmail);
-		dispatchPolicyKunEpost.setPrintWindowAgeIndays(serviceContext.getPrintContext().getPrintWindowAgeIndays());
+		dispatchPolicyKunEpost.setPrintWindowAgeInDays(serviceContext.getPrintContext().getPrintWindowAgeInDays());
 		dispatchPolicyKunEpost.addDispatchWindow(serviceContext.getEmailContext().getDispatchWindow());
 
 		dispatchers.add(new KunEmail(
@@ -104,7 +104,7 @@ public class DispatcherFactory {
 		DispatchPolicy dispatchPolicyKunAltinn = new DispatchPolicy();
 		dispatchPolicyKunAltinn.setMaxDispatchRate(rateConfig.getAltinn());
 		dispatchPolicyKunAltinn.setShipmentParams(paramsKunAltinn);
-		dispatchPolicyKunAltinn.setPrintWindowAgeIndays(serviceContext.getPrintContext().getPrintWindowAgeIndays());
+		dispatchPolicyKunAltinn.setPrintWindowAgeInDays(serviceContext.getPrintContext().getPrintWindowAgeInDays());
 		dispatchPolicyKunAltinn.addDispatchWindow(serviceContext.getAltinnContext().getDispatchWindow());
 
 		dispatchers.add(new KunAltinn(
@@ -121,7 +121,7 @@ public class DispatcherFactory {
 		DispatchPolicy dispatchPolicyAltinnOgPost = new DispatchPolicy();
 		dispatchPolicyAltinnOgPost.setMaxDispatchRate(rateConfig.getAltinn());
 		dispatchPolicyAltinnOgPost.setShipmentParams(paramsAltinnOgEpost);
-		dispatchPolicyAltinnOgPost.setPrintWindowAgeIndays(serviceContext.getPrintContext().getPrintWindowAgeIndays());
+		dispatchPolicyAltinnOgPost.setPrintWindowAgeInDays(serviceContext.getPrintContext().getPrintWindowAgeInDays());
 		dispatchPolicyAltinnOgPost.addDispatchWindow(serviceContext.getAltinnContext().getDispatchWindow());
 
 		dispatchers.add(new AltinnOgPost(

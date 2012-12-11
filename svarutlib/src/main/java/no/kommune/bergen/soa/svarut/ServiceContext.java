@@ -1,31 +1,30 @@
 package no.kommune.bergen.soa.svarut;
 
-import java.lang.reflect.Field;
-
 import no.kommune.bergen.soa.common.pdf.PdfGenerator;
 import no.kommune.bergen.soa.common.util.MailSender;
 import no.kommune.bergen.soa.common.util.TemplateEngine;
 import no.kommune.bergen.soa.common.util.VelocityTemplateEngine;
 import no.kommune.bergen.soa.svarut.altin.CorrespondenceClient;
 import no.kommune.bergen.soa.svarut.altin.CorrespondenceSettings;
-import no.kommune.bergen.soa.svarut.context.AltinnContext;
-import no.kommune.bergen.soa.svarut.context.ArchiveContext;
-import no.kommune.bergen.soa.svarut.context.DownloadContext;
-import no.kommune.bergen.soa.svarut.context.EmailContext;
-import no.kommune.bergen.soa.svarut.context.MessageTemplateAssembly;
-import no.kommune.bergen.soa.svarut.context.PrintContext;
+import no.kommune.bergen.soa.svarut.context.*;
 import no.kommune.bergen.soa.svarut.dao.FileStore;
 import no.kommune.bergen.soa.svarut.dao.ForsendelsesArkiv;
-
-import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-/** Holding tank for context */
+import java.lang.reflect.Field;
+
+/**
+ * Holding tank for context
+ */
 public class ServiceContext {
-	static final Logger logger = Logger.getLogger( ServiceContext.class );
+
+	private static final Logger log = LoggerFactory.getLogger(ServiceContext.class);
+
 	final ForsendelsesArkiv forsendelsesArkiv;
 	final EmailFacade emailFacade;
 	PrintFacade printFacade;
@@ -41,135 +40,131 @@ public class ServiceContext {
 	private final DownloadContext downloadContext;
 	private final ArchiveContext archiveContext;
 
-    public ServiceContext( VelocityEngine velocityEngine,
-                           AltinnContext altinnContext,
-                           EmailContext emailContext,
-                           PrintContext printContext,
-                           DownloadContext downloadContext,
-                           ArchiveContext archiveContext) {
+	public ServiceContext(VelocityEngine velocityEngine, AltinnContext altinnContext, EmailContext emailContext,
+						  PrintContext printContext, DownloadContext downloadContext, ArchiveContext archiveContext) {
 		this.velocityEngine = velocityEngine;
 		this.altinnContext = altinnContext;
 		this.emailContext = emailContext;
 		this.printContext = printContext;
 		this.downloadContext = downloadContext;
 		this.archiveContext = archiveContext;
-        verifyParams();
-		this.templateEngine = createTemplateEngine();
-		this.velocityModelFactory = createVelocityModelFactory();
-		this.pdfGenerator = new SvarUtPdfGenerator( this.archiveContext.getTempDir() );
-		this.forsendelsesArkiv = createForsendelsesArkiv();
-		this.emailFacade = createEmailFacadeDocumentAttached( this.emailContext.getJavaMailSender(), this.emailContext.getMessageTemplateAssembly() );
-		this.altinnFacade = createAltinnFacade( this.altinnContext.getCorrespondenceSettings() );
-		this.printFacade = createPrintFacade( this.printContext.getFrontPageTemplate(), this.printContext.getPrintServiceProvider() );
+		verifyParams();
+		templateEngine = createTemplateEngine();
+		velocityModelFactory = createVelocityModelFactory();
+		pdfGenerator = new SvarUtPdfGenerator(this.archiveContext.getTempDir());
+		forsendelsesArkiv = createForsendelsesArkiv();
+		emailFacade = createEmailFacadeDocumentAttached(this.emailContext.getJavaMailSender(), this.emailContext.getMessageTemplateAssembly());
+		altinnFacade = createAltinnFacade(this.altinnContext.getCorrespondenceSettings());
+		printFacade = createPrintFacade(this.printContext.getFrontPageTemplate(), this.printContext.getPrintServiceProvider());
 		verify();
 	}
 
 	private void verifyParams() {
-		this.altinnContext.verify();
-		this.emailContext.verify();
-		this.printContext.verify();
-		this.downloadContext.verify();
-		this.archiveContext.verify();
+		altinnContext.verify();
+		emailContext.verify();
+		printContext.verify();
+		downloadContext.verify();
+		archiveContext.verify();
 	}
 
-	private PrintFacade createPrintFacade( String frontPageTemplate, PrintServiceProvider printServiceProvider ) {
-		return new PrintFacade( pdfGenerator, frontPageTemplate, printServiceProvider, this.getVelocityModelFactory() );
+	private PrintFacade createPrintFacade(String frontPageTemplate, PrintServiceProvider printServiceProvider) {
+		return new PrintFacade(pdfGenerator, frontPageTemplate, printServiceProvider, getVelocityModelFactory());
 	}
 
 	private VelocityModelFactory createVelocityModelFactory() {
-		return new VelocityModelFactory( this.downloadContext.getServletPathTemplate(), this.downloadContext.getPdfLinkText(), this.downloadContext.getHelpLink(), this.downloadContext.getHelpLinkText(), this.downloadContext.getReaderDownloadLink(),
-				this.downloadContext.getReaderDownloadLinkText() );
+		return new VelocityModelFactory(downloadContext.getServletPathTemplate(), downloadContext.getPdfLinkText(), downloadContext.getHelpLink(),
+				downloadContext.getHelpLinkText(), downloadContext.getReaderDownloadLink(), downloadContext.getReaderDownloadLinkText());
 	}
 
-	private AltinnFacade createAltinnFacade( CorrespondenceSettings correspondenceSettings ) {
-		CorrespondenceClient correspondenceClient = new CorrespondenceClient( correspondenceSettings );
-		return new AltinnFacade( this.templateEngine, correspondenceClient, this.velocityModelFactory );
+	private AltinnFacade createAltinnFacade(CorrespondenceSettings correspondenceSettings) {
+		CorrespondenceClient correspondenceClient = new CorrespondenceClient(correspondenceSettings);
+		return new AltinnFacade(templateEngine, correspondenceClient, velocityModelFactory);
 	}
 
 	private VelocityTemplateEngine createTemplateEngine() {
 		VelocityTemplateEngine velocityTemplateEngine = new VelocityTemplateEngine();
-		velocityTemplateEngine.setVelocityEngine( this.velocityEngine );
+		velocityTemplateEngine.setVelocityEngine(velocityEngine);
 		return velocityTemplateEngine;
 	}
 
-
-	protected EmailFacade createEmailFacadeDocumentAlert( JavaMailSenderImpl javaMailSender, MessageTemplateAssembly templates ) {
-		MailSender mailSender = createMailSender( javaMailSender );
-		EmailFacadeDocumentAlert emailFacade = new EmailFacadeDocumentAlert( this.templateEngine, mailSender, this.velocityModelFactory, this.pdfGenerator );
-		emailFacade.setBodyTemplate( templates.getBodyTemplate() );
-		emailFacade.setBodyTemplateNoAttachment( templates.getBodyTemplateNoAttachment() );
-		emailFacade.setSubjectTemplate( templates.getSubjectTemplate() );
-		emailFacade.setPdfTemplate( templates.getPdfTemplate() );
-		emailFacade.setReplyTo( templates.getReplyTo() );
-		emailFacade.setToTemplate( templates.getToTemplate() );
+	@SuppressWarnings("unused")
+	protected EmailFacade createEmailFacadeDocumentAlert(JavaMailSenderImpl javaMailSender, MessageTemplateAssembly templates) {
+		MailSender mailSender = createMailSender(javaMailSender);
+		EmailFacadeDocumentAlert emailFacade = new EmailFacadeDocumentAlert(templateEngine, mailSender, velocityModelFactory, pdfGenerator);
+		emailFacade.setBodyTemplate(templates.getBodyTemplate());
+		emailFacade.setBodyTemplateNoAttachment(templates.getBodyTemplateNoAttachment());
+		emailFacade.setSubjectTemplate(templates.getSubjectTemplate());
+		emailFacade.setPdfTemplate(templates.getPdfTemplate());
+		emailFacade.setReplyTo(templates.getReplyTo());
+		emailFacade.setToTemplate(templates.getToTemplate());
 		return emailFacade;
 	}
 
-	protected EmailFacade createEmailFacadeDocumentAttached( JavaMailSenderImpl javaMailSender, MessageTemplateAssembly templates ) {
-		MailSender mailSender = createMailSender( javaMailSender );
-		EmailFacade emailFacade = new EmailFacade( templateEngine, mailSender, this.velocityModelFactory );
-		emailFacade.setBodyTemplate( templates.getBodyTemplate() );
-		emailFacade.setBodyTemplateNoAttachment( templates.getBodyTemplateNoAttachment() );
-		emailFacade.setSubjectTemplate( templates.getSubjectTemplate() );
-		emailFacade.setReplyTo( templates.getReplyTo() );
-		emailFacade.setToTemplate( templates.getToTemplate() );
+	protected EmailFacade createEmailFacadeDocumentAttached(JavaMailSenderImpl javaMailSender, MessageTemplateAssembly templates) {
+		MailSender mailSender = createMailSender(javaMailSender);
+		EmailFacade emailFacade = new EmailFacade(templateEngine, mailSender, velocityModelFactory);
+		emailFacade.setBodyTemplate(templates.getBodyTemplate());
+		emailFacade.setBodyTemplateNoAttachment(templates.getBodyTemplateNoAttachment());
+		emailFacade.setSubjectTemplate(templates.getSubjectTemplate());
+		emailFacade.setReplyTo(templates.getReplyTo());
+		emailFacade.setToTemplate(templates.getToTemplate());
 		return emailFacade;
 	}
 
-	private MailSender createMailSender( JavaMailSenderImpl javaMailSender ) {
+	private MailSender createMailSender(JavaMailSenderImpl javaMailSender) {
 		MailSender mailSender = new MailSender();
-		mailSender.setJavaMailSender( javaMailSender );
+		mailSender.setJavaMailSender(javaMailSender);
 		return mailSender;
 	}
 
 	protected ForsendelsesArkiv createForsendelsesArkiv() {
-		FileStore fileStore = new FileStore( this.archiveContext.getFileStorePath(), this.pdfGenerator );
-		JdbcTemplate jdbcTemplate = new JdbcTemplate( this.archiveContext.getDataSource() );
-		ForsendelsesArkiv forsendelsesArkiv = new ForsendelsesArkiv( fileStore, jdbcTemplate );
-		forsendelsesArkiv.setFailedToPrintAlertWindowStartDay( this.printContext.getFailedToPrintAlertWindowStartDay() );
-		forsendelsesArkiv.setFailedToPrintAlertWindowEndDay( this.printContext.getFailedToPrintAlertWindowEndDay() );
+		FileStore fileStore = new FileStore(archiveContext.getFileStorePath(), pdfGenerator);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(archiveContext.getDataSource());
+		ForsendelsesArkiv forsendelsesArkiv = new ForsendelsesArkiv(fileStore, jdbcTemplate);
+		forsendelsesArkiv.setFailedToPrintAlertWindowStartDay(printContext.getFailedToPrintAlertWindowStartDay());
+		forsendelsesArkiv.setFailedToPrintAlertWindowEndDay(printContext.getFailedToPrintAlertWindowEndDay());
 		return forsendelsesArkiv;
 	}
 
 	public void verify() {
-		Field[] fields = this.getClass().getFields();
+		Field[] fields = getClass().getFields();
 		for (Field field : fields) {
 			String name = field.getName();
 			try {
-				field.get( this );
+				field.get(this);
 			} catch (Exception e) {
-				throw new RuntimeException( "Undefined field: " + name, e );
+				throw new RuntimeException("Undefined field: " + name, e);
 			}
 		}
 	}
 
 	static DriverManagerDataSource createTestDataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName( "org.hsqldb.jdbcDriver" );
-		dataSource.setUrl( "jdbc:hsqldb:mem:mindatabase" );
-		dataSource.setUsername( "sa" );
-		dataSource.setPassword( "" );
+		dataSource.setDriverClassName("org.hsqldb.jdbcDriver");
+		dataSource.setUrl("jdbc:hsqldb:mem:mindatabase");
+		dataSource.setUsername("sa");
+		dataSource.setPassword("");
 		return dataSource;
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder( "{\n" );
-		Class<? extends ServiceContext> clazz = this.getClass();
+		StringBuilder sb = new StringBuilder("{\n");
+		Class<? extends ServiceContext> clazz = getClass();
 		Field[] fields = clazz.getDeclaredFields();
 		for (Field field : fields) {
 			String name = field.getName();
 			String value = "null";
-			Object obj = null;
+			Object obj;
 			try {
-				obj = field.get( this );
+				obj = field.get(this);
 				value = obj.toString();
 			} catch (Exception e) {
-				logger.warn( e );
+				log.warn("", e);
 			}
-			sb.append( "  " ).append( name ).append( "=" ).append( value ).append( "\n" );
+			sb.append("  ").append(name).append("=").append(value).append("\n");
 		}
-		sb.append( "}" );
+		sb.append("}");
 		return sb.toString();
 	}
 
@@ -190,11 +185,11 @@ public class ServiceContext {
 	}
 
 	public VelocityModelFactory getVelocityModelFactory() {
-		return this.velocityModelFactory;
+		return velocityModelFactory;
 	}
 
 	public AltinnFacade getAltinnFacade() {
-		return this.altinnFacade;
+		return altinnFacade;
 	}
 
 	public AltinnContext getAltinnContext() {
@@ -209,6 +204,7 @@ public class ServiceContext {
 		return printContext;
 	}
 
+	@SuppressWarnings("unused")
 	public DownloadContext getDownloadContext() {
 		return downloadContext;
 	}
@@ -216,5 +212,4 @@ public class ServiceContext {
 	public ArchiveContext getArchiveContext() {
 		return archiveContext;
 	}
-
 }

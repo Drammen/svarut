@@ -105,7 +105,7 @@ public abstract class AbstractDispatcher implements Dispatcher {
 	}
 
 	public void handleAllUnread() {
-		final List<String> forsendelser = forsendelsesArkiv.retrieveYoungerThan(getDispatchPolicy().getPrintWindowAgeIndays(), dispatchPolicy.getShipmentPolicies());
+		final List<String> forsendelser = forsendelsesArkiv.retrieveYoungerThan(getDispatchPolicy().getPrintWindowAgeInDays(), dispatchPolicy.getShipmentPolicies());
 		final String dispatcherName = getClass().getName();
 		log.debug("Antall uleste forsendelser:" + forsendelser.size() + " hentet for " + dispatcherName);
 
