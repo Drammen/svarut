@@ -1,0 +1,41 @@
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:a="http://www.w3.org/2005/08/addressing" xmlns:u="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+   <s:Header>
+      <a:Action s:mustUnderstand="1">http://www.altinn.no/services/Authorization/Administration/2010/10/IAuthorizationAdministrationExternal/GetReporteesResponse</a:Action>
+      <o:Security s:mustUnderstand="1" xmlns:o="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+         <u:Timestamp u:Id="_0">
+            <u:Created>2013-01-10T10:41:41.069Z</u:Created>
+            <u:Expires>2013-01-10T10:46:41.069Z</u:Expires>
+         </u:Timestamp>
+      </o:Security>
+   </s:Header>
+   <s:Body>
+      <GetReporteesResponse xmlns="http://www.altinn.no/services/Authorization/Administration/2010/10">
+         <GetReporteesResult xmlns:b="http://schemas.altinn.no/services/Authorization/Administration/2012/11" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+            <b:ExternalReporteeBE>
+               <b:Name>ALMA SKOGLAND</b:Name>
+               <b:OrganizationNumber i:nil="true"/>
+               <b:ReporteeType>Person</b:ReporteeType>
+               <b:SSN>02035701829</b:SSN>
+            </b:ExternalReporteeBE>
+            <b:ExternalReporteeBE>
+               <b:Name>ALTA OG NAMSOS REGNSKAP</b:Name>
+               <b:OrganizationNumber>910824929</b:OrganizationNumber>
+               <b:ReporteeType>Organization</b:ReporteeType>
+               <b:SSN i:nil="true"/>
+            </b:ExternalReporteeBE>
+            <b:ExternalReporteeBE>
+               <b:Name>KOKSTAD OG ENEBAKKNESET REGNSKAP</b:Name>
+               <b:OrganizationNumber>910854453</b:OrganizationNumber>
+               <b:ReporteeType>Organization</b:ReporteeType>
+               <b:SSN i:nil="true"/>
+            </b:ExternalReporteeBE>
+            <b:ExternalReporteeBE>
+               <b:Name>SNARØYA OG HYLKJE REGNSKAP</b:Name>
+               <b:OrganizationNumber>910892835</b:OrganizationNumber>
+               <b:ReporteeType>Organization</b:ReporteeType>
+               <b:SSN i:nil="true"/>
+            </b:ExternalReporteeBE>
+         </GetReporteesResult>
+      </GetReporteesResponse>
+   </s:Body>
+</s:Envelope>

@@ -64,16 +64,35 @@ public class ServiceDelegateImpl implements ServiceDelegate {
 		return forsendelsesArkiv.retrieve( id );
 	}
 
+	/** Returnerer en Forsendelse angitt ved forsendelsesId og som tilhører et gitt fodselsNr.
+	 *  Hvis forsendelsen er knyttet til et orgnr gjøres det en autoriseringssjekk mot Altinn på fødselsnr.
+	 *  */
+	@Override
+	public Forsendelse retrieve( String id, String fodselsNr ) {
+		forsendelsesArkiv.authorize( id, fodselsNr );
+		return forsendelsesArkiv.retrieve( id );
+	}
+
 	/** Returnerer Forsendelser som tilhører en gitt JuridiskEnhet */
 	@Override
 	public List<Forsendelse> retrieveList( JuridiskEnhet juridiskEnhet ) {
 		return forsendelsesArkiv.retrieveList( juridiskEnhet );
 	}
 
-	/** Returnerer dokument-innhold for en forsendelse angitt ved forsendelsesId og som tilhører en gitt JuridiskEnhet */
+	/** Returnerer dokument-innhold for en forsendelse angitt ved forsendelsesId og som tilhører en gitt JuridiskEnhet.
+	 *  */
 	@Override
 	public InputStream retrieveContent( String id, JuridiskEnhet juridiskEnhet ) {
 		forsendelsesArkiv.authorize( id, juridiskEnhet );
+		return forsendelsesArkiv.retrieveContent( id );
+	}
+
+	/** Returnerer dokument-innhold for en forsendelse angitt ved forsendelsesId og som tilhører en gitt JuridiskEnhet.
+	 *  Hvis forsendelsen er knyttet til et orgnr gjøres det en autoriseringssjekk mot Altinn på fødselsnr.
+	 *  */
+	@Override
+	public InputStream retrieveContent( String id, String fodselsNr ) {
+		forsendelsesArkiv.authorize( id, fodselsNr );
 		return forsendelsesArkiv.retrieveContent( id );
 	}
 
@@ -123,7 +142,7 @@ public class ServiceDelegateImpl implements ServiceDelegate {
 
 	/** Bekrefter at forsendelsesdokumentet er å betrakte som lest elektronisk */
 	@Override
-	public void confirm( String id ) {
+	public void confirm( String id ) { //TODO Forsendelsesdokument skal foreløpig ikke settes til lest hvis org
 		forsendelsesArkiv.confirm( id );
 	}
 

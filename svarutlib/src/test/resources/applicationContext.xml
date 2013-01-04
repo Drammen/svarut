@@ -75,7 +75,7 @@
 
 	<bean id="altinnContext" class="no.kommune.bergen.soa.svarut.context.AltinnContext">
 		<property name="correspondenceSettings">
-			<bean class="no.kommune.bergen.soa.svarut.altin.CorrespondenceSettings">
+			<bean class="no.kommune.bergen.soa.svarut.altinn.correspondence.CorrespondenceSettings">
 				<property name="notificationType" value="${altinn.notificationType}" />
 				<property name="fromAddress" value="${altinn.fromAddress}" />
 				<property name="languageCode" value="1044" />
@@ -87,6 +87,17 @@
 				<property name="serviceEdition" value="1" />
 				<property name="subjectTemplate" value="$texts{subjectTemplate}" />
 				<property name="bodyTemplate" value="$texts{bodyTemplate}" />
+			</bean>
+		</property>
+		<property name="AltinnAdministrationExternalSettings">
+			<bean class="no.kommune.bergen.soa.svarut.altinn.authorization.client.AltinnAdministrationExternalSettings">
+				<property name="fromAddress" value="${altinn.fromAddress}" />
+				<property name="serviceCode" value="${altinn.serviceCode}" />
+				<property name="endpoint" value="${altinn.authorization.endpoint}" />
+				<property name="systemUserName" value="${altinn.systemUserName}" />
+				<property name="systemPassword" value="${altinn.systemPassword}" />
+				<property name="systemUserCode" value="${altinn.systemUserCode}" />
+				<property name="serviceEdition" value="1" />
 			</bean>
 		</property>
 		<property name="messageTemplateAssembly">

@@ -5,7 +5,7 @@ import no.kommune.bergen.soa.svarut.AltinnFacade;
 import no.kommune.bergen.soa.svarut.DispatchPolicy;
 import no.kommune.bergen.soa.svarut.PrintFacade;
 import no.kommune.bergen.soa.svarut.ServiceDelegate;
-import no.kommune.bergen.soa.svarut.altin.AltinnException;
+import no.kommune.bergen.soa.svarut.altinn.AltinnException;
 import no.kommune.bergen.soa.svarut.dao.ForsendelsesArkiv;
 import no.kommune.bergen.soa.svarut.domain.Forsendelse;
 import no.kommune.bergen.soa.svarut.domain.PrintReceipt;

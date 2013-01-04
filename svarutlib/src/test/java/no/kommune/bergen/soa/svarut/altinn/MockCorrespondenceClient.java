@@ -1,4 +1,4 @@
-package no.kommune.bergen.soa.svarut.altin;
+package no.kommune.bergen.soa.svarut.altinn;
 
 import junit.framework.Assert;
 import no.altinn.schemas.serviceengine.formsengine._2009._10.TransportType;
@@ -7,6 +7,9 @@ import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertC
 import no.altinn.schemas.services.serviceengine.notification._2009._10.Notification;
 import no.altinn.schemas.services.serviceengine.notification._2009._10.ReceiverEndPoint;
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic;
+import no.kommune.bergen.soa.svarut.altinn.correspondence.CorrespondenceClient;
+import no.kommune.bergen.soa.svarut.altinn.correspondence.CorrespondenceMessage;
+import no.kommune.bergen.soa.svarut.altinn.correspondence.CorrespondenceSettings;
 
 import java.util.List;
 

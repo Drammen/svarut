@@ -4,8 +4,10 @@ import no.kommune.bergen.soa.common.pdf.PdfGenerator;
 import no.kommune.bergen.soa.common.util.MailSender;
 import no.kommune.bergen.soa.common.util.TemplateEngine;
 import no.kommune.bergen.soa.common.util.VelocityTemplateEngine;
-import no.kommune.bergen.soa.svarut.altin.CorrespondenceClient;
-import no.kommune.bergen.soa.svarut.altin.CorrespondenceSettings;
+import no.kommune.bergen.soa.svarut.altinn.authorization.client.AltinnAuthorization;
+import no.kommune.bergen.soa.svarut.altinn.authorization.client.AltinnAdministrationExternalSettings;
+import no.kommune.bergen.soa.svarut.altinn.correspondence.CorrespondenceClient;
+import no.kommune.bergen.soa.svarut.altinn.correspondence.CorrespondenceSettings;
 import no.kommune.bergen.soa.svarut.context.*;
 import no.kommune.bergen.soa.svarut.dao.FileStore;
 import no.kommune.bergen.soa.svarut.dao.ForsendelsesArkiv;
@@ -52,9 +54,9 @@ public class ServiceContext {
 		templateEngine = createTemplateEngine();
 		velocityModelFactory = createVelocityModelFactory();
 		pdfGenerator = new SvarUtPdfGenerator(this.archiveContext.getTempDir());
-		forsendelsesArkiv = createForsendelsesArkiv();
 		emailFacade = createEmailFacadeDocumentAttached(this.emailContext.getJavaMailSender(), this.emailContext.getMessageTemplateAssembly());
-		altinnFacade = createAltinnFacade(this.altinnContext.getCorrespondenceSettings());
+		altinnFacade = createAltinnFacade(this.altinnContext.getCorrespondenceSettings(), this.altinnContext.getAltinnAdministrationExternalSettings() );
+		forsendelsesArkiv = createForsendelsesArkiv(altinnFacade);
 		printFacade = createPrintFacade(this.printContext.getFrontPageTemplate(), this.printContext.getPrintServiceProvider());
 		verify();
 	}
@@ -76,9 +78,10 @@ public class ServiceContext {
 				downloadContext.getHelpLinkText(), downloadContext.getReaderDownloadLink(), downloadContext.getReaderDownloadLinkText());
 	}
 
-	private AltinnFacade createAltinnFacade(CorrespondenceSettings correspondenceSettings) {
+	private AltinnFacade createAltinnFacade(CorrespondenceSettings correspondenceSettings, AltinnAdministrationExternalSettings authorizationSettings) {
 		CorrespondenceClient correspondenceClient = new CorrespondenceClient(correspondenceSettings);
-		return new AltinnFacade(templateEngine, correspondenceClient, velocityModelFactory);
+		AltinnAuthorization authorizationClient = new AltinnAuthorization(authorizationSettings);
+		return new AltinnFacade(templateEngine, correspondenceClient, authorizationClient, velocityModelFactory);
 	}
 
 	private VelocityTemplateEngine createTemplateEngine() {
@@ -117,10 +120,10 @@ public class ServiceContext {
 		return mailSender;
 	}
 
-	protected ForsendelsesArkiv createForsendelsesArkiv() {
+	protected ForsendelsesArkiv createForsendelsesArkiv(AltinnFacade altinnFacade) {
 		FileStore fileStore = new FileStore(archiveContext.getFileStorePath(), pdfGenerator);
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(archiveContext.getDataSource());
-		ForsendelsesArkiv forsendelsesArkiv = new ForsendelsesArkiv(fileStore, jdbcTemplate);
+		ForsendelsesArkiv forsendelsesArkiv = new ForsendelsesArkiv(fileStore, jdbcTemplate, altinnFacade);
 		forsendelsesArkiv.setFailedToPrintAlertWindowStartDay(printContext.getFailedToPrintAlertWindowStartDay());
 		forsendelsesArkiv.setFailedToPrintAlertWindowEndDay(printContext.getFailedToPrintAlertWindowEndDay());
 		return forsendelsesArkiv;

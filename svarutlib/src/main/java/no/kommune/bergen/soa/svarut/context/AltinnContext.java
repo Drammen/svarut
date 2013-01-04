@@ -1,6 +1,7 @@
 package no.kommune.bergen.soa.svarut.context;
 
-import no.kommune.bergen.soa.svarut.altin.CorrespondenceSettings;
+import no.kommune.bergen.soa.svarut.altinn.authorization.client.AltinnAdministrationExternalSettings;
+import no.kommune.bergen.soa.svarut.altinn.correspondence.CorrespondenceSettings;
 import no.kommune.bergen.soa.svarut.util.DispatchWindow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,9 @@ public class AltinnContext {
 
 	@Autowired
 	private CorrespondenceSettings correspondenceSettings;
+
+	@Autowired
+	private AltinnAdministrationExternalSettings altinnAdministrationExternalSettings;
 
 	private long leadTimeApost = 2, leadTimeBpost = 2, leadTimeRekommandert = 1;
 
@@ -41,6 +45,14 @@ public class AltinnContext {
 
 	public void setCorrespondenceSettings( CorrespondenceSettings correspondenceSettings ) {
 		this.correspondenceSettings = correspondenceSettings;
+	}
+
+	public AltinnAdministrationExternalSettings getAltinnAdministrationExternalSettings() {
+		return this.altinnAdministrationExternalSettings;
+	}
+
+	public void setAltinnAdministrationExternalSettings( AltinnAdministrationExternalSettings settings ) {
+		this.altinnAdministrationExternalSettings = settings;
 	}
 
 	public long getLeadTimeApost() {
@@ -76,7 +88,7 @@ public class AltinnContext {
 	}
 
 	public MessageTemplateAssembly getMessageTemplateAssembly() {
-			return messageTemplateAssembly;
+		return messageTemplateAssembly;
 	}
 
 	public void setMessageTemplateAssembly( MessageTemplateAssembly messageTemplateAssembly ) {

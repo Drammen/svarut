@@ -1,9 +1,10 @@
-package no.kommune.bergen.soa.svarut.altin;
+package no.kommune.bergen.soa.svarut.altinn;
 
 import java.util.Calendar;
 
 import no.altinn.schemas.serviceengine.formsengine._2009._10.TransportType;
 import no.altinn.schemas.services.serviceengine.notification._2009._10.*;
+import no.kommune.bergen.soa.svarut.altinn.correspondence.CorrespondenceSettings;
 import no.kommune.bergen.soa.util.XMLDatatypeUtil;
 
 /** CorrespondenceClient helper */

@@ -1,4 +1,4 @@
-package no.kommune.bergen.soa.svarut.altin;
+package no.kommune.bergen.soa.svarut.altinn.correspondence;
 
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptExternal;
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptStatusEnum;
@@ -8,6 +8,9 @@ import no.altinn.schemas.services.serviceengine.notification._2009._10.Notificat
 import no.altinn.services.common.fault._2009._10.AltinnFault;
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic;
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage;
+import no.kommune.bergen.soa.svarut.altinn.AltinnException;
+import no.kommune.bergen.soa.svarut.altinn.CdataWriterInterceptor;
+import no.kommune.bergen.soa.svarut.altinn.MessageNotification;
 import no.kommune.bergen.soa.util.XMLDatatypeUtil;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
@@ -43,7 +46,7 @@ public class CorrespondenceClient {
 
 	private NotificationBEList createMessageNotification() {
 		MessageNotification messageNotification = new MessageNotification(settings);
-		return messageNotification.notifications;
+		return messageNotification.getNotifications();
 	}
 
 	private InsertCorrespondenceV2 createRequest(CorrespondenceMessage msg) {

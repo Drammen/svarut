@@ -15,9 +15,13 @@ public interface ServiceDelegate {
 
 	Forsendelse retrieve( String id, JuridiskEnhet juridiskEnhet );
 
+	Forsendelse retrieve( String id, String fodselsNr);
+
 	List<Forsendelse> retrieveList( JuridiskEnhet juridiskEnhet );
 
 	InputStream retrieveContent( String id, JuridiskEnhet juridiskEnhet );
+
+	InputStream retrieveContent( String id, String fodselsNr );
 
 	InputStream retrieveContentNoAuthorization( String id );
 

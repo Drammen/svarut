@@ -1,8 +1,13 @@
 package no.kommune.bergen.soa.svarut.soap;
 
+import java.io.InputStream;
+import java.util.List;
+
+import javax.activation.DataHandler;
+import javax.jws.WebParam;
+
 import no.kommune.bergen.soa.common.exception.UserException;
 import no.kommune.bergen.soa.svarut.JobController;
-import no.kommune.bergen.soa.svarut.JuridiskEnhetFactory;
 import no.kommune.bergen.soa.svarut.ServiceDelegate;
 import no.kommune.bergen.soa.svarut.ServiceDelegateImpl;
 import no.kommune.bergen.soa.svarut.domain.Fodselsnr;
@@ -15,14 +20,10 @@ import no.kommune.bergen.soa.svarut.dto.ForsendelsesRq;
 import no.kommune.bergen.soa.svarut.dto.UserContext;
 import no.kommune.bergen.soa.svarut.util.ForsendelseMapper;
 import no.kommune.bergen.soa.svarut.util.InputStreamDataSource;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.activation.DataHandler;
-import javax.jws.WebParam;
-import java.io.InputStream;
-import java.util.List;
 
 @Service
 public class SvarUtServiceImpl implements SvarUtService {
@@ -96,7 +97,7 @@ public class SvarUtServiceImpl implements SvarUtService {
 	@Override
 	public DokumentRs retrieveContent( UserContext userContext, String id ) {
 		try {
-			InputStream inputStream = serviceDelegate.retrieveContent( id, JuridiskEnhetFactory.create( userContext ) );
+			InputStream inputStream = serviceDelegate.retrieveContent( id, userContext.getUserid() );
 			InputStreamDataSource dataSource = new InputStreamDataSource( inputStream, "application/pdf", id );
 			DataHandler dataHandler = new DataHandler( dataSource );
 			DokumentRs rs = new DokumentRs();
