@@ -86,7 +86,6 @@
 			<groupId>org.constretto</groupId>
 			<artifactId>constretto-core</artifactId>
 			<version>${constretto.version}</version>
-			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.constretto</groupId>
