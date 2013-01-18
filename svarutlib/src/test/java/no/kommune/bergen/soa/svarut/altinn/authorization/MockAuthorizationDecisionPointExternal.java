@@ -5,20 +5,18 @@ import no.kommune.bergen.soa.svarut.altinn.authorization.client.AltinnAuthorizat
 
 public class MockAuthorizationDecisionPointExternal extends AltinnAuthorizationDesicionPointExternalClient {
 
-	private final AltinnAuthorizationDesicionPointExternalSettings settings;
+	private final String authorizedFnr = "02035701829";
+	private final String authorizedOrgnr = "910824929";
 
 	public MockAuthorizationDecisionPointExternal(AltinnAuthorizationDesicionPointExternalSettings settings) {
 		super(settings);
-		this.settings = settings;
-	}
-
-	@Override
-	protected void setupAuthorizationDesicionPointExternalServices() {
-		// Do nothing
 	}
 
 	@Override
 	public boolean authorizeAccessExternal(String fodselsNr, String orgNr) {
-		return true;
+		if(fodselsNr.equals(authorizedFnr) && orgNr.equals(authorizedOrgnr))
+			return true;
+
+		return false;
 	}
 }

@@ -69,9 +69,12 @@ public class AltinnAuthorizationDesicionPointExternalXACMLUtil {
 		return xacmlString;
 	}
 
-	public static String parseXACMLResponse(String xacmlResponse) {
+	public static boolean parseXACMLResponseAndVerifyPermitted(String xacmlResponse) {
 		String authString = xacmlResponse;
 		//TODO parse response string and fetch decision
-		return authString;
+		if(!authString.isEmpty() && xacmlResponse.contains("<Decision>Permit</Decision>") )
+			return true;
+
+		return false;
 	}
 }

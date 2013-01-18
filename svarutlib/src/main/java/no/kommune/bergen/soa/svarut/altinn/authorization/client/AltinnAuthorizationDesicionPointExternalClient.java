@@ -3,7 +3,6 @@ package no.kommune.bergen.soa.svarut.altinn.authorization.client;
 import java.util.HashMap;
 import java.util.Map;
 
-import no.altinn.services.authorization.administration._2010._10.IAuthorizationAdministrationExternal;
 import no.altinn.services.authorization.decisionpoint._2010._10.IAuthorizationDecisionPointExternal;
 import no.altinn.services.authorization.decisionpoint._2010._10.IAuthorizationDecisionPointExternalAuthorizeAccessExternalAltinnFaultFaultFaultMessage;
 import no.kommune.bergen.soa.svarut.altinn.administration.external.client.AltinnAdministrationExternalClientCallback;
@@ -41,7 +40,7 @@ public class AltinnAuthorizationDesicionPointExternalClient {
 		factory.getInInterceptors().add(new LoggingInInterceptor());
 		factory.getOutInterceptors().add(new LoggingOutInterceptor());
 
-		factory.setServiceClass(IAuthorizationAdministrationExternal.class);
+		factory.setServiceClass(IAuthorizationDecisionPointExternal.class);
 		factory.setAddress(settings.getEndpoint());
 		factory.getFeatures().add(new WSAddressingFeature());
 
@@ -89,7 +88,7 @@ public class AltinnAuthorizationDesicionPointExternalClient {
 			e.printStackTrace();
 		}
 
-		AltinnAuthorizationDesicionPointExternalXACMLUtil.parseXACMLResponse(xacmlResponse);
+		AltinnAuthorizationDesicionPointExternalXACMLUtil.parseXACMLResponseAndVerifyPermitted(xacmlResponse);
 
 		return authorized;
 	}
