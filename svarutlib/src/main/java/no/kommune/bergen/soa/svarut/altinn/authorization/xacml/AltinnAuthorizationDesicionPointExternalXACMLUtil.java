@@ -1,8 +1,11 @@
 package no.kommune.bergen.soa.svarut.altinn.authorization.xacml;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.AccessControlException;
 
+import org.jboss.security.xacml.core.JBossResponseContext;
 import org.jboss.security.xacml.core.model.context.ActionType;
 import org.jboss.security.xacml.core.model.context.EnvironmentType;
 import org.jboss.security.xacml.core.model.context.RequestType;
@@ -11,6 +14,7 @@ import org.jboss.security.xacml.core.model.context.SubjectType;
 import org.jboss.security.xacml.factories.RequestAttributeFactory;
 import org.jboss.security.xacml.factories.RequestResponseContextFactory;
 import org.jboss.security.xacml.interfaces.RequestContext;
+import org.jboss.security.xacml.interfaces.XACMLConstants;
 
 public class AltinnAuthorizationDesicionPointExternalXACMLUtil {
 
@@ -70,10 +74,21 @@ public class AltinnAuthorizationDesicionPointExternalXACMLUtil {
 	}
 
 	public static boolean parseXACMLResponseAndVerifyPermitted(String xacmlResponse) {
-		String authString = xacmlResponse;
-		//TODO parse response string and fetch decision
-		if(!authString.isEmpty() && xacmlResponse.contains("<Decision>Permit</Decision>") )
+		// Parse response string and fetch decision
+		JBossResponseContext responseContext = new JBossResponseContext();
+		InputStream is = new ByteArrayInputStream(xacmlResponse.getBytes());
+		try {
+			responseContext.readResponse(is);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if(responseContext.getDecision() == XACMLConstants.DECISION_PERMIT)
 			return true;
+
+		//		if(!authString.isEmpty() && xacmlResponse.contains("<Decision>Permit</Decision>") )
+		//			return true;
 
 		return false;
 	}
