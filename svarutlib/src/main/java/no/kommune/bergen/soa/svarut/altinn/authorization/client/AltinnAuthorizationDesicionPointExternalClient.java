@@ -3,9 +3,11 @@ package no.kommune.bergen.soa.svarut.altinn.authorization.client;
 import java.util.HashMap;
 import java.util.Map;
 
-import no.altinn.schemas.services.authorization.administration._2012._11.ExternalReporteeBEList;
 import no.altinn.services.authorization.administration._2010._10.IAuthorizationAdministrationExternal;
-import no.altinn.services.authorization.administration._2010._10.IAuthorizationAdministrationExternalGetReporteesAltinnFaultFaultFaultMessage;
+import no.altinn.services.authorization.decisionpoint._2010._10.IAuthorizationDecisionPointExternal;
+import no.altinn.services.authorization.decisionpoint._2010._10.IAuthorizationDecisionPointExternalAuthorizeAccessExternalAltinnFaultFaultFaultMessage;
+import no.kommune.bergen.soa.svarut.altinn.administration.external.client.AltinnAdministrationExternalClientCallback;
+import no.kommune.bergen.soa.svarut.altinn.authorization.pep.AltinnAuthorizationDesicionPointExternalXACMLHandler;
 
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.endpoint.Endpoint;
@@ -20,19 +22,17 @@ import org.apache.cxf.ws.security.wss4j.WSS4JOutInterceptor;
 import org.apache.ws.security.WSConstants;
 import org.apache.ws.security.handler.WSHandlerConstants;
 
+public class AltinnAuthorizationDesicionPointExternalClient {
 
-public class AltinnAdministrationExternalClient {
+	private IAuthorizationDecisionPointExternal iAuthorizationDecisionPointExternal;
+	private final AltinnAuthorizationDesicionPointExternalSettings settings;
 
-	private IAuthorizationAdministrationExternal iAuthorizationAdministrationExternal;
-	private final AltinnAdministrationExternalSettings authorizationServiceSettings;
-
-	public AltinnAdministrationExternalClient(AltinnAdministrationExternalSettings settings) {
-		this.authorizationServiceSettings = settings;
-		setupAdministrationExternalServices();
+	public AltinnAuthorizationDesicionPointExternalClient(AltinnAuthorizationDesicionPointExternalSettings settings) {
+		this.settings = settings;
+		setupAuthorizationDesicionPointExternalServices();
 	}
 
-
-	private void setupAdministrationExternalServices() {
+	private void setupAuthorizationDesicionPointExternalServices() {
 		JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
 
 		// Set requests to run on SOAP 1.2
@@ -42,20 +42,19 @@ public class AltinnAdministrationExternalClient {
 		factory.getOutInterceptors().add(new LoggingOutInterceptor());
 
 		factory.setServiceClass(IAuthorizationAdministrationExternal.class);
-		//TODO Hente adresse fra konfigurasjon
-		factory.setAddress(authorizationServiceSettings.getEndpoint());
+		factory.setAddress(settings.getEndpoint());
 		factory.getFeatures().add(new WSAddressingFeature());
 
-		iAuthorizationAdministrationExternal = (IAuthorizationAdministrationExternal) factory.create();
+		iAuthorizationDecisionPointExternal = (IAuthorizationDecisionPointExternal) factory.create();
 
-		Client client = ClientProxy.getClient(iAuthorizationAdministrationExternal);
+		Client client = ClientProxy.getClient(iAuthorizationDecisionPointExternal);
 
 		// WS-security settings
 		Endpoint cxfEndpoint = client.getEndpoint();
 		WSS4JOutInterceptor wssOut = null;
 		Map<String,Object> outProps = new HashMap<String, Object>();
 		outProps.put(WSHandlerConstants.ACTION, WSHandlerConstants.USERNAME_TOKEN);
-		outProps.put(WSHandlerConstants.USER, authorizationServiceSettings.getSystemUserName());
+		outProps.put(WSHandlerConstants.USER, settings.getSystemUserName());
 		outProps.put(WSHandlerConstants.PASSWORD_TYPE, WSConstants.PW_TEXT);
 		outProps.put(WSHandlerConstants.ADD_UT_ELEMENTS, WSConstants.NONCE_LN + " " + WSConstants.CREATED_LN);
 		outProps.put(WSHandlerConstants.PW_CALLBACK_CLASS, AltinnAdministrationExternalClientCallback.class.getName());
@@ -77,14 +76,20 @@ public class AltinnAdministrationExternalClient {
 		http.setClient(httpClientPolicy);
 	}
 
-	public ExternalReporteeBEList getAvgivere(String fodselsNr) {
-		ExternalReporteeBEList list = null;
+	public boolean authorizeAccessExternal(String fodselsNr, String orgNr) {
+
+		String environment;
+		boolean authorized = false;
+
+		String xacmlRequest = AltinnAuthorizationDesicionPointExternalXACMLHandler.createXACMLRequest(fodselsNr, orgNr, settings.getServiceCode(), settings.getServiceEdition(), settings.getEnvironment());
+		String xacmlResponse = null;
 		try {
-			list = iAuthorizationAdministrationExternal.getReportees(fodselsNr, true, true, 100);
-		} catch (IAuthorizationAdministrationExternalGetReporteesAltinnFaultFaultFaultMessage e) {
+			xacmlResponse = iAuthorizationDecisionPointExternal.authorizeAccessExternal(xacmlRequest);
+		} catch (IAuthorizationDecisionPointExternalAuthorizeAccessExternalAltinnFaultFaultFaultMessage e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-			System.out.println(e.getStackTrace());
 		}
-		return list;
+
+		return authorized;
 	}
 }

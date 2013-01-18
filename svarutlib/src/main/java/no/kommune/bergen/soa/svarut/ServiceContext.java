@@ -1,24 +1,30 @@
 package no.kommune.bergen.soa.svarut;
 
+import java.lang.reflect.Field;
+
 import no.kommune.bergen.soa.common.pdf.PdfGenerator;
 import no.kommune.bergen.soa.common.util.MailSender;
 import no.kommune.bergen.soa.common.util.TemplateEngine;
 import no.kommune.bergen.soa.common.util.VelocityTemplateEngine;
 import no.kommune.bergen.soa.svarut.altinn.authorization.client.AltinnAuthorization;
-import no.kommune.bergen.soa.svarut.altinn.authorization.client.AltinnAdministrationExternalSettings;
+import no.kommune.bergen.soa.svarut.altinn.authorization.client.AltinnAuthorizationDesicionPointExternalSettings;
 import no.kommune.bergen.soa.svarut.altinn.correspondence.CorrespondenceClient;
 import no.kommune.bergen.soa.svarut.altinn.correspondence.CorrespondenceSettings;
-import no.kommune.bergen.soa.svarut.context.*;
+import no.kommune.bergen.soa.svarut.context.AltinnContext;
+import no.kommune.bergen.soa.svarut.context.ArchiveContext;
+import no.kommune.bergen.soa.svarut.context.DownloadContext;
+import no.kommune.bergen.soa.svarut.context.EmailContext;
+import no.kommune.bergen.soa.svarut.context.MessageTemplateAssembly;
+import no.kommune.bergen.soa.svarut.context.PrintContext;
 import no.kommune.bergen.soa.svarut.dao.FileStore;
 import no.kommune.bergen.soa.svarut.dao.ForsendelsesArkiv;
+
 import org.apache.velocity.app.VelocityEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-
-import java.lang.reflect.Field;
 
 /**
  * Holding tank for context
@@ -43,7 +49,7 @@ public class ServiceContext {
 	private final ArchiveContext archiveContext;
 
 	public ServiceContext(VelocityEngine velocityEngine, AltinnContext altinnContext, EmailContext emailContext,
-						  PrintContext printContext, DownloadContext downloadContext, ArchiveContext archiveContext) {
+			PrintContext printContext, DownloadContext downloadContext, ArchiveContext archiveContext) {
 		this.velocityEngine = velocityEngine;
 		this.altinnContext = altinnContext;
 		this.emailContext = emailContext;
@@ -55,7 +61,7 @@ public class ServiceContext {
 		velocityModelFactory = createVelocityModelFactory();
 		pdfGenerator = new SvarUtPdfGenerator(this.archiveContext.getTempDir());
 		emailFacade = createEmailFacadeDocumentAttached(this.emailContext.getJavaMailSender(), this.emailContext.getMessageTemplateAssembly());
-		altinnFacade = createAltinnFacade(this.altinnContext.getCorrespondenceSettings(), this.altinnContext.getAltinnAdministrationExternalSettings() );
+		altinnFacade = createAltinnFacade(this.altinnContext.getCorrespondenceSettings(), this.altinnContext.getAltinnAuthorizationDesicionPointExternalSettings() );
 		forsendelsesArkiv = createForsendelsesArkiv(altinnFacade);
 		printFacade = createPrintFacade(this.printContext.getFrontPageTemplate(), this.printContext.getPrintServiceProvider());
 		verify();
@@ -78,10 +84,10 @@ public class ServiceContext {
 				downloadContext.getHelpLinkText(), downloadContext.getReaderDownloadLink(), downloadContext.getReaderDownloadLinkText());
 	}
 
-	private AltinnFacade createAltinnFacade(CorrespondenceSettings correspondenceSettings, AltinnAdministrationExternalSettings authorizationSettings) {
+	private AltinnFacade createAltinnFacade(CorrespondenceSettings correspondenceSettings, AltinnAuthorizationDesicionPointExternalSettings authorizationSettings) {
 		CorrespondenceClient correspondenceClient = new CorrespondenceClient(correspondenceSettings);
-		AltinnAuthorization authorizationClient = new AltinnAuthorization(authorizationSettings);
-		return new AltinnFacade(templateEngine, correspondenceClient, authorizationClient, velocityModelFactory);
+		AltinnAuthorization altinnAuthorization = new AltinnAuthorization(authorizationSettings);
+		return new AltinnFacade(templateEngine, correspondenceClient, altinnAuthorization, velocityModelFactory);
 	}
 
 	private VelocityTemplateEngine createTemplateEngine() {

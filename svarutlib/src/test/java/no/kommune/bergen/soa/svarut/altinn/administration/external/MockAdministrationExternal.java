@@ -1,4 +1,4 @@
-package no.kommune.bergen.soa.svarut.altinn.authorization;
+package no.kommune.bergen.soa.svarut.altinn.administration.external;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,8 @@ import java.util.List;
 import no.altinn.schemas.services.authorization.administration._2012._11.ExternalReporteeBE;
 import no.altinn.schemas.services.authorization.administration._2012._11.ExternalReporteeBEList;
 import no.altinn.schemas.services.register._2009._10.PartyType;
-import no.kommune.bergen.soa.svarut.altinn.authorization.client.AltinnAdministrationExternalClient;
-import no.kommune.bergen.soa.svarut.altinn.authorization.client.AltinnAdministrationExternalSettings;
+import no.kommune.bergen.soa.svarut.altinn.administration.external.client.AltinnAdministrationExternalClient;
+import no.kommune.bergen.soa.svarut.altinn.administration.external.client.AltinnAdministrationExternalSettings;
 
 public class MockAdministrationExternal extends AltinnAdministrationExternalClient {
 

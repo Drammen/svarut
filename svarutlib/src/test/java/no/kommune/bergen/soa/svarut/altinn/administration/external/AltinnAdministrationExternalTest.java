@@ -1,4 +1,4 @@
-package no.kommune.bergen.soa.svarut.altinn.authorization;
+package no.kommune.bergen.soa.svarut.altinn.administration.external;
 
 import java.security.AccessControlException;
 
@@ -6,8 +6,8 @@ import no.kommune.bergen.soa.common.pdf.PdfGeneratorImpl;
 import no.kommune.bergen.soa.svarut.AltinnFacade;
 import no.kommune.bergen.soa.svarut.JdbcHelper;
 import no.kommune.bergen.soa.svarut.altinn.MockCorrespondenceClient;
-import no.kommune.bergen.soa.svarut.altinn.authorization.client.AltinnAdministrationExternalSettings;
 import no.kommune.bergen.soa.svarut.altinn.authorization.client.AltinnAuthorization;
+import no.kommune.bergen.soa.svarut.altinn.authorization.client.AltinnAuthorizationDesicionPointExternalSettings;
 import no.kommune.bergen.soa.svarut.altinn.correspondence.CorrespondenceClient;
 import no.kommune.bergen.soa.svarut.dao.FileStore;
 import no.kommune.bergen.soa.svarut.dao.ForsendelsesArkiv;
@@ -16,7 +16,7 @@ import no.kommune.bergen.soa.svarut.domain.Forsendelse;
 
 import org.junit.Test;
 
-public class AltinnAuthorizationTest {
+public class AltinnAdministrationExternalTest {
 
 	private AltinnFacade altinnFacade;
 	private AltinnAuthorization altinnAuthorization;
@@ -25,10 +25,10 @@ public class AltinnAuthorizationTest {
 	private final String UnauthorizedFodselsNr = "12345678910";
 	private final String OrgNr = "910824929";
 
-	private AltinnAdministrationExternalSettings settings;
+	private AltinnAuthorizationDesicionPointExternalSettings settings;
 
 	public void initWithStandardReturnDataInMockService() {
-		settings = new AltinnAdministrationExternalSettings();
+		settings = new AltinnAuthorizationDesicionPointExternalSettings();
 		settings.setEndpoint("http://brukes_ikke");
 		altinnAuthorization = new AltinnAuthorization(settings);
 		MockAdministrationExternal client = new MockAdministrationExternal(settings);
@@ -40,7 +40,7 @@ public class AltinnAuthorizationTest {
 	}
 
 	public void initWithNoReturnDataInMockService() {
-		settings = new AltinnAdministrationExternalSettings();
+		settings = new AltinnAuthorizationDesicionPointExternalSettings();
 		settings.setEndpoint("http://brukes_ikke");
 		altinnAuthorization = new AltinnAuthorization(settings);
 		MockAdministrationExternal client = new MockAdministrationExternal(settings);

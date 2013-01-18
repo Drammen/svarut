@@ -1,12 +1,13 @@
 package no.kommune.bergen.soa.svarut.context;
 
-import no.kommune.bergen.soa.svarut.altinn.authorization.client.AltinnAdministrationExternalSettings;
+import javax.annotation.Resource;
+
+import no.kommune.bergen.soa.svarut.altinn.authorization.client.AltinnAuthorizationDesicionPointExternalSettings;
 import no.kommune.bergen.soa.svarut.altinn.correspondence.CorrespondenceSettings;
 import no.kommune.bergen.soa.svarut.util.DispatchWindow;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 
 /**
  * Benyttes som bærer av kofigurasjon for Altinn distribusjoner. Obs: LeadTime betyr her antall dager mottaker har på å lese et
@@ -19,7 +20,7 @@ public class AltinnContext {
 	private CorrespondenceSettings correspondenceSettings;
 
 	@Autowired
-	private AltinnAdministrationExternalSettings altinnAdministrationExternalSettings;
+	private AltinnAuthorizationDesicionPointExternalSettings altinnAuthorizationDesicionPointExternalSettings;
 
 	private long leadTimeApost = 2, leadTimeBpost = 2, leadTimeRekommandert = 1;
 
@@ -47,12 +48,12 @@ public class AltinnContext {
 		this.correspondenceSettings = correspondenceSettings;
 	}
 
-	public AltinnAdministrationExternalSettings getAltinnAdministrationExternalSettings() {
-		return this.altinnAdministrationExternalSettings;
+	public AltinnAuthorizationDesicionPointExternalSettings getAltinnAuthorizationDesicionPointExternalSettings() {
+		return this.altinnAuthorizationDesicionPointExternalSettings;
 	}
 
-	public void setAltinnAdministrationExternalSettings( AltinnAdministrationExternalSettings settings ) {
-		this.altinnAdministrationExternalSettings = settings;
+	public void setAltinnAuthorizationDesicionPointExternalSettings( AltinnAuthorizationDesicionPointExternalSettings settings ) {
+		this.altinnAuthorizationDesicionPointExternalSettings = settings;
 	}
 
 	public long getLeadTimeApost() {
