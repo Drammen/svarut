@@ -7,7 +7,7 @@ import no.altinn.services.authorization.administration._2010._10.IAuthorizationA
 import no.altinn.services.authorization.decisionpoint._2010._10.IAuthorizationDecisionPointExternal;
 import no.altinn.services.authorization.decisionpoint._2010._10.IAuthorizationDecisionPointExternalAuthorizeAccessExternalAltinnFaultFaultFaultMessage;
 import no.kommune.bergen.soa.svarut.altinn.administration.external.client.AltinnAdministrationExternalClientCallback;
-import no.kommune.bergen.soa.svarut.altinn.authorization.pep.AltinnAuthorizationDesicionPointExternalXACMLHandler;
+import no.kommune.bergen.soa.svarut.altinn.authorization.xacml.AltinnAuthorizationDesicionPointExternalXACMLUtil;
 
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.endpoint.Endpoint;
@@ -32,7 +32,7 @@ public class AltinnAuthorizationDesicionPointExternalClient {
 		setupAuthorizationDesicionPointExternalServices();
 	}
 
-	private void setupAuthorizationDesicionPointExternalServices() {
+	protected void setupAuthorizationDesicionPointExternalServices() {
 		JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
 
 		// Set requests to run on SOAP 1.2
@@ -78,10 +78,9 @@ public class AltinnAuthorizationDesicionPointExternalClient {
 
 	public boolean authorizeAccessExternal(String fodselsNr, String orgNr) {
 
-		String environment;
 		boolean authorized = false;
 
-		String xacmlRequest = AltinnAuthorizationDesicionPointExternalXACMLHandler.createXACMLRequest(fodselsNr, orgNr, settings.getServiceCode(), settings.getServiceEdition(), settings.getEnvironment());
+		String xacmlRequest = AltinnAuthorizationDesicionPointExternalXACMLUtil.createXACMLRequest(fodselsNr, orgNr, settings.getServiceCode(), settings.getServiceEdition(), settings.getEnvironment());
 		String xacmlResponse = null;
 		try {
 			xacmlResponse = iAuthorizationDecisionPointExternal.authorizeAccessExternal(xacmlRequest);
@@ -89,6 +88,8 @@ public class AltinnAuthorizationDesicionPointExternalClient {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		AltinnAuthorizationDesicionPointExternalXACMLUtil.parseXACMLResponse(xacmlResponse);
 
 		return authorized;
 	}

@@ -7,7 +7,7 @@ public class AltinnAuthorization {
 
 	private static final Logger log = LoggerFactory.getLogger(AltinnAuthorization.class);
 
-	private final AltinnAuthorizationDesicionPointExternalClient altinnAuthorizationDesicionPointExternalClient;
+	private AltinnAuthorizationDesicionPointExternalClient altinnAuthorizationDesicionPointExternalClient;
 
 	public AltinnAuthorization(AltinnAuthorizationDesicionPointExternalSettings settings) {
 		altinnAuthorizationDesicionPointExternalClient = new AltinnAuthorizationDesicionPointExternalClient(settings);
@@ -17,4 +17,12 @@ public class AltinnAuthorization {
 		return altinnAuthorizationDesicionPointExternalClient.authorizeAccessExternal(fodselsNr, orgNr);
 	}
 
+	public AltinnAuthorizationDesicionPointExternalClient getAltinnAuthorizationDesicionPointExternalClient() {
+		return altinnAuthorizationDesicionPointExternalClient;
+	}
+
+	public void setAltinnAuthorizationDesicionPointExternalClient(
+			AltinnAuthorizationDesicionPointExternalClient altinnAuthorizationDesicionPointExternalClient) {
+		this.altinnAuthorizationDesicionPointExternalClient = altinnAuthorizationDesicionPointExternalClient;
+	}
 }

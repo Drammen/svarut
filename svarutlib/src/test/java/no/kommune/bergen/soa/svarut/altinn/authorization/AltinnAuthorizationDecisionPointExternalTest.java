@@ -1,4 +1,4 @@
-package no.kommune.bergen.soa.svarut.altinn.administration.external;
+package no.kommune.bergen.soa.svarut.altinn.authorization;
 
 import java.security.AccessControlException;
 
@@ -16,7 +16,7 @@ import no.kommune.bergen.soa.svarut.domain.Forsendelse;
 
 import org.junit.Test;
 
-public class AltinnAdministrationExternalTest {
+public class AltinnAuthorizationDecisionPointExternalTest {
 
 	private AltinnFacade altinnFacade;
 	private AltinnAuthorization altinnAuthorization;
@@ -31,9 +31,8 @@ public class AltinnAdministrationExternalTest {
 		settings = new AltinnAuthorizationDesicionPointExternalSettings();
 		settings.setEndpoint("http://brukes_ikke");
 		altinnAuthorization = new AltinnAuthorization(settings);
-		MockAdministrationExternal client = new MockAdministrationExternal(settings);
-		client.setExternalReporteeBETestList(MockAdministrationExternal.createTestData());
-		altinnAuthorization.setAltinnAdministrationExternalClient(client);
+		MockAuthorizationDecisionPointExternal client = new MockAuthorizationDecisionPointExternal(settings);
+		altinnAuthorization.setAltinnAuthorizationDesicionPointExternalClient(client);
 		CorrespondenceClient correspondenceClient = new CorrespondenceClient(MockCorrespondenceClient.newSettings());
 		altinnFacade = new AltinnFacade(null, correspondenceClient, altinnAuthorization, null);
 		forsendelsesArkiv = createForsendesesArkiv();
@@ -43,8 +42,8 @@ public class AltinnAdministrationExternalTest {
 		settings = new AltinnAuthorizationDesicionPointExternalSettings();
 		settings.setEndpoint("http://brukes_ikke");
 		altinnAuthorization = new AltinnAuthorization(settings);
-		MockAdministrationExternal client = new MockAdministrationExternal(settings);
-		altinnAuthorization.setAltinnAdministrationExternalClient(client);
+		MockAuthorizationDecisionPointExternal client = new MockAuthorizationDecisionPointExternal(settings);
+		altinnAuthorization.setAltinnAuthorizationDesicionPointExternalClient(client);
 		CorrespondenceClient correspondenceClient = new CorrespondenceClient(MockCorrespondenceClient.newSettings());
 		altinnFacade = new AltinnFacade(null, correspondenceClient, altinnAuthorization, null);
 		forsendelsesArkiv = createForsendesesArkiv();

@@ -1,4 +1,4 @@
-package no.kommune.bergen.soa.svarut.altinn.authorization.pep;
+package no.kommune.bergen.soa.svarut.altinn.authorization.xacml;
 
 import java.io.IOException;
 import java.security.AccessControlException;
@@ -12,7 +12,7 @@ import org.jboss.security.xacml.factories.RequestAttributeFactory;
 import org.jboss.security.xacml.factories.RequestResponseContextFactory;
 import org.jboss.security.xacml.interfaces.RequestContext;
 
-public class AltinnAuthorizationDesicionPointExternalXACMLHandler {
+public class AltinnAuthorizationDesicionPointExternalXACMLUtil {
 
 	private final static String ACTION_IDENTIFIER = "urn:oasis:names:tc:xacml:2.0:action:urn:altinn:action-id"; // ACTION
 	private final static String ENVIRONMENT_IDENTIFIER = "urn:oasis:names:tc:xacml:2.0:action:urn:altinn:environment"; // ENVIRONMENT
@@ -69,9 +69,9 @@ public class AltinnAuthorizationDesicionPointExternalXACMLHandler {
 		return xacmlString;
 	}
 
-	public String parseXACMLResponse(String xacmlResponse) {
-		String authString = null;
-
+	public static String parseXACMLResponse(String xacmlResponse) {
+		String authString = xacmlResponse;
+		//TODO parse response string and fetch decision
 		return authString;
 	}
 }

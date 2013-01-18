@@ -43,17 +43,6 @@ public class AltinnFacade {
 	}
 
 	public boolean authorizeUserAgainstOrgNr(String fodselsNr, String orgNr) {
-		//		List<Avgiver> avgivere = altinnAuthorization.getOrganisasjonsAvgivere(fodselsNr);
-		//		if(avgivere.isEmpty() || orgNr == null)
-		//			return false;
-		//
-		//		for(Avgiver avgiver : avgivere) {
-		//			if(avgiver.getOrganizationNumber().equals(orgNr)) {
-		//				return true;
-		//			}
-		//		}
-		//		return false;
-
 		return altinnAuthorization.authorize(fodselsNr, orgNr);
 	}
 
