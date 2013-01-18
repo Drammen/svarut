@@ -18,14 +18,14 @@ import org.jboss.security.xacml.interfaces.XACMLConstants;
 
 public class AltinnAuthorizationDesicionPointExternalXACMLUtil {
 
-	private final static String ACTION_IDENTIFIER = "urn:oasis:names:tc:xacml:2.0:action:urn:altinn:action-id"; // ACTION
-	private final static String ENVIRONMENT_IDENTIFIER = "urn:oasis:names:tc:xacml:2.0:action:urn:altinn:environment"; // ENVIRONMENT
-	//private final static String CURRENT_TIME_IDENTIFIER = "urn:oasis:names:tc:xacml:1.0:environment:current-time";
-	private final static String RESOURCE_IDENTIFIER_ORGNR = "urn:oasis:names:tc:xacml:2.0:resource:urn:altinn:reportee-orgno"; //RESOURCE
-	private final static String RESOURCE_IDENTIFIER_SERVICECODE = "urn:oasis:names:tc:xacml:2.0:resource:urn:altinn:externalservicecode"; //RESOURCE
-	private final static String RESOURCE_IDENTIFIER_SERVICEEDITIONCODE = "urn:oasis:names:tc:xacml:2.0:resource:urn:altinn:externalserviceeditioncode"; //SUBJECT
-	private final static String SUBJECT_IDENTIFIER_SSN = "urn:oasis:names:tc:xacml:2.0:subject:urn:altinn:ssn";
-	//private final static String SUBJECT_ROLE_IDENTIFIER = "urn:oasis:names:tc:xacml:2.0:subject:role";
+	private static final String ACTION_IDENTIFIER = "urn:oasis:names:tc:xacml:2.0:action:urn:altinn:action-id"; // ACTION
+	private static final String ENVIRONMENT_IDENTIFIER = "urn:oasis:names:tc:xacml:2.0:action:urn:altinn:environment"; // ENVIRONMENT
+	//private static final String CURRENT_TIME_IDENTIFIER = "urn:oasis:names:tc:xacml:1.0:environment:current-time";
+	private static final String RESOURCE_IDENTIFIER_ORGNR = "urn:oasis:names:tc:xacml:2.0:resource:urn:altinn:reportee-orgno"; //RESOURCE
+	private static final String RESOURCE_IDENTIFIER_SERVICECODE = "urn:oasis:names:tc:xacml:2.0:resource:urn:altinn:externalservicecode"; //RESOURCE
+	private static final String RESOURCE_IDENTIFIER_SERVICEEDITIONCODE = "urn:oasis:names:tc:xacml:2.0:resource:urn:altinn:externalserviceeditioncode"; //SUBJECT
+	private static final String SUBJECT_IDENTIFIER_SSN = "urn:oasis:names:tc:xacml:2.0:subject:urn:altinn:ssn";
+	//private final String SUBJECT_ROLE_IDENTIFIER = "urn:oasis:names:tc:xacml:2.0:subject:role";
 
 	public static String createXACMLRequest(String fodselsNr, String orgNr, String serviceCode, String serviceEditionCode, String environment) {
 		String xacmlString = null;
