@@ -25,7 +25,7 @@ public class AltinnAuthorizationDecisionPointExternalFakeService extends HttpSer
 		InputStreamReader responseInputStreamReader = null;
 		BufferedReader responseBufferedReader = null;
 		boolean isWdslRequest = (request.getParameter( "wsdl" ) != null || request.getParameter( "WSDL" ) != null);
-		String operation = (isWdslRequest ? "AdministrationExternal.svc.wsdl" : "AltinnAuthorizationAdministrationExternalGetReportees.soap.response");
+		String operation = (isWdslRequest ? "AuthorizationDecisionPointExternal.svc.wsdl" : "AltinnAuthorizationDecisionPointExternal.soap.response");
 		try {
 			responseInputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(operation);
 			responseInputStreamReader = new InputStreamReader(responseInputStream);
