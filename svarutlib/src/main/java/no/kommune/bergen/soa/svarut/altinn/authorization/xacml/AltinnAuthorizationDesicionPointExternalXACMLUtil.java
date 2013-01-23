@@ -95,8 +95,7 @@ public class AltinnAuthorizationDesicionPointExternalXACMLUtil {
 		return getDecision(is);
 	}
 
-	private static boolean getDecision(InputStream is)
-	{
+	private static boolean getDecision(InputStream is) {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		factory.setIgnoringComments(true);
 		Document doc = null;
