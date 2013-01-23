@@ -1,11 +1,16 @@
 package no.kommune.bergen.soa.svarut.altinn.authorization.xacml;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.AccessControlException;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.jboss.security.xacml.core.JBossResponseContext;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.jboss.security.xacml.core.model.context.ActionType;
 import org.jboss.security.xacml.core.model.context.EnvironmentType;
 import org.jboss.security.xacml.core.model.context.RequestType;
@@ -14,7 +19,10 @@ import org.jboss.security.xacml.core.model.context.SubjectType;
 import org.jboss.security.xacml.factories.RequestAttributeFactory;
 import org.jboss.security.xacml.factories.RequestResponseContextFactory;
 import org.jboss.security.xacml.interfaces.RequestContext;
-import org.jboss.security.xacml.interfaces.XACMLConstants;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class AltinnAuthorizationDesicionPointExternalXACMLUtil {
 
@@ -70,26 +78,61 @@ public class AltinnAuthorizationDesicionPointExternalXACMLUtil {
 			throw new AccessControlException("Could not authorize. Failed to create RequestContext.");
 		}
 
-		return xacmlString;
-	}
-
-	public static boolean parseXACMLResponseAndVerifyPermitted(String xacmlResponse) {
-		// Parse response string and fetch decision
-		JBossResponseContext responseContext = new JBossResponseContext();
-		InputStream is = new ByteArrayInputStream(xacmlResponse.getBytes());
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
-			responseContext.readResponse(is);
-		} catch (Exception e) {
+			requestContext.marshall(os);
+			xacmlString = os.toString("UTF-8");
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		if(responseContext.getDecision() == XACMLConstants.DECISION_PERMIT)
-			return true;
+		return xacmlString;
+	}
 
-		//		if(!authString.isEmpty() && xacmlResponse.contains("<Decision>Permit</Decision>") )
-		//			return true;
+	public static boolean parseXACMLResponseAndVerifyPermitted(String xacmlResponse) {
+		InputStream is = new ByteArrayInputStream(xacmlResponse.getBytes());
+		return getDecision(is);
+	}
+
+	private static boolean getDecision(InputStream is)
+	{
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		factory.setIgnoringComments(true);
+		Document doc = null;
+		try {
+			doc = factory.newDocumentBuilder().parse(is);
+		} catch (SAXException e) {
+			System.out.println(e.getStackTrace());
+		} catch (IOException e) {
+			System.out.println(e.getStackTrace());
+		} catch (ParserConfigurationException e) {
+			System.out.println(e.getStackTrace());
+		}
+
+		List<Node> decisionsFound = new ArrayList<Node>();
+		decisionsFound.addAll(findDecisionChildNodes(doc.getChildNodes()));
+
+		if(decisionsFound.size() > 1 || decisionsFound.isEmpty())
+			return false;
+
+		String decision = decisionsFound.get(0).getTextContent();
+
+		if(decision.equals("Permit"))
+			return true;
 
 		return false;
 	}
+
+	private static List<Node> findDecisionChildNodes(NodeList nodeList) {
+		List<Node> decisions = new ArrayList<Node>();
+		for(int i = 0; i < nodeList.getLength(); i++) {
+			if(nodeList.item(i).getNodeName().toLowerCase().equals("xacml:decision"))
+				decisions.add(nodeList.item(i));
+			if(nodeList.item(i).getChildNodes().getLength() > 0)
+				decisions.addAll(findDecisionChildNodes(nodeList.item(i).getChildNodes()));
+		}
+		return decisions;
+	}
+
 }

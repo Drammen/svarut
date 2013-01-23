@@ -86,6 +86,7 @@ public class AltinnAuthorizationDesicionPointExternalClient {
 		} catch (IAuthorizationDecisionPointExternalAuthorizeAccessExternalAltinnFaultFaultFaultMessage e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return false;
 		}
 
 		AltinnAuthorizationDesicionPointExternalXACMLUtil.parseXACMLResponseAndVerifyPermitted(xacmlResponse);
