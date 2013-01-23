@@ -19,7 +19,7 @@ import org.svarut.sample.utils.SvarUtServiceCreator;
 
 public class AltinnTest {
 
-	private final SvarUtService service = SvarUtServiceCreator.getService();
+	private SvarUtService service = SvarUtServiceCreator.getService();
 
 
 	@Test
