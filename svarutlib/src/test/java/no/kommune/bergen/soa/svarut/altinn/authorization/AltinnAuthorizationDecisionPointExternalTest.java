@@ -14,7 +14,6 @@ import no.kommune.bergen.soa.svarut.dao.ForsendelsesArkiv;
 import no.kommune.bergen.soa.svarut.dao.ForsendelsesArkivTest;
 import no.kommune.bergen.soa.svarut.domain.Forsendelse;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class AltinnAuthorizationDecisionPointExternalTest {
@@ -88,7 +87,6 @@ public class AltinnAuthorizationDecisionPointExternalTest {
 	// This test is as far as we can test for the moment. Probably missing "Rolle" on the Altinn side.
 	// See response from Altinn service inn Console.
 	@Test(expected=AccessControlException.class)
-	@Ignore
 	public void testAuthorizeMotEkteAltinnServiceFeilerPgaManglendeOppsett() {
 		initWithAltinnTestService(); // Init
 

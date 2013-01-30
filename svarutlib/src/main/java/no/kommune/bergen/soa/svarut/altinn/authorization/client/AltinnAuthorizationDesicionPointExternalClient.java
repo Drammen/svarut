@@ -18,11 +18,13 @@ import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.apache.cxf.ws.addressing.WSAddressingFeature;
 import org.apache.cxf.ws.security.wss4j.WSS4JOutInterceptor;
+import org.apache.log4j.Logger;
 import org.apache.ws.security.WSConstants;
 import org.apache.ws.security.handler.WSHandlerConstants;
 
 public class AltinnAuthorizationDesicionPointExternalClient {
 
+	public static final Logger log = Logger.getLogger(AltinnAuthorizationDesicionPointExternalClient.class);
 	private IAuthorizationDecisionPointExternal iAuthorizationDecisionPointExternal;
 	private final AltinnAuthorizationDesicionPointExternalSettings settings;
 
@@ -38,6 +40,7 @@ public class AltinnAuthorizationDesicionPointExternalClient {
 		factory.setBindingId("http://schemas.xmlsoap.org/wsdl/soap12/");
 
 		factory.getInInterceptors().add(new LoggingInInterceptor());
+		//		factory.getOutInterceptors().add(new CdataWriterInterceptor("XACMLRequest"));
 		factory.getOutInterceptors().add(new LoggingOutInterceptor());
 
 		factory.setServiceClass(IAuthorizationDecisionPointExternal.class);
@@ -80,6 +83,7 @@ public class AltinnAuthorizationDesicionPointExternalClient {
 		boolean authorized = false;
 
 		String xacmlRequest = AltinnAuthorizationDesicionPointExternalXACMLUtil.createXACMLRequest(fodselsNr, orgNr, settings.getServiceCode(), settings.getServiceEdition(), settings.getEnvironment());
+		log.debug("Generated XACML request:\n" + xacmlRequest);
 		String xacmlResponse = null;
 		try {
 			xacmlResponse = iAuthorizationDecisionPointExternal.authorizeAccessExternal(xacmlRequest);
@@ -89,6 +93,7 @@ public class AltinnAuthorizationDesicionPointExternalClient {
 			return false;
 		}
 
+		log.debug("Altinn service XACML response:\n" + xacmlResponse);
 		AltinnAuthorizationDesicionPointExternalXACMLUtil.parseXACMLResponseAndVerifyPermitted(xacmlResponse);
 
 		return authorized;

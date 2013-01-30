@@ -1,15 +1,21 @@
 package no.kommune.bergen.soa.svarut.altinn.authorization.xacml;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.jboss.security.xacml.core.model.context.ActionType;
 import org.jboss.security.xacml.core.model.context.EnvironmentType;
@@ -78,14 +84,28 @@ public class AltinnAuthorizationDesicionPointExternalXACMLUtil {
 			throw new AccessControlException("Could not authorize. Failed to create RequestContext.");
 		}
 
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
-			requestContext.marshall(os);
-			xacmlString = os.toString("UTF-8");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Node doc = requestContext.getDocumentElement();
+			TransformerFactory tf = TransformerFactory.newInstance();
+			Transformer transformer = tf.newTransformer();
+
+			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+			transformer.setOutputProperty(OutputKeys.INDENT, "no");
+			StringWriter writer = new StringWriter();
+			transformer.transform(new DOMSource(doc), new StreamResult(writer));
+			xacmlString = writer.getBuffer().toString().replaceAll("\n|\r", "").trim().replaceAll(">\\s*<", "><");;
+		} catch (TransformerException te) {
+			te.printStackTrace();
+			throw new AccessControlException("Could not authorize. Failed to create RequestContext.");
 		}
+		//		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		//		try {
+		//			requestContext.marshall(os);
+		//			xacmlString = os.toString("UTF-8");
+		//		} catch (IOException e) {
+		//			// TODO Auto-generated catch block
+		//			e.printStackTrace();
+		//		}
 
 		return xacmlString;
 	}
