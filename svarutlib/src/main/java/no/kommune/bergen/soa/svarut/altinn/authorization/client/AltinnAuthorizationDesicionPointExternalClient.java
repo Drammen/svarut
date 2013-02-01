@@ -94,7 +94,7 @@ public class AltinnAuthorizationDesicionPointExternalClient {
 		}
 
 		log.debug("Altinn service XACML response:\n" + xacmlResponse);
-		AltinnAuthorizationDesicionPointExternalXACMLUtil.parseXACMLResponseAndVerifyPermitted(xacmlResponse);
+		authorized = AltinnAuthorizationDesicionPointExternalXACMLUtil.parseXACMLResponseAndVerifyPermitted(xacmlResponse);
 
 		return authorized;
 	}

@@ -50,30 +50,23 @@ public class AltinnAuthorizationDesicionPointExternalXACMLUtil {
 		subject.getAttribute().add(RequestAttributeFactory.createStringAttributeType(SUBJECT_IDENTIFIER_SSN, "jboss_org", fodselsNr));
 
 		// Resources
-		ResourceType resourceTypeOrgNr = new ResourceType();
-		resourceTypeOrgNr.getAttribute().add(RequestAttributeFactory.createStringAttributeType(RESOURCE_IDENTIFIER_ORGNR, "jboss_org", orgNr));
-
-		ResourceType resourceTypeServiceCode = new ResourceType();
-		resourceTypeServiceCode.getAttribute().add(RequestAttributeFactory.createStringAttributeType(RESOURCE_IDENTIFIER_SERVICECODE, "jboss_org", serviceCode));
-
-		ResourceType resourceTypeServiceEditionCode = new ResourceType();
-		resourceTypeServiceEditionCode.getAttribute().add(RequestAttributeFactory.createStringAttributeType(RESOURCE_IDENTIFIER_SERVICEEDITIONCODE, "jboss_org", serviceEditionCode));
+		ResourceType resourceType = new ResourceType();
+		resourceType.getAttribute().add(RequestAttributeFactory.createStringAttributeType(RESOURCE_IDENTIFIER_ORGNR, "jboss_org", orgNr));
+		resourceType.getAttribute().add(RequestAttributeFactory.createStringAttributeType(RESOURCE_IDENTIFIER_SERVICECODE, "jboss_org", serviceCode));
+		resourceType.getAttribute().add(RequestAttributeFactory.createStringAttributeType(RESOURCE_IDENTIFIER_SERVICEEDITIONCODE, "jboss_org", serviceEditionCode));
 
 		// Action
 		ActionType actionType = new ActionType();
-		actionType.getAttribute().add(RequestAttributeFactory.createStringAttributeType(ACTION_IDENTIFIER, "jboss.org", "read"));
+		actionType.getAttribute().add(RequestAttributeFactory.createStringAttributeType(ACTION_IDENTIFIER, "jboss.org", "Read"));
 
 		// Environment
 		EnvironmentType environmentType = new EnvironmentType();
 		environmentType.getAttribute().add(RequestAttributeFactory.createStringAttributeType(ENVIRONMENT_IDENTIFIER, "jboss.org", environment));
 
-
 		// Create Request Type
 		RequestType requestType = new RequestType();
 		requestType.getSubject().add(subject);
-		requestType.getResource().add(resourceTypeOrgNr);
-		requestType.getResource().add(resourceTypeServiceCode);
-		requestType.getResource().add(resourceTypeServiceEditionCode);
+		requestType.getResource().add(resourceType);
 		requestType.setAction(actionType);
 		requestType.setEnvironment(environmentType);
 
@@ -98,14 +91,6 @@ public class AltinnAuthorizationDesicionPointExternalXACMLUtil {
 			te.printStackTrace();
 			throw new AccessControlException("Could not authorize. Failed to create RequestContext.");
 		}
-		//		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		//		try {
-		//			requestContext.marshall(os);
-		//			xacmlString = os.toString("UTF-8");
-		//		} catch (IOException e) {
-		//			// TODO Auto-generated catch block
-		//			e.printStackTrace();
-		//		}
 
 		return xacmlString;
 	}
