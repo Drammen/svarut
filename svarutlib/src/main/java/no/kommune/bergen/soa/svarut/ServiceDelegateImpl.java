@@ -87,15 +87,6 @@ public class ServiceDelegateImpl implements ServiceDelegate {
 		return forsendelsesArkiv.retrieveContent( id );
 	}
 
-	/** Returnerer dokument-innhold for en forsendelse angitt ved forsendelsesId og som tilhører en gitt JuridiskEnhet.
-	 *  Hvis forsendelsen er knyttet til et orgnr gjøres det en autoriseringssjekk mot Altinn på fødselsnr.
-	 *  */
-	@Override
-	public InputStream retrieveContent( String id, String fodselsNr ) {
-		forsendelsesArkiv.authorize( id, fodselsNr );
-		return forsendelsesArkiv.retrieveContent( id );
-	}
-
 	/** Returnerer dokument-innholde for en forsendelse angitt ved forsendelsesId */
 	@Override
 	public InputStream retrieveContentNoAuthorization( String id ) {

@@ -21,8 +21,6 @@ public interface ServiceDelegate {
 
 	InputStream retrieveContent( String id, JuridiskEnhet juridiskEnhet );
 
-	InputStream retrieveContent( String id, String fodselsNr );
-
 	InputStream retrieveContentNoAuthorization( String id );
 
 	void print( String id );

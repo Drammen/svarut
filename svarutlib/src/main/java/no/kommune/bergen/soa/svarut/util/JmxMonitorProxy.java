@@ -207,20 +207,6 @@ public class JmxMonitorProxy implements ServiceDelegate, OppsynJmx {
 	}
 
 	@Override
-	public InputStream retrieveContent(String id, String fodselsNr) {
-		try {
-			InputStream is = serviceDelegate.retrieveContent( id, fodselsNr );
-			retrieveContentIr.recordSuccess();
-			return is;
-		}   catch(AccessControlException ace){
-			throw ace;
-		}	catch (RuntimeException e) {
-			retrieveContentIr.recordException( e.getMessage() );
-			throw e;
-		}
-	}
-
-	@Override
 	public InputStream retrieveContentNoAuthorization( String id ) {
 		try {
 			InputStream is = serviceDelegate.retrieveContentNoAuthorization( id );
