@@ -64,15 +64,6 @@ public class ServiceDelegateImpl implements ServiceDelegate {
 		return forsendelsesArkiv.retrieve( id );
 	}
 
-	/** Returnerer en Forsendelse angitt ved forsendelsesId og som tilhører et gitt fodselsNr.
-	 *  Hvis forsendelsen er knyttet til et orgnr gjøres det en autoriseringssjekk mot Altinn på fødselsnr.
-	 *  */
-	@Override
-	public Forsendelse retrieve( String id, String fodselsNr ) {
-		forsendelsesArkiv.authorize( id, fodselsNr );
-		return forsendelsesArkiv.retrieve( id );
-	}
-
 	/** Returnerer Forsendelser som tilhører en gitt JuridiskEnhet */
 	@Override
 	public List<Forsendelse> retrieveList( JuridiskEnhet juridiskEnhet ) {

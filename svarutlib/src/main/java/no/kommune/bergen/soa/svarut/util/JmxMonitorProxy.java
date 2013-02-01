@@ -181,18 +181,6 @@ public class JmxMonitorProxy implements ServiceDelegate, OppsynJmx {
 	}
 
 	@Override
-	public Forsendelse retrieve(String id, String fodselsNr) {
-		try {
-			Forsendelse f = serviceDelegate.retrieve( id, fodselsNr );
-			retrieveIr.recordSuccess();
-			return f;
-		} catch (RuntimeException e) {
-			retrieveIr.recordException( e.getMessage() );
-			throw e;
-		}
-	}
-
-	@Override
 	public InputStream retrieveContent( String id, JuridiskEnhet juridiskEnhet ) {
 		try {
 			InputStream is = serviceDelegate.retrieveContent( id, juridiskEnhet );
