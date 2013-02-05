@@ -37,13 +37,13 @@ public class FtpClient implements RemoteFileTransferClient {
 				ftpClient = connect();
 				ftpClient.setFileType( FTPClient.BINARY_FILE_TYPE );
 				if (!ftpClient.retrieveFile( getFullPath( filename ), outputStream )) {
-					throw new RuntimeException( "Retrieving file was not successfull. FTPClient.retrieveFile() returned false" );
+					throw new RuntimeException("Retrieving file '" + filename + "' was not successful. FTPClient.retrieveFile() returned false");
 				}
 			} finally {
 				disconnect( ftpClient );
 			}
 		} catch (IOException e) {
-			throw new RuntimeException( "Problem occurrre while retrieving file " + filename, e );
+			throw new RuntimeException("Problem occurred while retrieving file " + filename, e);
 		}
 		if (log.isDebugEnabled()) log.debug( "retrieve() end file " + filename );
 	}
