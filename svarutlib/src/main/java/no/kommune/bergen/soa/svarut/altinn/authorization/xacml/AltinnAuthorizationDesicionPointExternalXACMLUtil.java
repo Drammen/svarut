@@ -86,7 +86,7 @@ public class AltinnAuthorizationDesicionPointExternalXACMLUtil {
 			transformer.setOutputProperty(OutputKeys.INDENT, "no");
 			StringWriter writer = new StringWriter();
 			transformer.transform(new DOMSource(doc), new StreamResult(writer));
-			xacmlString = writer.getBuffer().toString().replaceAll("\n|\r", "").trim().replaceAll(">\\s*<", "><");;
+			xacmlString = writer.getBuffer().toString().replaceAll("\n|\r", "").trim().replaceAll(">\\s*<", "><");
 		} catch (TransformerException te) {
 			te.printStackTrace();
 			throw new AccessControlException("Could not authorize. Failed to create RequestContext.");
