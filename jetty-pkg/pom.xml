@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>no.kommune.bergen.svarut</groupId>
 		<artifactId>svarut-parent</artifactId>
-		<version>7.0-SNAPSHOT</version>
+		<version>7.0</version>
 	</parent>
 	<name>SvarUt: Jetty Standalone Jar</name>
 
