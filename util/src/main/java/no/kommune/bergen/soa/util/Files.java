@@ -19,7 +19,7 @@ public class Files {
 			inputStream = new FileInputStream(source);
 			outputStream = new FileOutputStream(target);
 			byte[] buffer = new byte[1024 * 4];
-			for (int len; (len = inputStream.read(buffer)) > -1; )
+			for (int len; (len = inputStream.read(buffer)) > -1;)
 				outputStream.write(buffer, 0, len);
 
 		} finally {
@@ -51,7 +51,7 @@ public class Files {
 		try {
 			fileOutputStream = new FileOutputStream(file);
 			byte[] data = new byte[512 * 4];
-			for (int count; (count = inputStream.read(data)) != -1; )
+			for (int count; (count = inputStream.read(data)) != -1;)
 				fileOutputStream.write(data, 0, count);
 
 		} finally {
