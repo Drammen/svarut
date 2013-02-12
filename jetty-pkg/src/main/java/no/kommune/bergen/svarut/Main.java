@@ -32,7 +32,7 @@ public class Main {
 		} catch (Exception ignored) {
 		}
 
-		port = Integer.parseInt(System.getProperty("jetty.port", "8080"));
+		port = Integer.parseInt(System.getProperty("jetty.port", "9080"));
 		contextPath = System.getProperty("jetty.contextPath", "/");
 		workPath = System.getProperty("no.kommune.bergen.svarut.workDir", null);
 		secret = System.getProperty("no.kommune.bergen.svarut.secret", "eb27fb2e61ed603367461b3b4e37e0a0");

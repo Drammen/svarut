@@ -1,4 +1,4 @@
-package no.kommune.bergen.soa.svarut.altin;
+package no.kommune.bergen.soa.svarut.altinn;
 
 import org.apache.cxf.staxutils.DelegatingXMLStreamWriter;
 

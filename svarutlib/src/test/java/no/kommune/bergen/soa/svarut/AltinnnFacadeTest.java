@@ -4,8 +4,8 @@ import no.kommune.bergen.soa.common.util.TemplateEngine;
 import no.kommune.bergen.soa.common.util.VelocityTemplateEngine;
 import no.kommune.bergen.soa.svarut.AltinnFacade;
 import no.kommune.bergen.soa.svarut.VelocityModelFactory;
-import no.kommune.bergen.soa.svarut.altin.CorrespondenceMessage;
-import no.kommune.bergen.soa.svarut.altin.MockCorrespondenceClient;
+import no.kommune.bergen.soa.svarut.altinn.MockCorrespondenceClient;
+import no.kommune.bergen.soa.svarut.altinn.correspondence.CorrespondenceMessage;
 import no.kommune.bergen.soa.svarut.dao.ForsendelsesArkivTest;
 import no.kommune.bergen.soa.svarut.domain.Forsendelse;
 

@@ -14,9 +14,12 @@ import java.util.UUID;
 
 import no.kommune.bergen.soa.common.calendar.BusinessCalendar;
 import no.kommune.bergen.soa.common.exception.UserException;
+import no.kommune.bergen.soa.svarut.AltinnFacade;
+import no.kommune.bergen.soa.svarut.JuridiskEnhetFactory;
 import no.kommune.bergen.soa.svarut.domain.Fodselsnr;
 import no.kommune.bergen.soa.svarut.domain.Forsendelse;
 import no.kommune.bergen.soa.svarut.domain.JuridiskEnhet;
+import no.kommune.bergen.soa.svarut.domain.Orgnr;
 import no.kommune.bergen.soa.svarut.domain.PrintReceipt;
 import no.kommune.bergen.soa.svarut.domain.Printed;
 import no.kommune.bergen.soa.svarut.dto.ShipmentPolicy;
@@ -31,11 +34,13 @@ public class ForsendelsesArkiv {
 
 	FileStore fileStore;
 	JdbcTemplate jdbcTemplate;
+	AltinnFacade altinnFacade;
 	private int failedToPrintAlertWindowStartDay = 2, failedToPrintAlertWindowEndDay = 10;
 
-	public ForsendelsesArkiv(FileStore fileStore, JdbcTemplate jdbcTemplate) {
+	public ForsendelsesArkiv(FileStore fileStore, JdbcTemplate jdbcTemplate, AltinnFacade altinnFacade) {
 		this.fileStore = fileStore;
 		this.jdbcTemplate = jdbcTemplate;
+		this.altinnFacade = altinnFacade;
 	}
 
 	private void insert(Forsendelse f, String filename) {
@@ -241,6 +246,8 @@ public class ForsendelsesArkiv {
 
 	/**
 	 * Finner forsendelser som ligger klar til utsendelse for et sett shipmentpolicies.
+	 * Returnerer bare uleste forsendelser (lest -> STOPPET=dato).
+	 * Midlertidig vil listen returnere leste forsendelser for organisasjoner. De skal sendes til print uansett.
 	 * . Returnerer en liste av forsendelses-ider
 	 */
 	public List<String> readUnsent(ShipmentPolicy[] shipmentPolicies) {
@@ -259,14 +266,41 @@ public class ForsendelsesArkiv {
 			sql = sql.substring(0, sql.length() - 1) + ")";
 		}
 		List<?> queryResponse = jdbcTemplate.queryForList(sql);
-		return convertListOfIds(queryResponse);
+		List<String> allUnsent = convertListOfIds(queryResponse);
+		allUnsent.addAll(readAllReadUnsentOrgShipments(shipmentPolicies));
+		return allUnsent;
+	}
+
+	/**
+	 *  Finn alle Forsendelser som er registrert med Orgnr og satt til lest, men som ikke er utskrevet enda.
+	 *  Midlertidig skal elektronisk leste dokumenter til org sendes ut til print allikevel.
+	 */
+	private List<String> readAllReadUnsentOrgShipments(ShipmentPolicy[] shipmentPolicies) {
+		String sql = "SELECT ID, ORGNR FROM FORSENDELSESARKIV "
+				+ "WHERE ORGNR IS NOT NULL "
+				+ "AND UTSKREVET IS NULL "
+				+ "AND NORGEDOTNO IS NULL "
+				+ "AND ALTINN_SENDT IS NULL "
+				+ "AND EPOST_SENDT IS NULL "
+				+ "AND STOPPET IS NOT NULL "
+				+ "AND LEST IS NOT NULL "
+				+ "AND ( NESTE_FORSOK IS NULL OR NESTE_FORSOK < SYSDATE )";
+		if (shipmentPolicies != null && shipmentPolicies.length > 0) {
+			sql = sql + " AND FORSENDELSES_MATE IN ( ";
+			for (ShipmentPolicy sp : shipmentPolicies) {
+				sql = sql + "'" + sp.value() + "',";
+			}
+			sql = sql.substring(0, sql.length() - 1) + ")";
+		}
+		List<?> queryResponse = jdbcTemplate.queryForList(sql);
+		return convertListOfIdsFromOrgList(queryResponse);
 	}
 
 	private List<String> convertListOfIds(List<?> queryResponse) {
 		List<String> list = new ArrayList<String>();
 		for (Object map : queryResponse) {
 			try {
-				String id = (String) ((Map) map).get("ID");
+				String id = (String) ((Map<?, ?>) map).get("ID");
 				list.add(id);
 			} catch (RuntimeException e) {
 				logger.error("Response missing ID ", e);
@@ -274,6 +308,24 @@ public class ForsendelsesArkiv {
 		}
 		return list;
 	}
+
+	private List<String> convertListOfIdsFromOrgList(List<?> queryResponse) {
+		List<String> list = new ArrayList<String>();
+		for (Object map : queryResponse) {
+			try {
+				String id = (String) ((Map<?, ?>) map).get("ID");
+				int orgnr = (Integer) ((Map<?, ?>) map).get("ORGNR");
+				String orgnrStr = Integer.toString(orgnr);
+				// Check orgnr is valid
+				if(JuridiskEnhetFactory.create(orgnrStr) instanceof Orgnr)
+					list.add(id);
+			} catch (RuntimeException e) {
+				logger.error("Response missing ID ", e);
+			}
+		}
+		return list;
+	}
+
 
 	public void setSentAltinn(String id, int receiptId) {
 		logger.debug("setSentAltinn() id={}", id);
@@ -299,7 +351,8 @@ public class ForsendelsesArkiv {
 		jdbcTemplate.update(sql, printReceipt.getPrintId(), printReceipt.getPageCount(), id);
 	}
 
-	public void confirm(String id) { // Was read
+	//	Confirm forsendelse was read
+	public void confirm(String id) {
 		String sql = "UPDATE FORSENDELSESARKIV SET LEST=SYSDATE,STOPPET=SYSDATE WHERE LEST IS NULL AND ID=?";
 		logger.info("Forsendelse ID={}, was read", id);
 		jdbcTemplate.update(sql, new Object[]{id}, new int[]{java.sql.Types.VARCHAR});
@@ -311,9 +364,11 @@ public class ForsendelsesArkiv {
 	}
 
 	/**
-	 * Sjekk om angitt juridik enhet har anledning til å se dokumentet tilhørende angitt forsendelses-id
+	 * Sjekk om angitt juridisk enhet har anledning til å se dokumentet tilhørende angitt forsendelses-id
+	 * Gjøres kun ved å sjekke at forsendelse med gitt id stemmer overens med enten gitt fødselsnr eller orgnr
 	 */
 	public void authorize(String id, JuridiskEnhet juridiskEnhet) {
+
 		final String sqlFnr = "SELECT COUNT(*) FROM FORSENDELSESARKIV WHERE ID=? AND FODSELSNR=?";
 		final String sqlOrg = "SELECT COUNT(*) FROM FORSENDELSESARKIV WHERE ID=? AND ORGNR=?";
 		String sql = (juridiskEnhet instanceof Fodselsnr) ? sqlFnr : sqlOrg;
@@ -328,6 +383,51 @@ public class ForsendelsesArkiv {
 			throw new RuntimeException(msg, e);
 		}
 		if (1 > count) throw new AccessControlException(msg);
+	}
+
+	/**
+	 * Sjekk om angitt fødselsnr har lov til å se dokumentet tilhørende angitt forsendelses-id.
+	 * Sjekker mot Altinn-service og ser at bruker med angitt fødselsnr har tilgang til registrert orgnr på forsendelsen
+	 */
+	public void authorize(String id, String fodselsNr) {
+		final String sql = "SELECT ORGNR, FODSELSNR FROM FORSENDELSESARKIV WHERE ID=?";
+		String errMsg = String.format("Unable to authorize fødselsnr=%s for access to forsendelsesid=%s.", fodselsNr, id);
+		Object[] args = new Object[]{id};
+		int[] types = new int[]{java.sql.Types.VARCHAR};
+		Map<?, ?> forsendelseMap;
+		try {
+			forsendelseMap = jdbcTemplate.queryForMap(sql, args, types);
+		} catch (Exception e) {
+			throw new RuntimeException("JDBC query failed. " + errMsg, e);
+		}
+		if(forsendelseMap.isEmpty()) {
+			throw new RuntimeException("ID was not found. No record found in FORSENDELSESARKIV with ID:" + id);
+		}
+
+		// Fetch Map values
+		Object forsendelseFodselsNr = forsendelseMap.get("FODSELSNR");
+		Object forsendelseOrgNr = forsendelseMap.get("ORGNR");
+
+		// Authorize by orgnr
+		if(forsendelseOrgNr != null) {
+			String orgNr = forsendelseOrgNr.toString();
+			String orgErrMsg = String.format("Unable to authorize fødselsnr=%s to access forsendelsesid=%s with organisasjonsnr=%s", fodselsNr, id, orgNr);
+			if(!orgNr.isEmpty()) {
+				// Check by Altinn service
+				boolean authorized = altinnFacade.authorizeUserAgainstOrgNr(fodselsNr, orgNr);
+				if(!authorized)
+					throw new AccessControlException(String.format("Not authorized to access forsendelsesid=%s by Altinn service. Orgnr=%s not found with given fodselsNr=%s", id, orgNr, fodselsNr));
+			} else {
+				throw new AccessControlException(orgErrMsg);
+			}
+		} else if(forsendelseFodselsNr != null) { // Authorize by fodselsnr
+			if(!forsendelseFodselsNr.toString().equals(fodselsNr))
+				throw new AccessControlException(errMsg);
+		} else { // Unauthorized
+			throw new AccessControlException(errMsg);
+		}
+
+
 	}
 
 	public void remove(String id) {

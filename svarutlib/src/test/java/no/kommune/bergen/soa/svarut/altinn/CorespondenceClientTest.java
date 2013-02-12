@@ -1,10 +1,10 @@
-package no.kommune.bergen.soa.svarut.altin;
+package no.kommune.bergen.soa.svarut.altinn;
 
 import junit.framework.Assert;
 
-import no.kommune.bergen.soa.svarut.altin.CorrespondenceClient;
-import no.kommune.bergen.soa.svarut.altin.CorrespondenceMessage;
-import no.kommune.bergen.soa.svarut.altin.CorrespondenceSettings;
+import no.kommune.bergen.soa.svarut.altinn.correspondence.CorrespondenceClient;
+import no.kommune.bergen.soa.svarut.altinn.correspondence.CorrespondenceMessage;
+import no.kommune.bergen.soa.svarut.altinn.correspondence.CorrespondenceSettings;
 
 import org.junit.Before;
 import org.junit.Ignore;

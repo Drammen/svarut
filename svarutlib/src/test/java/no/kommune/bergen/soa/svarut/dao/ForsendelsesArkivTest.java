@@ -22,8 +22,11 @@ import junit.framework.Assert;
 import no.kommune.bergen.soa.common.calendar.BusinessCalendar;
 import no.kommune.bergen.soa.common.calendar.CalendarHelper;
 import no.kommune.bergen.soa.common.pdf.PdfGeneratorImpl;
+import no.kommune.bergen.soa.svarut.AltinnFacade;
 import no.kommune.bergen.soa.svarut.JdbcHelper;
 import no.kommune.bergen.soa.svarut.ServiceContext;
+import no.kommune.bergen.soa.svarut.altinn.correspondence.CorrespondenceClient;
+import no.kommune.bergen.soa.svarut.altinn.correspondence.CorrespondenceSettings;
 import no.kommune.bergen.soa.svarut.domain.Fodselsnr;
 import no.kommune.bergen.soa.svarut.domain.Forsendelse;
 import no.kommune.bergen.soa.svarut.domain.JuridiskEnhet;
@@ -72,7 +75,10 @@ public class ForsendelsesArkivTest {
 		JdbcHelper jdbcHelper = new JdbcHelper();
 		jdbcHelper.createTable( "FORSENDELSESARKIV" );
 		FileStore fileStore = new FileStore("target", new PdfGeneratorImpl("target"));
-		return new ForsendelsesArkiv( fileStore, jdbcHelper.getJdbcTemplate() );
+		CorrespondenceClient correspondenceClient = new CorrespondenceClient(new CorrespondenceSettings());
+		AltinnFacade altinnFacade = new AltinnFacade(null, correspondenceClient, null, null);
+
+		return new ForsendelsesArkiv( fileStore, jdbcHelper.getJdbcTemplate(), altinnFacade );
 	}
 
 	@Test
@@ -385,6 +391,31 @@ public class ForsendelsesArkivTest {
 		return f;
 	}
 
+	public static Forsendelse createForsendelse( int variant, String fnr, String orgnr, String id ) {
+		Forsendelse f = new Forsendelse();
+		f.setFnr( fnr );
+		f.setId(id);
+		f.setOrgnr( orgnr );
+		f.setNavn( navn + variant );
+		f.setAdresse1( adresse1 + variant );
+		f.setAdresse2( adresse2 + variant );
+		f.setAdresse3( adresse3 + variant );
+		f.setPostnr( postnr + variant );
+		f.setPoststed( poststed + variant );
+		f.setLand( land + variant );
+		f.setAvsenderNavn( avsender_navn + variant );
+		f.setAvsenderAdresse1( avsender_adresse1 + variant );
+		f.setAvsenderAdresse2( avsender_adresse2 + variant );
+		f.setAvsenderAdresse3( avsender_adresse3 + variant );
+		f.setAvsenderPostnr( avsender_postnr + variant );
+		f.setAvsenderPoststed( avsender_poststed + variant );
+		f.setTittel( tittel + variant );
+		f.setMeldingsTekst( melding + variant );
+		f.setAppid( appid + variant );
+		f.setShipmentPolicy( ALTINN_OG_APOST.value() );
+		return f;
+	}
+
 	public static void validateForsendelse( Forsendelse f, int variant ) {
 		validateForsendelse( f, variant, fnr, orgnr );
 	}
@@ -431,5 +462,156 @@ public class ForsendelsesArkivTest {
 
 		List<String> forsendelser2 = forsendelsesArkiv.readUnsent( new ShipmentPolicy[] { ShipmentPolicy.fromValue( f.getShipmentPolicy() ) } );
 		assertTrue( forsendelser2.contains( f2.getId() ) );
+	}
+
+	@Test
+	public void testReadUnsentReturnererForsendelseSomIkkeErSendt() {
+		Forsendelse f = createForsendelse(1, "12345678910", "123456789");
+		String forsendelseId = forsendelsesArkiv.save( f, ForsendelsesArkivTest.class.getClassLoader().getResourceAsStream( "test.pdf" ) );
+
+		ShipmentPolicy[] shipmentPolicies = {ALTINN_OG_APOST};
+
+		List<String> unsent = forsendelsesArkiv.readUnsent(shipmentPolicies);
+		boolean funnet = false;
+		for(String id : unsent) {
+			if(id.equals(forsendelseId))
+				funnet = true;
+		}
+		assertTrue("Forsendelsen ikke funnet.", funnet);
+	}
+
+	@Test
+	public void testReadUnsentReturnererForsendelserTilOrgSomErLest() {
+		Forsendelse f1 = createForsendelse(1, "12345678910", null);
+		Forsendelse f2 = createForsendelse(1, "12345678910", "123456789");
+		String forsendelseId1 = forsendelsesArkiv.save( f1, ForsendelsesArkivTest.class.getClassLoader().getResourceAsStream( "test.pdf" ) );
+		String forsendelseId2 = forsendelsesArkiv.save( f2, ForsendelsesArkivTest.class.getClassLoader().getResourceAsStream( "test.pdf" ) );
+
+		// Sett som lest
+		forsendelsesArkiv.confirm(forsendelseId1);
+		forsendelsesArkiv.confirm(forsendelseId2);
+
+		ShipmentPolicy[] shipmentPolicies = {ALTINN_OG_APOST};
+
+		List<String> unsent = forsendelsesArkiv.readUnsent(shipmentPolicies);
+		boolean funnet1 = false;
+		boolean funnet2 = false;
+		for(String id : unsent) {
+			if(id.equals(forsendelseId1)) {
+				funnet1 = true;
+			} else if(id.equals(forsendelseId2)) {
+				funnet2 = true;
+			}
+		}
+		assertFalse("Forsendelsen uten orgnr funnet. Skal ikke være der.", funnet1);
+		assertTrue("Forsendelsen med orgnr ikke funnet.", funnet2);
+	}
+
+	@Test
+	public void testReadUnsentReturnererIkkeForsendelserTilOrgEtterLestOgPrint() {
+		Forsendelse f1 = createForsendelse(1, "12345678910", null);
+		Forsendelse f2 = createForsendelse(1, "12345678910", "123456789");
+		String forsendelseId1 = forsendelsesArkiv.save( f1, ForsendelsesArkivTest.class.getClassLoader().getResourceAsStream( "test.pdf" ) );
+		String forsendelseId2 = forsendelsesArkiv.save( f2, ForsendelsesArkivTest.class.getClassLoader().getResourceAsStream( "test.pdf" ) );
+
+		// Sett som lest
+		forsendelsesArkiv.confirm(forsendelseId1);
+		forsendelsesArkiv.confirm(forsendelseId2);
+
+		ShipmentPolicy[] shipmentPolicies = {ALTINN_OG_APOST};
+
+		List<String> unsent = forsendelsesArkiv.readUnsent(shipmentPolicies);
+		boolean funnet1 = false;
+		boolean funnet2 = false;
+		for(String id : unsent) {
+			if(id.equals(forsendelseId1)) {
+				funnet1 = true;
+			} else if(id.equals(forsendelseId2)) {
+				funnet2 = true;
+			}
+		}
+		assertFalse("Forsendelsen uten orgnr funnet. Skal ikke være der.", funnet1);
+		assertTrue("Forsendelsen med orgnr ikke funnet.", funnet2);
+
+		// Sjekk at de ikke blir funnet etter print
+		PrintReceipt printReceipt1 = newPrintReceipt();
+		forsendelsesArkiv.setPrinted( forsendelseId1, printReceipt1 );
+		PrintReceipt printReceipt2 = newPrintReceipt();
+		forsendelsesArkiv.setPrinted( forsendelseId2, printReceipt2 );
+
+		unsent = forsendelsesArkiv.readUnsent(shipmentPolicies);
+		funnet1 = false;
+		funnet2 = false;
+		for(String id : unsent) {
+			if(id.equals(forsendelseId1)) {
+				funnet1 = true;
+			} else if(id.equals(forsendelseId2)) {
+				funnet2 = true;
+			}
+		}
+		assertFalse("Forsendelsen uten orgnr funnet. Skal ikke være der. Heller ikke etter print.", funnet1);
+		assertFalse("Forsendelsen med orgnr funnet. Skal ikke være der etter print", funnet2);
+	}
+
+	@Test
+	public void testReadUnsentReturnererForsendelserTilOrgEtterLestOgSattUlest() {
+		Forsendelse f1 = createForsendelse(1, "12345678910", null);
+		Forsendelse f2 = createForsendelse(1, "12345678910", "123456789");
+		String forsendelseId1 = forsendelsesArkiv.save( f1, ForsendelsesArkivTest.class.getClassLoader().getResourceAsStream( "test.pdf" ) );
+		String forsendelseId2 = forsendelsesArkiv.save( f2, ForsendelsesArkivTest.class.getClassLoader().getResourceAsStream( "test.pdf" ) );
+
+		// Sett som lest
+		forsendelsesArkiv.confirm(forsendelseId1);
+		forsendelsesArkiv.confirm(forsendelseId2);
+
+		ShipmentPolicy[] shipmentPolicies = {ALTINN_OG_APOST};
+
+		List<String> unsent = forsendelsesArkiv.readUnsent(shipmentPolicies);
+		boolean funnet1 = false;
+		boolean funnet2 = false;
+		for(String id : unsent) {
+			if(id.equals(forsendelseId1)) {
+				funnet1 = true;
+			} else if(id.equals(forsendelseId2)) {
+				funnet2 = true;
+			}
+		}
+		assertFalse("Forsendelsen uten orgnr funnet. Skal ikke være der.", funnet1);
+		assertTrue("Forsendelsen med orgnr ikke funnet.", funnet2);
+
+		// Sjekk at de ikke blir funnet etter print
+		PrintReceipt printReceipt1 = newPrintReceipt();
+		forsendelsesArkiv.setPrinted( forsendelseId1, printReceipt1 );
+		PrintReceipt printReceipt2 = newPrintReceipt();
+		forsendelsesArkiv.setPrinted( forsendelseId2, printReceipt2 );
+
+		unsent = forsendelsesArkiv.readUnsent(shipmentPolicies);
+		funnet1 = false;
+		funnet2 = false;
+		for(String id : unsent) {
+			if(id.equals(forsendelseId1)) {
+				funnet1 = true;
+			} else if(id.equals(forsendelseId2)) {
+				funnet2 = true;
+			}
+		}
+		assertFalse("Forsendelsen uten orgnr funnet. Skal ikke være der. Heller ikke etter print.", funnet1);
+		assertFalse("Forsendelsen med orgnr funnet. Skal ikke være der etter print", funnet2);
+
+		forsendelsesArkiv.setUnread(forsendelseId1);
+		forsendelsesArkiv.setUnread(forsendelseId2);
+
+		unsent = forsendelsesArkiv.readUnsent(shipmentPolicies);
+		funnet1 = false;
+		funnet2 = false;
+		for(String id : unsent) {
+			if(id.equals(forsendelseId1)) {
+				funnet1 = true;
+			} else if(id.equals(forsendelseId2)) {
+				funnet2 = true;
+			}
+		}
+		assertFalse("Forsendelsen uten orgnr funnet etter satt til unread og er printet. Skal ikke finnes og kunne sendes til print 2 ganger. ", funnet1);
+		assertFalse("Forsendelsen med orgnr funnet etter satt til unread og er printet. Skal ikke finnes og kunne sendes til print 2 ganger.", funnet2);
 	}
 }

@@ -68,7 +68,7 @@
 		<property name="frontPageTemplate" value="${frontPageTemplate}" />
 		<property name="failedToPrintAlertWindowStartDay" value="${failedToPrint.AlertWindow.StartDay}" />
 		<property name="failedToPrintAlertWindowEndDay" value="${failedToPrint.AlertWindow.EndDay}" />
-		<property name="printWindowAgeIndays" value="30" />
+		<property name="printWindowAgeInDays" value="30" />
         <property name="dispatchWindow" ref="printDispatchWindow"/>
 	</bean>
 

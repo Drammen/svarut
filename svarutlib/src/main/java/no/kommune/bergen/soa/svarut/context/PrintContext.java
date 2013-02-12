@@ -9,13 +9,13 @@ import no.kommune.bergen.soa.svarut.util.DispatchWindow;
 public class PrintContext {
 	private PrintServiceProvider printServiceProvider;
 	private String frontPageTemplate = "";
-	private int failedToPrintAlertWindowStartDay = 4, failedToPrintAlertWindowEndDay = 14, printWindowAgeIndays = 30;
+	private int failedToPrintAlertWindowStartDay = 4, failedToPrintAlertWindowEndDay = 14, printWindowAgeInDays = 30;
     private DispatchWindow dispatchWindow;
 
 	@Override
 	public String toString() {
-		return String.format( "{\n  printServiceProvider=%s\n frontPageTemplate=%s\n failedToPrintAlertWindowStartDay=%s\n failedToPrintAlertWindowEndDay=%s\n printWindowAgeIndays=%s\n \n}", printServiceProvider, frontPageTemplate,
-				failedToPrintAlertWindowStartDay, failedToPrintAlertWindowEndDay, printWindowAgeIndays );
+		return String.format( "{\n  printServiceProvider=%s\n frontPageTemplate=%s\n failedToPrintAlertWindowStartDay=%s\n failedToPrintAlertWindowEndDay=%s\n printWindowAgeInDays=%s\n \n}", printServiceProvider, frontPageTemplate,
+				failedToPrintAlertWindowStartDay, failedToPrintAlertWindowEndDay, printWindowAgeInDays);
 	}
 
 	public void verify() {
@@ -56,13 +56,13 @@ public class PrintContext {
 		this.failedToPrintAlertWindowEndDay = failedToPrintAlertWindowEndDay;
 	}
 
-	public int getPrintWindowAgeIndays() {
-		return printWindowAgeIndays;
+	public int getPrintWindowAgeInDays() {
+		return printWindowAgeInDays;
 	}
 
 	/** When to give up trying to submit a recurring failing Forsendelse to PrintServiceProvider -- used as a circuit breaker. */
-	public void setPrintWindowAgeIndays( int printWindowAgeIndays ) {
-		this.printWindowAgeIndays = printWindowAgeIndays;
+	public void setPrintWindowAgeInDays(int printWindowAgeInDays) {
+		this.printWindowAgeInDays = printWindowAgeInDays;
 	}
 
     public DispatchWindow getDispatchWindow() {

@@ -1,4 +1,4 @@
-package no.kommune.bergen.soa.svarut.altin;
+package no.kommune.bergen.soa.svarut.altinn.correspondence;
 
 /** Melding som sendes til mottakerens Altinn postkasse */
 public class CorrespondenceMessage {

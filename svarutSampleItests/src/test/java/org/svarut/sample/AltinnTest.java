@@ -1,15 +1,21 @@
 package org.svarut.sample;
 
-import no.kommune.bergen.svarut.v1.*;
-import org.junit.Test;
-import org.svarut.sample.utils.ForsendelseUtil;
-import org.svarut.sample.utils.SvarUtServiceCreator;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import no.kommune.bergen.svarut.v1.Adresse123;
+import no.kommune.bergen.svarut.v1.Forsendelse;
+import no.kommune.bergen.svarut.v1.ForsendelseStatus;
+import no.kommune.bergen.svarut.v1.ForsendelsesRq;
+import no.kommune.bergen.svarut.v1.ShipmentPolicy;
+import no.kommune.bergen.svarut.v1.SvarUtService;
+
+import org.junit.Test;
+import org.svarut.sample.utils.ForsendelseUtil;
+import org.svarut.sample.utils.SvarUtServiceCreator;
 
 public class AltinnTest {
 

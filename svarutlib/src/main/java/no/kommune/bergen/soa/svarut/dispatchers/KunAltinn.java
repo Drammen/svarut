@@ -6,13 +6,16 @@ import no.kommune.bergen.soa.svarut.DispatchPolicy;
 import no.kommune.bergen.soa.svarut.ServiceDelegate;
 import no.kommune.bergen.soa.svarut.dao.ForsendelsesArkiv;
 import no.kommune.bergen.soa.svarut.domain.Forsendelse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.apache.log4j.Logger;
+public class KunAltinn extends AbstractDispatcher {
 
-public class KunAltinn extends AbstractDispatcher  {
-	final Logger logger = Logger.getLogger( KunAltinn.class );
-	final AltinnFacade altinnFacade;
-	private final long leadTimeBeforeStop = 1000 * 60 * 60 * 24 * 5;
+	private static final Logger log = LoggerFactory.getLogger(KunAltinn.class);
+
+	private static final long LEAD_TIME_BEFORE_STOP = 1000 * 60 * 60 * 24 * 5;
+
+	private final AltinnFacade altinnFacade;
 
 	public KunAltinn(ServiceDelegate serviceDelegate, ForsendelsesArkiv forsendelsesArkiv, AltinnFacade altinnFacade, DispatchPolicy dispatchPolicy) {
 		super(serviceDelegate, dispatchPolicy, forsendelsesArkiv);
@@ -20,19 +23,18 @@ public class KunAltinn extends AbstractDispatcher  {
 		this.altinnFacade = altinnFacade;
 	}
 
-	public void send( Forsendelse f ) {
-		int receiptId = altinnFacade.send( f );
-		forsendelsesArkiv.setSentAltinn( f.getId(), receiptId );
-		logger.info( String.format( "Successfully sent to Altinn. Id=%s, Org=%s, Navn=%s", f.getId(), f.getOrgnr(), f.getNavn() ) );
+	public void send(Forsendelse f) {
+		int receiptId = altinnFacade.send(f);
+		forsendelsesArkiv.setSentAltinn(f.getId(), receiptId);
+		log.info(String.format("Successfully sent to Altinn. Id=%s, Org=%s, Navn=%s", f.getId(), f.getOrgnr(), f.getNavn()));
 	}
 
 	@Override
-	public void handleUnread( Forsendelse f ) {
+	public void handleUnread(Forsendelse f) {
 		long sent = f.getSendt().getTime();
 		long now = System.currentTimeMillis();
-		if (sent + this.leadTimeBeforeStop < now) {
-			forsendelsesArkiv.stop( f.getId() );
-		}
+		if (sent + LEAD_TIME_BEFORE_STOP < now)
+			forsendelsesArkiv.stop(f.getId());
 	}
 
 	@Override
@@ -41,5 +43,4 @@ public class KunAltinn extends AbstractDispatcher  {
 			throw new UserException(String.format("Required fields are: orgnr/fodselsnr, tittel. Received: orgnr=%s, fodselsnr=%s, tittel=%s.", f.getOrgnr(), f.getTittel(), f.getFnr()));
 		}
 	}
-
 }

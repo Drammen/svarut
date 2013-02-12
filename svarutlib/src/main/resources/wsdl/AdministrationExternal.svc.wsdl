@@ -1,0 +1,580 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="AuthorizationAdministrationExternalSF"
+	targetNamespace="http://www.altinn.no/services/Authorization/Administration/2010/10"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex"
+	xmlns:wsa10="http://www.w3.org/2005/08/addressing"
+	xmlns:tns="http://www.altinn.no/services/Authorization/Administration/2010/10"
+	xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+	xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+	xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy"
+	xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract"
+	xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing"
+	xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/">
+	<wsp:Policy wsu:Id="CustomBinding_IAuthorizationAdministrationExternal_policy">
+		<wsp:ExactlyOne>
+			<wsp:All>
+				<sp:TransportBinding
+					xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:TransportToken>
+							<wsp:Policy>
+								<sp:HttpToken />
+							</wsp:Policy>
+						</sp:TransportToken>
+						<sp:AlgorithmSuite>
+							<wsp:Policy>
+								<sp:Basic256 />
+							</wsp:Policy>
+						</sp:AlgorithmSuite>
+						<sp:Layout>
+							<wsp:Policy>
+								<sp:Strict />
+							</wsp:Policy>
+						</sp:Layout>
+						<sp:IncludeTimestamp />
+					</wsp:Policy>
+				</sp:TransportBinding>
+				<sp:SignedSupportingTokens
+					xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:UsernameToken
+							sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient">
+							<wsp:Policy>
+								<sp:WssUsernameToken10 />
+							</wsp:Policy>
+						</sp:UsernameToken>
+					</wsp:Policy>
+				</sp:SignedSupportingTokens>
+				<sp:Wss11 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy />
+				</sp:Wss11>
+				<sp:Trust10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:MustSupportIssuedTokens />
+						<sp:RequireClientEntropy />
+						<sp:RequireServerEntropy />
+					</wsp:Policy>
+				</sp:Trust10>
+				<wsaw:UsingAddressing />
+			</wsp:All>
+		</wsp:ExactlyOne>
+	</wsp:Policy>
+	<wsdl:types>
+		<xsd:schema elementFormDefault="qualified"
+			targetNamespace="http://www.altinn.no/services/2009/10">
+			<xsd:element name="Test">
+				<xsd:complexType>
+					<xsd:sequence />
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="TestResponse">
+				<xsd:complexType>
+					<xsd:sequence />
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:schema>
+		<xsd:schema elementFormDefault="qualified"
+			targetNamespace="http://www.altinn.no/services/common/fault/2009/10"
+			xmlns:tns="http://www.altinn.no/services/common/fault/2009/10">
+			<xsd:complexType name="AltinnFault">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" name="AltinnErrorMessage"
+						nillable="true" type="xsd:string" />
+					<xsd:element minOccurs="0" name="AltinnExtendedErrorMessage"
+						nillable="true" type="xsd:string" />
+					<xsd:element minOccurs="0" name="AltinnLocalizedErrorMessage"
+						nillable="true" type="xsd:string" />
+					<xsd:element minOccurs="0" name="ErrorGuid" nillable="true"
+						type="xsd:string" />
+					<xsd:element minOccurs="0" name="ErrorID" type="xsd:int" />
+					<xsd:element minOccurs="0" name="UserGuid" nillable="true"
+						type="xsd:string" />
+					<xsd:element minOccurs="0" name="UserId" nillable="true"
+						type="xsd:string" />
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:element name="AltinnFault" nillable="true"
+				type="tns:AltinnFault" />
+		</xsd:schema>
+		<xs:schema attributeFormDefault="qualified"
+			elementFormDefault="qualified"
+			targetNamespace="http://schemas.microsoft.com/2003/10/Serialization/"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://schemas.microsoft.com/2003/10/Serialization/">
+			<xs:element name="anyType" nillable="true" type="xs:anyType" />
+			<xs:element name="anyURI" nillable="true" type="xs:anyURI" />
+			<xs:element name="base64Binary" nillable="true" type="xs:base64Binary" />
+			<xs:element name="boolean" nillable="true" type="xs:boolean" />
+			<xs:element name="byte" nillable="true" type="xs:byte" />
+			<xs:element name="dateTime" nillable="true" type="xs:dateTime" />
+			<xs:element name="decimal" nillable="true" type="xs:decimal" />
+			<xs:element name="double" nillable="true" type="xs:double" />
+			<xs:element name="float" nillable="true" type="xs:float" />
+			<xs:element name="int" nillable="true" type="xs:int" />
+			<xs:element name="long" nillable="true" type="xs:long" />
+			<xs:element name="QName" nillable="true" type="xs:QName" />
+			<xs:element name="short" nillable="true" type="xs:short" />
+			<xs:element name="string" nillable="true" type="xs:string" />
+			<xs:element name="unsignedByte" nillable="true" type="xs:unsignedByte" />
+			<xs:element name="unsignedInt" nillable="true" type="xs:unsignedInt" />
+			<xs:element name="unsignedLong" nillable="true" type="xs:unsignedLong" />
+			<xs:element name="unsignedShort" nillable="true"
+				type="xs:unsignedShort" />
+			<xs:element name="char" nillable="true" type="tns:char" />
+			<xs:simpleType name="char">
+				<xs:restriction base="xs:int" />
+			</xs:simpleType>
+			<xs:element name="duration" nillable="true" type="tns:duration" />
+			<xs:simpleType name="duration">
+				<xs:restriction base="xs:duration">
+					<xs:pattern value="\-?P(\d*D)?(T(\d*H)?(\d*M)?(\d*(\.\d*)?S)?)?" />
+					<xs:minInclusive value="-P10675199DT2H48M5.4775808S" />
+					<xs:maxInclusive value="P10675199DT2H48M5.4775807S" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:element name="guid" nillable="true" type="tns:guid" />
+			<xs:simpleType name="guid">
+				<xs:restriction base="xs:string">
+					<xs:pattern
+						value="[\da-fA-F]{8}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{12}" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:attribute name="FactoryType" type="xs:QName" />
+			<xs:attribute name="Id" type="xs:ID" />
+			<xs:attribute name="Ref" type="xs:IDREF" />
+		</xs:schema>
+		<xsd:schema elementFormDefault="qualified"
+			targetNamespace="http://www.altinn.no/services/Authorization/Administration/2010/10">
+			<xsd:import
+				namespace="http://schemas.altinn.no/services/Authorization/Administration/2009/10" />
+			<xsd:import
+				namespace="http://schemas.altinn.no/services/Authorization/Administration/2012/11" />
+			<xsd:import namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+			<xsd:element name="ImportAuthorizationPolicy">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="1" name="authorizationRulesXml"
+							type="xsd:string" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="ImportAuthorizationPolicyResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0"
+							name="ImportAuthorizationPolicyResult" type="xsd:boolean" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetRoles">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" name="roleSearchBE"
+							nillable="true" type="q1:ExternalRoleSearchBE"
+							xmlns:q1="http://schemas.altinn.no/services/Authorization/Administration/2009/10" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetRolesResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" name="GetRolesResult"
+							nillable="true" type="q2:ExternalRoleBEList"
+							xmlns:q2="http://schemas.altinn.no/services/Authorization/Administration/2009/10" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetReportees">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="1" name="userSSN" type="xsd:string" />
+						<xsd:element minOccurs="0" name="retrieveInActiveReportee"
+							type="xsd:boolean" />
+						<xsd:element minOccurs="0" name="retrieveSubEnitiy"
+							type="xsd:boolean" />
+						<xsd:element minOccurs="0" name="maximumReporteeCount"
+							nillable="true" type="xsd:int" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetReporteesResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" name="GetReporteesResult"
+							nillable="true" type="q3:ExternalReporteeBEList"
+							xmlns:q3="http://schemas.altinn.no/services/Authorization/Administration/2012/11" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetReporteeByTempKey">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="1" name="tempKey" type="q4:guid"
+							xmlns:q4="http://schemas.microsoft.com/2003/10/Serialization/" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetReporteeByTempKeyResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element minOccurs="0" name="GetReporteeByTempKeyResult"
+							nillable="true" type="q5:ExternalReporteeBE"
+							xmlns:q5="http://schemas.altinn.no/services/Authorization/Administration/2012/11" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:schema>
+		<xsd:schema elementFormDefault="qualified"
+			targetNamespace="http://schemas.altinn.no/services/Authorization/Administration/2009/10"
+			xmlns:tns="http://schemas.altinn.no/services/Authorization/Administration/2009/10">
+			<xsd:complexType name="ExternalRoleSearchBE">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" name="CoveredByParty"
+						nillable="true" type="xsd:string" />
+					<xsd:element minOccurs="0" name="CoveredByUser"
+						nillable="true" type="xsd:string" />
+					<xsd:element minOccurs="0" name="LanguageID" type="xsd:int" />
+					<xsd:element minOccurs="0" name="OfferedByParty"
+						nillable="true" type="xsd:string" />
+					<xsd:element minOccurs="0" name="RoleCodeFilter"
+						nillable="true" type="xsd:string" />
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:element name="ExternalRoleSearchBE" nillable="true"
+				type="tns:ExternalRoleSearchBE" />
+			<xsd:complexType name="ExternalRoleBEList">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="ExternalRoleBE"
+						nillable="true" type="tns:ExternalRoleBE" />
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:element name="ExternalRoleBEList" nillable="true"
+				type="tns:ExternalRoleBEList" />
+			<xsd:complexType name="ExternalRoleBE">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" name="CoveredBy" nillable="true"
+						type="xsd:string" />
+					<xsd:element minOccurs="0" name="DelegatedBy" nillable="true"
+						type="xsd:string" />
+					<xsd:element minOccurs="0" name="OfferedBy" nillable="true"
+						type="xsd:string" />
+					<xsd:element minOccurs="0" name="RoleCode" nillable="true"
+						type="xsd:string" />
+					<xsd:element minOccurs="0" name="RoleName" nillable="true"
+						type="xsd:string" />
+					<xsd:element minOccurs="0" name="RoleTypeSource"
+						nillable="true" type="xsd:string" />
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:element name="ExternalRoleBE" nillable="true"
+				type="tns:ExternalRoleBE" />
+		</xsd:schema>
+		<xsd:schema elementFormDefault="qualified"
+			targetNamespace="http://schemas.altinn.no/services/Authorization/Administration/2012/11"
+			xmlns:tns="http://schemas.altinn.no/services/Authorization/Administration/2012/11">
+			<xsd:import namespace="http://schemas.altinn.no/services/Register/2009/10" />
+			<xsd:complexType name="ExternalReporteeBEList">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="unbounded"
+						name="ExternalReporteeBE" nillable="true" type="tns:ExternalReporteeBE" />
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:element name="ExternalReporteeBEList" nillable="true"
+				type="tns:ExternalReporteeBEList" />
+			<xsd:complexType name="ExternalReporteeBE">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" name="Name" nillable="true"
+						type="xsd:string" />
+					<xsd:element minOccurs="0" name="OrganizationNumber"
+						nillable="true" type="xsd:string" />
+					<xsd:element minOccurs="0" name="ReporteeType" type="q6:PartyType"
+						xmlns:q6="http://schemas.altinn.no/services/Register/2009/10" />
+					<xsd:element minOccurs="0" name="SSN" nillable="true"
+						type="xsd:string" />
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:element name="ExternalReporteeBE" nillable="true"
+				type="tns:ExternalReporteeBE" />
+		</xsd:schema>
+		<xsd:schema elementFormDefault="qualified"
+			targetNamespace="http://schemas.altinn.no/services/Register/2009/10"
+			xmlns:tns="http://schemas.altinn.no/services/Register/2009/10">
+			<xsd:simpleType name="PartyType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="None" />
+					<xsd:enumeration value="Person" />
+					<xsd:enumeration value="Organization" />
+					<xsd:enumeration value="SelfIdentified" />
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:element name="PartyType" nillable="true" type="tns:PartyType" />
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="IAuthorizationAdministrationExternal_Test_InputMessage">
+		<wsdl:part name="parameters" element="q7:Test"
+			xmlns:q7="http://www.altinn.no/services/2009/10" />
+	</wsdl:message>
+	<wsdl:message name="IAuthorizationAdministrationExternal_Test_OutputMessage">
+		<wsdl:part name="parameters" element="q8:TestResponse"
+			xmlns:q8="http://www.altinn.no/services/2009/10" />
+	</wsdl:message>
+	<wsdl:message
+		name="IAuthorizationAdministrationExternal_Test_AltinnFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q9:AltinnFault"
+			xmlns:q9="http://www.altinn.no/services/common/fault/2009/10" />
+	</wsdl:message>
+	<wsdl:message
+		name="IAuthorizationAdministrationExternal_ImportAuthorizationPolicy_InputMessage">
+		<wsdl:part name="parameters" element="tns:ImportAuthorizationPolicy" />
+	</wsdl:message>
+	<wsdl:message
+		name="IAuthorizationAdministrationExternal_ImportAuthorizationPolicy_OutputMessage">
+		<wsdl:part name="parameters" element="tns:ImportAuthorizationPolicyResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="IAuthorizationAdministrationExternal_ImportAuthorizationPolicy_AltinnFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q10:AltinnFault"
+			xmlns:q10="http://www.altinn.no/services/common/fault/2009/10" />
+	</wsdl:message>
+	<wsdl:message
+		name="IAuthorizationAdministrationExternal_GetRoles_InputMessage">
+		<wsdl:part name="parameters" element="tns:GetRoles" />
+	</wsdl:message>
+	<wsdl:message
+		name="IAuthorizationAdministrationExternal_GetRoles_OutputMessage">
+		<wsdl:part name="parameters" element="tns:GetRolesResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="IAuthorizationAdministrationExternal_GetRoles_AltinnFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q11:AltinnFault"
+			xmlns:q11="http://www.altinn.no/services/common/fault/2009/10" />
+	</wsdl:message>
+	<wsdl:message
+		name="IAuthorizationAdministrationExternal_GetReportees_InputMessage">
+		<wsdl:part name="parameters" element="tns:GetReportees" />
+	</wsdl:message>
+	<wsdl:message
+		name="IAuthorizationAdministrationExternal_GetReportees_OutputMessage">
+		<wsdl:part name="parameters" element="tns:GetReporteesResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="IAuthorizationAdministrationExternal_GetReportees_AltinnFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q12:AltinnFault"
+			xmlns:q12="http://www.altinn.no/services/common/fault/2009/10" />
+	</wsdl:message>
+	<wsdl:message
+		name="IAuthorizationAdministrationExternal_GetReporteeByTempKey_InputMessage">
+		<wsdl:part name="parameters" element="tns:GetReporteeByTempKey" />
+	</wsdl:message>
+	<wsdl:message
+		name="IAuthorizationAdministrationExternal_GetReporteeByTempKey_OutputMessage">
+		<wsdl:part name="parameters" element="tns:GetReporteeByTempKeyResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="IAuthorizationAdministrationExternal_GetReporteeByTempKey_AltinnFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q13:AltinnFault"
+			xmlns:q13="http://www.altinn.no/services/common/fault/2009/10" />
+	</wsdl:message>
+	<wsdl:portType name="IAuthorizationAdministrationExternal">
+		<wsdl:documentation>&lt;summary&gt;
+			Service contract for the Authorization Administration Point service external
+			services
+			&lt;/summary&gt;</wsdl:documentation>
+		<wsdl:operation name="Test">
+			<wsdl:input
+				wsaw:Action="http://www.altinn.no/services/2009/10/IAltinnContractBase/Test"
+				message="tns:IAuthorizationAdministrationExternal_Test_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://www.altinn.no/services/2009/10/IAltinnContractBase/TestResponse"
+				message="tns:IAuthorizationAdministrationExternal_Test_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://www.altinn.no/services/2009/10/IAltinnContractBase/TestAltinnFaultFault"
+				name="AltinnFaultFault"
+				message="tns:IAuthorizationAdministrationExternal_Test_AltinnFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="ImportAuthorizationPolicy">
+			<wsdl:documentation>&lt;summary&gt;
+				This operation insert/update all the Migrated Authorization rules from
+				TUL.
+				&lt;/summary&gt;
+				&lt;param name="authorizationRulesXml"&gt;Authorization Rules Xml content-
+				mandatory parameter&lt;/param&gt;
+				&lt;returns&gt;Status for the rules import : Success / Fail- mandatory
+				parameter&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input
+				wsaw:Action="http://www.altinn.no/services/Authorization/Administration/2010/10/IAuthorizationAdministrationExternal/ImportAuthorizationPolicy"
+				message="tns:IAuthorizationAdministrationExternal_ImportAuthorizationPolicy_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://www.altinn.no/services/Authorization/Administration/2010/10/IAuthorizationAdministrationExternal/ImportAuthorizationPolicyResponse"
+				message="tns:IAuthorizationAdministrationExternal_ImportAuthorizationPolicy_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://www.altinn.no/services/Authorization/Administration/2010/10/IAuthorizationAdministrationExternal/ImportAuthorizationPolicyAltinnFaultFault"
+				name="AltinnFaultFault"
+				message="tns:IAuthorizationAdministrationExternal_ImportAuthorizationPolicy_AltinnFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="GetRoles">
+			<wsdl:documentation>&lt;summary&gt;
+				This method retrieve roles for a current reportee Id for sepecific user.
+				&lt;/summary&gt;
+				&lt;param name="roleSearchBE"&gt;contains role Information&lt;/param&gt;
+				&lt;returns&gt;RoleBEList&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input
+				wsaw:Action="http://www.altinn.no/services/Authorization/Administration/2010/10/IAuthorizationAdministrationExternal/GetRoles"
+				message="tns:IAuthorizationAdministrationExternal_GetRoles_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://www.altinn.no/services/Authorization/Administration/2010/10/IAuthorizationAdministrationExternal/GetRolesResponse"
+				message="tns:IAuthorizationAdministrationExternal_GetRoles_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://www.altinn.no/services/Authorization/Administration/2010/10/IAuthorizationAdministrationExternal/GetRolesAltinnFaultFault"
+				name="AltinnFaultFault"
+				message="tns:IAuthorizationAdministrationExternal_GetRoles_AltinnFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="GetReportees">
+			<wsdl:documentation>&lt;summary&gt;
+				This method retrieves list of reportee for the external system.
+				&lt;/summary&gt;
+				&lt;param name="userSSN"&gt;
+				Input Parameter - UserSSN is the end user's social security number of the
+				Reportee for which ExternalReporteeBEList will be populated
+				SSN number should be a number consists of 11 digits - mandatory
+				paremeter.
+				&lt;/param&gt;
+				&lt;param name="retrieveInActiveReportee"&gt;
+				RetrieveInActiveReportee flag is required to set as true to include Inactive reportees.
+				This is an optional paremeter.
+				&lt;/param&gt;
+				&lt;param name="retrieveSubEnitiy"&gt;
+				RetrieveSubEnitiy flag is required to set as true to display the Sub Entity or else
+				the Sub Entity will not be displayed.
+				This is an optional paremeter.
+				&lt;/param&gt;
+				&lt;param name="maximumReporteeCount"&gt;
+				Maximum number of parties which will be retrieved from this operation.
+				This is an optional paremeter.
+				&lt;/param&gt;
+				&lt;returns&gt;Returns ExternalReporteeBEList.&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input
+				wsaw:Action="http://www.altinn.no/services/Authorization/Administration/2010/10/IAuthorizationAdministrationExternal/GetReportees"
+				message="tns:IAuthorizationAdministrationExternal_GetReportees_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://www.altinn.no/services/Authorization/Administration/2010/10/IAuthorizationAdministrationExternal/GetReporteesResponse"
+				message="tns:IAuthorizationAdministrationExternal_GetReportees_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://www.altinn.no/services/Authorization/Administration/2010/10/IAuthorizationAdministrationExternal/GetReporteesAltinnFaultFault"
+				name="AltinnFaultFault"
+				message="tns:IAuthorizationAdministrationExternal_GetReportees_AltinnFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="GetReporteeByTempKey">
+			<wsdl:documentation>&lt;summary&gt;
+				GetReporteeByTempKey method is a part of link service. This operation would be called
+				from external sites to
+				fetch the ExternalReporteeBE details for the given input parameter
+				temporary key.
+				&lt;/summary&gt;
+				&lt;param name="tempKey"&gt;
+				Temporary key is used to retrieve reportee details for single time.
+				After retrieving the reportee details, the temporary key will be expired
+				- mandatory paremeter.
+				&lt;/param&gt;
+				&lt;returns&gt;Returns ExternalReporteeBE&lt;/returns&gt;</wsdl:documentation>
+			<wsdl:input
+				wsaw:Action="http://www.altinn.no/services/Authorization/Administration/2010/10/IAuthorizationAdministrationExternal/GetReporteeByTempKey"
+				message="tns:IAuthorizationAdministrationExternal_GetReporteeByTempKey_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://www.altinn.no/services/Authorization/Administration/2010/10/IAuthorizationAdministrationExternal/GetReporteeByTempKeyResponse"
+				message="tns:IAuthorizationAdministrationExternal_GetReporteeByTempKey_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://www.altinn.no/services/Authorization/Administration/2010/10/IAuthorizationAdministrationExternal/GetReporteeByTempKeyAltinnFaultFault"
+				name="AltinnFaultFault"
+				message="tns:IAuthorizationAdministrationExternal_GetReporteeByTempKey_AltinnFaultFault_FaultMessage" />
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="CustomBinding_IAuthorizationAdministrationExternal"
+		type="tns:IAuthorizationAdministrationExternal">
+		<wsp:PolicyReference
+			URI="#CustomBinding_IAuthorizationAdministrationExternal_policy" />
+		<soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="Test">
+			<soap12:operation
+				soapAction="http://www.altinn.no/services/2009/10/IAltinnContractBase/Test"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="AltinnFaultFault">
+				<soap12:fault name="AltinnFaultFault" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="ImportAuthorizationPolicy">
+			<soap12:operation
+				soapAction="http://www.altinn.no/services/Authorization/Administration/2010/10/IAuthorizationAdministrationExternal/ImportAuthorizationPolicy"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="AltinnFaultFault">
+				<soap12:fault name="AltinnFaultFault" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetRoles">
+			<soap12:operation
+				soapAction="http://www.altinn.no/services/Authorization/Administration/2010/10/IAuthorizationAdministrationExternal/GetRoles"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="AltinnFaultFault">
+				<soap12:fault name="AltinnFaultFault" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetReportees">
+			<soap12:operation
+				soapAction="http://www.altinn.no/services/Authorization/Administration/2010/10/IAuthorizationAdministrationExternal/GetReportees"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="AltinnFaultFault">
+				<soap12:fault name="AltinnFaultFault" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetReporteeByTempKey">
+			<soap12:operation
+				soapAction="http://www.altinn.no/services/Authorization/Administration/2010/10/IAuthorizationAdministrationExternal/GetReporteeByTempKey"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="AltinnFaultFault">
+				<soap12:fault name="AltinnFaultFault" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="AuthorizationAdministrationExternalSF">
+		<wsdl:port name="CustomBinding_IAuthorizationAdministrationExternal"
+			binding="tns:CustomBinding_IAuthorizationAdministrationExternal">
+			<soap12:address
+				location="http://tt02.altinn.basefarm.net/AuthorizationExternal/AdministrationExternal.svc" />
+			<wsa10:EndpointReference>
+				<wsa10:Address>http://tt02.altinn.basefarm.net/AuthorizationExternal/AdministrationExternal.svc
+				</wsa10:Address>
+			</wsa10:EndpointReference>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

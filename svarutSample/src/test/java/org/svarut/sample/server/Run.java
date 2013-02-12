@@ -8,7 +8,7 @@ public class Run {
 
 	public static void main(String... args) throws Exception {
 		System.setProperty("CONSTRETTO_TAGS", "ITEST");
-		Server server = new Server(8080);
+		Server server = new Server(9080);
 		String dir;
 		if (new File("src/main/webapp").exists()) dir = "src/main/webapp";
 		else dir = "svarutSample/src/main/webapp";

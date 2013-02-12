@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>no.kommune.bergen.svarut</groupId>
 		<artifactId>svarut-parent</artifactId>
-		<version>5.0</version>
+		<version>7.0</version>
 	</parent>
 	<name>${project.artifactId}</name>
 	<description>SvarUt Lib-prosjekt</description>
@@ -86,7 +86,6 @@
 			<groupId>org.constretto</groupId>
 			<artifactId>constretto-core</artifactId>
 			<version>${constretto.version}</version>
-			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.constretto</groupId>
@@ -114,6 +113,16 @@
 			<artifactId>cxf-rt-transports-http</artifactId>
 			<version>${cxf.version}</version>
 		</dependency>
+		<dependency>
+    		<groupId>org.apache.cxf</groupId>
+	    	<artifactId>cxf-rt-ws-security</artifactId>
+	    	<version>${cxf.version}</version>
+	    </dependency>
+	    <dependency>
+	    	<groupId>org.apache.cxf</groupId>
+	    	<artifactId>cxf-rt-frontend-jaxrs</artifactId>
+	    	<version>${cxf.version}</version>
+	    </dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>

@@ -70,7 +70,8 @@ public class ServiceDelegateImpl implements ServiceDelegate {
 		return forsendelsesArkiv.retrieveList( juridiskEnhet );
 	}
 
-	/** Returnerer dokument-innhold for en forsendelse angitt ved forsendelsesId og som tilhører en gitt JuridiskEnhet */
+	/** Returnerer dokument-innhold for en forsendelse angitt ved forsendelsesId og som tilhører en gitt JuridiskEnhet.
+	 *  */
 	@Override
 	public InputStream retrieveContent( String id, JuridiskEnhet juridiskEnhet ) {
 		forsendelsesArkiv.authorize( id, juridiskEnhet );
@@ -123,7 +124,7 @@ public class ServiceDelegateImpl implements ServiceDelegate {
 
 	/** Bekrefter at forsendelsesdokumentet er å betrakte som lest elektronisk */
 	@Override
-	public void confirm( String id ) {
+	public void confirm( String id ) { //TODO Forsendelsesdokument skal foreløpig ikke settes til lest hvis org
 		forsendelsesArkiv.confirm( id );
 	}
 

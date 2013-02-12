@@ -51,7 +51,8 @@ public final class XTrustProvider extends java.security.Provider {
 	public XTrustProvider() {
 		super( NAME, VERSION, INFO );
 
-		AccessController.doPrivileged( new PrivilegedAction() {
+		AccessController.doPrivileged( new PrivilegedAction<Object>() {
+			@Override
 			public Object run() {
 				put( "TrustManagerFactory." + TrustManagerFactoryImpl.getAlgorithm(), TrustManagerFactoryImpl.class.getName() );
 				return null;
@@ -84,12 +85,15 @@ public final class XTrustProvider extends java.security.Provider {
 		@Override
 		protected TrustManager[] engineGetTrustManagers() {
 			return new TrustManager[] { new X509TrustManager() {
+				@Override
 				public X509Certificate[] getAcceptedIssuers() {
 					return null;
 				}
 
+				@Override
 				public void checkClientTrusted( X509Certificate[] certs, String authType ) {}
 
+				@Override
 				public void checkServerTrusted( X509Certificate[] certs, String authType ) {}
 			} };
 		}
