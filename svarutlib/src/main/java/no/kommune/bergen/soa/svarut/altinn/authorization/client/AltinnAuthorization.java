@@ -1,13 +1,5 @@
 package no.kommune.bergen.soa.svarut.altinn.authorization.client;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import no.altinn.schemas.services.authorization.administration._2012._11.ExternalReporteeBE;
-import no.altinn.schemas.services.authorization.administration._2012._11.ExternalReporteeBEList;
-import no.altinn.schemas.services.register._2009._10.PartyType;
-import no.kommune.bergen.soa.svarut.altinn.authorization.Avgiver;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,47 +7,22 @@ public class AltinnAuthorization {
 
 	private static final Logger log = LoggerFactory.getLogger(AltinnAuthorization.class);
 
-	private AltinnAdministrationExternalClient altinnAdministrationExternal;
+	private AltinnAuthorizationDesicionPointExternalClient altinnAuthorizationDesicionPointExternalClient;
 
-	public AltinnAuthorization(AltinnAdministrationExternalSettings settings) {
-		altinnAdministrationExternal = new AltinnAdministrationExternalClient(settings);
+	public AltinnAuthorization(AltinnAuthorizationDesicionPointExternalSettings settings) {
+		altinnAuthorizationDesicionPointExternalClient = new AltinnAuthorizationDesicionPointExternalClient(settings);
 	}
 
-	public void setAltinnAdministrationExternalClient(AltinnAdministrationExternalClient client) {
-		this.altinnAdministrationExternal = client;
+	public boolean authorize(String fodselsNr, String orgNr) {
+		return altinnAuthorizationDesicionPointExternalClient.authorizeAccessExternal(fodselsNr, orgNr);
 	}
 
-	public List<Avgiver> getOrganisasjonsAvgivere(String fodselsNr) {
-		return submitRequest(fodselsNr);
+	public AltinnAuthorizationDesicionPointExternalClient getAltinnAuthorizationDesicionPointExternalClient() {
+		return altinnAuthorizationDesicionPointExternalClient;
 	}
 
-	private List<Avgiver> lagOrganisasjonsAvgiverListe(ExternalReporteeBEList externalReporteeBEList) {
-		return lagAvgiverListe(externalReporteeBEList, PartyType.ORGANIZATION.value());
-	}
-
-	private List<Avgiver> lagAvgiverListe(ExternalReporteeBEList externalReporteeBEList, String typeFilter) {
-		List<Avgiver> organisasjoner = new ArrayList<Avgiver>();
-		List<ExternalReporteeBE> list = externalReporteeBEList.getExternalReporteeBE();
-		for(ExternalReporteeBE externalReporteeBE : list) {
-			if(typeFilter != null && !typeFilter.equals(externalReporteeBE.getReporteeType().value()))
-				continue;
-
-			Avgiver reportee = new Avgiver();
-			reportee.setName(externalReporteeBE.getName());
-			reportee.setOrganizationNumber(externalReporteeBE.getOrganizationNumber());
-			reportee.setReporteeType(externalReporteeBE.getReporteeType().value());
-			reportee.setSsn(externalReporteeBE.getSSN());
-			organisasjoner.add(reportee);
-		}
-		return organisasjoner;
-	}
-
-	protected List<Avgiver> submitRequest(String fodselsNr) {
-		ExternalReporteeBEList list = this.altinnAdministrationExternal.getAvgivere(fodselsNr);
-		List<Avgiver> organisasjoner = new ArrayList<Avgiver>();
-		if(list != null) {
-			organisasjoner = lagOrganisasjonsAvgiverListe(list);
-		}
-		return organisasjoner;
+	public void setAltinnAuthorizationDesicionPointExternalClient(
+			AltinnAuthorizationDesicionPointExternalClient altinnAuthorizationDesicionPointExternalClient) {
+		this.altinnAuthorizationDesicionPointExternalClient = altinnAuthorizationDesicionPointExternalClient;
 	}
 }

@@ -1,4 +1,4 @@
-package no.kommune.bergen.soa.svarut.altinn.authorization.client;
+package no.kommune.bergen.soa.svarut.altinn.administration.external.client;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package no.kommune.bergen.soa.svarut.altinn.authorization;
+package no.kommune.bergen.soa.svarut.altinn.administration.external;
 
 public class Avgiver {
 

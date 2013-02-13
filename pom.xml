@@ -8,6 +8,13 @@
 	<version>8.0-SNAPSHOT</version>
 	<name>SvarUt Parent</name>
 
+	<repositories>
+    	<repository>
+			<id>JBoss repository</id>
+			<url>http://repository.jboss.org/nexus/content/groups/public/</url>
+    	</repository>
+    </repositories>
+
 	<build>
 		<plugins>
 			<plugin>

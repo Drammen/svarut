@@ -89,8 +89,8 @@
 				<property name="bodyTemplate" value="$texts{bodyTemplate}" />
 			</bean>
 		</property>
-		<property name="AltinnAdministrationExternalSettings">
-			<bean class="no.kommune.bergen.soa.svarut.altinn.authorization.client.AltinnAdministrationExternalSettings">
+		<property name="altinnAuthorizationDesicionPointExternalSettings">
+			<bean class="no.kommune.bergen.soa.svarut.altinn.authorization.client.AltinnAuthorizationDesicionPointExternalSettings">
 				<property name="fromAddress" value="${altinn.fromAddress}" />
 				<property name="serviceCode" value="${altinn.serviceCode}" />
 				<property name="endpoint" value="${altinn.authorization.endpoint}" />

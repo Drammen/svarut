@@ -1,4 +1,4 @@
-package no.kommune.bergen.mock.altinn.authorization;
+package no.kommune.bergen.mock.altinn.administration.external;
 
 import java.io.BufferedReader;
 import java.io.IOException;

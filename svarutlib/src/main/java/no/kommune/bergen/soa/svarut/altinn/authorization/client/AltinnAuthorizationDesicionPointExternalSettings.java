@@ -7,11 +7,13 @@ import org.constretto.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AltinnAdministrationExternalSettings extends AltinnCommonSettings implements AltinnServiceSettings{
+public class AltinnAuthorizationDesicionPointExternalSettings extends AltinnCommonSettings implements AltinnServiceSettings {
 
 	@Configuration(expression = "altinn.authorization.endpoint")
 	String endpoint;
 	String serviceEdition;
+	@Configuration(expression = "altinn.authorization.environment")
+	String environment;
 
 	@Override
 	public String getEndpoint() {
@@ -25,7 +27,7 @@ public class AltinnAdministrationExternalSettings extends AltinnCommonSettings i
 
 	@Override
 	public String getServiceEdition() {
-		return this.serviceEdition;
+		return serviceEdition;
 	}
 
 	@Override
@@ -33,4 +35,11 @@ public class AltinnAdministrationExternalSettings extends AltinnCommonSettings i
 		this.serviceEdition = serviceEdition;
 	}
 
+	public String getEnvironment() {
+		return environment;
+	}
+
+	public void setEnvironment(String environment) {
+		this.environment = environment;
+	}
 }
