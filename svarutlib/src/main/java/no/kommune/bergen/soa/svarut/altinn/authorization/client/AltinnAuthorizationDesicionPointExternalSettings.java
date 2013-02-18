@@ -11,6 +11,7 @@ public class AltinnAuthorizationDesicionPointExternalSettings extends AltinnComm
 
 	@Configuration(expression = "altinn.authorization.endpoint")
 	String endpoint;
+	@Configuration(expression = "altinn.authorization.service.edition")
 	String serviceEdition;
 	@Configuration(expression = "altinn.authorization.environment")
 	String environment;
