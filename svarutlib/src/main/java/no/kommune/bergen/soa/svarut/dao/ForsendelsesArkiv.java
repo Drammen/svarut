@@ -1,6 +1,7 @@
 package no.kommune.bergen.soa.svarut.dao;
 
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.security.AccessControlException;
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -280,10 +281,9 @@ public class ForsendelsesArkiv {
 				+ "WHERE ORGNR IS NOT NULL "
 				+ "AND UTSKREVET IS NULL "
 				+ "AND NORGEDOTNO IS NULL "
-				+ "AND ALTINN_SENDT IS NULL "
+				+ "AND ALTINN_SENDT IS NOT NULL "
 				+ "AND EPOST_SENDT IS NULL "
-				+ "AND STOPPET IS NOT NULL "
-				+ "AND LEST IS NOT NULL "
+				+ "AND STOPPET IS NULL "
 				+ "AND ( NESTE_FORSOK IS NULL OR NESTE_FORSOK < SYSDATE )";
 		if (shipmentPolicies != null && shipmentPolicies.length > 0) {
 			sql = sql + " AND FORSENDELSES_MATE IN ( ";
@@ -314,8 +314,8 @@ public class ForsendelsesArkiv {
 		for (Object map : queryResponse) {
 			try {
 				String id = (String) ((Map<?, ?>) map).get("ID");
-				int orgnr = (Integer) ((Map<?, ?>) map).get("ORGNR");
-				String orgnrStr = Integer.toString(orgnr);
+				BigInteger orgnr = (BigInteger) ((Map<?, ?>) map).get("ORGNR");
+				String orgnrStr = orgnr.toString();
 				// Check orgnr is valid
 				if(JuridiskEnhetFactory.create(orgnrStr) instanceof Orgnr)
 					list.add(id);
