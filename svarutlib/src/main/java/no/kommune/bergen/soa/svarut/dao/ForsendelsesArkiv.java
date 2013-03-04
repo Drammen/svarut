@@ -1,7 +1,6 @@
 package no.kommune.bergen.soa.svarut.dao;
 
 import java.io.InputStream;
-import java.math.BigInteger;
 import java.security.AccessControlException;
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -16,11 +15,9 @@ import java.util.UUID;
 import no.kommune.bergen.soa.common.calendar.BusinessCalendar;
 import no.kommune.bergen.soa.common.exception.UserException;
 import no.kommune.bergen.soa.svarut.AltinnFacade;
-import no.kommune.bergen.soa.svarut.JuridiskEnhetFactory;
 import no.kommune.bergen.soa.svarut.domain.Fodselsnr;
 import no.kommune.bergen.soa.svarut.domain.Forsendelse;
 import no.kommune.bergen.soa.svarut.domain.JuridiskEnhet;
-import no.kommune.bergen.soa.svarut.domain.Orgnr;
 import no.kommune.bergen.soa.svarut.domain.PrintReceipt;
 import no.kommune.bergen.soa.svarut.domain.Printed;
 import no.kommune.bergen.soa.svarut.dto.ShipmentPolicy;
@@ -268,32 +265,7 @@ public class ForsendelsesArkiv {
 		}
 		List<?> queryResponse = jdbcTemplate.queryForList(sql);
 		List<String> allUnsent = convertListOfIds(queryResponse);
-		allUnsent.addAll(readAllReadUnsentOrgShipments(shipmentPolicies));
 		return allUnsent;
-	}
-
-	/**
-	 *  Finn alle Forsendelser som er registrert med Orgnr og satt til lest, men som ikke er utskrevet enda.
-	 *  Midlertidig skal elektronisk leste dokumenter til org sendes ut til print allikevel.
-	 */
-	private List<String> readAllReadUnsentOrgShipments(ShipmentPolicy[] shipmentPolicies) {
-		String sql = "SELECT ID, ORGNR FROM FORSENDELSESARKIV "
-				+ "WHERE ORGNR IS NOT NULL "
-				+ "AND UTSKREVET IS NULL "
-				+ "AND NORGEDOTNO IS NULL "
-				+ "AND ALTINN_SENDT IS NOT NULL "
-				+ "AND EPOST_SENDT IS NULL "
-				+ "AND STOPPET IS NULL "
-				+ "AND ( NESTE_FORSOK IS NULL OR NESTE_FORSOK < SYSDATE )";
-		if (shipmentPolicies != null && shipmentPolicies.length > 0) {
-			sql = sql + " AND FORSENDELSES_MATE IN ( ";
-			for (ShipmentPolicy sp : shipmentPolicies) {
-				sql = sql + "'" + sp.value() + "',";
-			}
-			sql = sql.substring(0, sql.length() - 1) + ")";
-		}
-		List<?> queryResponse = jdbcTemplate.queryForList(sql);
-		return convertListOfIdsFromOrgList(queryResponse);
 	}
 
 	private List<String> convertListOfIds(List<?> queryResponse) {
@@ -308,24 +280,6 @@ public class ForsendelsesArkiv {
 		}
 		return list;
 	}
-
-	private List<String> convertListOfIdsFromOrgList(List<?> queryResponse) {
-		List<String> list = new ArrayList<String>();
-		for (Object map : queryResponse) {
-			try {
-				String id = (String) ((Map<?, ?>) map).get("ID");
-				BigInteger orgnr = (BigInteger) ((Map<?, ?>) map).get("ORGNR");
-				String orgnrStr = orgnr.toString();
-				// Check orgnr is valid
-				if(JuridiskEnhetFactory.create(orgnrStr) instanceof Orgnr)
-					list.add(id);
-			} catch (RuntimeException e) {
-				logger.error("Response missing ID ", e);
-			}
-		}
-		return list;
-	}
-
 
 	public void setSentAltinn(String id, int receiptId) {
 		logger.debug("setSentAltinn() id={}", id);
@@ -498,6 +452,26 @@ public class ForsendelsesArkiv {
 			sql = sql.substring(0, sql.length() - 1) + ")";
 		}
 		List<?> list = jdbcTemplate.queryForList(sql, timestamp);
+		return convertListOfIds(list);
+	}
+
+	/**
+	 * MIDLERTIDIG: Vi printer alle forsendelser sendt til Altinn uansett inntil videre.
+	 * Return liste med forsendelses-ider sendt til Altinn, lest men ikke printet, for et sett shipment-policyer
+	 */
+	public List<String> retrieveSentToAltinnButNotPrinted(ShipmentPolicy[] shipmentPolicies) {
+		String sql = "SELECT ID FROM FORSENDELSESARKIV WHERE "
+				+ "ALTINN_SENDT IS NOT NULL AND "
+				+ "UTSKREVET IS NULL";
+
+		if (shipmentPolicies != null && shipmentPolicies.length > 0) {
+			sql = sql + " AND FORSENDELSES_MATE IN ( ";
+			for (ShipmentPolicy sp : shipmentPolicies) {
+				sql = sql + "'" + sp.value() + "',";
+			}
+			sql = sql.substring(0, sql.length() - 1) + ")";
+		}
+		List<?> list = jdbcTemplate.queryForList(sql);
 		return convertListOfIds(list);
 	}
 

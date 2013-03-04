@@ -113,6 +113,14 @@ public class ForsendelsesArkivTest {
 		assertEquals(4, forsendelsesArkiv.retrieveYoungerThan(5, null).size());
 	}
 
+	@Test
+	public void testAtRetrieveSentToAltinnButNotPrintedYoungerThanFinnerAlleAltinnForsendelser() {
+		for (int numberOfDays = 0; numberOfDays < 4; numberOfDays++) {
+			createOldSentToAltinnForsendelse( numberOfDays );
+		}
+		assertEquals(4, forsendelsesArkiv.retrieveSentToAltinnButNotPrinted(null).size());
+	}
+
 	private Forsendelse createOldForsendelse( int numberOfDays ) {
 		String id = forsendelsesArkiv.save(createForsendelse(numberOfDays), getTestDocument());
 		assertNotNull( id );
@@ -120,6 +128,12 @@ public class ForsendelsesArkivTest {
 		return forsendelsesArkiv.retrieve( id );
 	}
 
+	private Forsendelse createOldSentToAltinnForsendelse( int numberOfDays ) {
+		String id = forsendelsesArkiv.save(createForsendelse(numberOfDays), getTestDocument());
+		assertNotNull( id );
+		forsendelsesArkiv.jdbcTemplate.update("UPDATE FORSENDELSESARKIV SET SENDT=?, ALTINN_SENDT=? WHERE ID=?", new Object[]{daysAgo(numberOfDays), daysAgo(numberOfDays), id}, new int[]{Types.DATE, Types.DATE, Types.VARCHAR});
+		return forsendelsesArkiv.retrieve( id );
+	}
 	private java.sql.Date daysAgo( int numberOfDays ) {
 		final long dayInMillis = 1000 * 60 * 60 * 24;
 		long now = System.currentTimeMillis();
@@ -481,7 +495,7 @@ public class ForsendelsesArkivTest {
 	}
 
 	@Test
-	public void testReadUnsentReturnererForsendelserTilOrgSomErLest() {
+	public void testAtLesteForsendelserTilOrgDukkerOppISentToAltinn() {
 		Forsendelse f1 = createForsendelse(1, "12345678910", null);
 		Forsendelse f2 = createForsendelse(1, "12345678910", "123456789");
 		String forsendelseId1 = forsendelsesArkiv.save( f1, ForsendelsesArkivTest.class.getClassLoader().getResourceAsStream( "test.pdf" ) );
@@ -490,6 +504,9 @@ public class ForsendelsesArkivTest {
 		// Sett som lest
 		forsendelsesArkiv.confirm(forsendelseId1);
 		forsendelsesArkiv.confirm(forsendelseId2);
+
+		// Sett som sendt til Altinn
+		forsendelsesArkiv.setSentAltinn(forsendelseId2, MOCK_RECEIPT_ID);
 
 		ShipmentPolicy[] shipmentPolicies = {ALTINN_OG_APOST};
 
@@ -503,20 +520,26 @@ public class ForsendelsesArkivTest {
 				funnet2 = true;
 			}
 		}
-		assertFalse("Forsendelsen uten orgnr funnet. Skal ikke være der.", funnet1);
-		assertTrue("Forsendelsen med orgnr ikke funnet.", funnet2);
+		assertFalse("Forsendelsen uten orgnr funnet i readUnsent. Skal ikke være der.", funnet1);
+		assertFalse("Forsendelsen uten orgnr funne i readUnsent. Skal ikke være der.", funnet2);
+		assertEquals("Forsendelse ikke funnet i retrieveSentToAltinnButNotPrinted.", 1, forsendelsesArkiv.retrieveSentToAltinnButNotPrinted(shipmentPolicies).size());
 	}
 
 	@Test
-	public void testReadUnsentReturnererIkkeForsendelserTilOrgEtterLestOgPrint() {
+	public void testAtLesteForsendelserTilOrgIkkeDukkerOppISentToAltinnEtterPrint() {
 		Forsendelse f1 = createForsendelse(1, "12345678910", null);
 		Forsendelse f2 = createForsendelse(1, "12345678910", "123456789");
+
+		// Arkiver forsendelse
 		String forsendelseId1 = forsendelsesArkiv.save( f1, ForsendelsesArkivTest.class.getClassLoader().getResourceAsStream( "test.pdf" ) );
 		String forsendelseId2 = forsendelsesArkiv.save( f2, ForsendelsesArkivTest.class.getClassLoader().getResourceAsStream( "test.pdf" ) );
 
 		// Sett som lest
 		forsendelsesArkiv.confirm(forsendelseId1);
 		forsendelsesArkiv.confirm(forsendelseId2);
+
+		// Sett som sendt til Altinn
+		forsendelsesArkiv.setSentAltinn(forsendelseId2, MOCK_RECEIPT_ID);
 
 		ShipmentPolicy[] shipmentPolicies = {ALTINN_OG_APOST};
 
@@ -530,8 +553,9 @@ public class ForsendelsesArkivTest {
 				funnet2 = true;
 			}
 		}
-		assertFalse("Forsendelsen uten orgnr funnet. Skal ikke være der.", funnet1);
-		assertTrue("Forsendelsen med orgnr ikke funnet.", funnet2);
+		assertFalse("Forsendelsen uten orgnr funnet i readUnsent. Skal ikke være der.", funnet1);
+		assertFalse("Forsendelsen uten orgnr funnet i readUnsent. Skal ikke være der.", funnet2);
+		assertEquals("Forsendelse ikke funnet i retrieveSentToAltinnButNotPrinted.", 1, forsendelsesArkiv.retrieveSentToAltinnButNotPrinted(shipmentPolicies).size());
 
 		// Sjekk at de ikke blir funnet etter print
 		PrintReceipt printReceipt1 = newPrintReceipt();
@@ -549,11 +573,13 @@ public class ForsendelsesArkivTest {
 				funnet2 = true;
 			}
 		}
-		assertFalse("Forsendelsen uten orgnr funnet. Skal ikke være der. Heller ikke etter print.", funnet1);
-		assertFalse("Forsendelsen med orgnr funnet. Skal ikke være der etter print", funnet2);
+		assertFalse("Forsendelsen uten orgnr funnet etter print. Skal ikke være der etter print eller lest.", funnet1);
+		assertFalse("Forsendelsen med orgnr funnet etter print. Skal ikke være der etter print eller lest", funnet2);
+		assertTrue("Forsendelse funnet i retrieveSentToAltinnButNotPrinted.", forsendelsesArkiv.retrieveSentToAltinnButNotPrinted(shipmentPolicies).size() < 1);
 	}
 
 	@Test
+	@Ignore
 	public void testReadUnsentReturnererForsendelserTilOrgEtterLestOgSattUlest() {
 		Forsendelse f1 = createForsendelse(1, "12345678910", null);
 		Forsendelse f2 = createForsendelse(1, "12345678910", "123456789");

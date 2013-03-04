@@ -1,5 +1,8 @@
 package no.kommune.bergen.soa.svarut.dispatchers;
 
+import java.util.Date;
+import java.util.List;
+
 import no.kommune.bergen.soa.svarut.DispatchPolicy;
 import no.kommune.bergen.soa.svarut.DispatchPolicyShipmentParams;
 import no.kommune.bergen.soa.svarut.Dispatcher;
@@ -7,11 +10,9 @@ import no.kommune.bergen.soa.svarut.ServiceDelegate;
 import no.kommune.bergen.soa.svarut.dao.ForsendelsesArkiv;
 import no.kommune.bergen.soa.svarut.domain.Forsendelse;
 import no.kommune.bergen.soa.svarut.dto.ShipmentPolicy;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Date;
-import java.util.List;
 
 public abstract class AbstractDispatcher implements Dispatcher {
 
@@ -39,6 +40,7 @@ public abstract class AbstractDispatcher implements Dispatcher {
 
 	public abstract void handleUnread(Forsendelse f);
 
+	@Override
 	public void sendAlleForsendelser() {
 
 		final String dispatcherName = getClass().getName();
@@ -104,8 +106,10 @@ public abstract class AbstractDispatcher implements Dispatcher {
 		log.debug("sendAlleForsendelser from " + dispatcherName + " ferdig");
 	}
 
+	@Override
 	public void handleAllUnread() {
-		final List<String> forsendelser = forsendelsesArkiv.retrieveYoungerThan(getDispatchPolicy().getPrintWindowAgeInDays(), dispatchPolicy.getShipmentPolicies());
+		List<String> forsendelser = forsendelsesArkiv.retrieveYoungerThan(getDispatchPolicy().getPrintWindowAgeInDays(), dispatchPolicy.getShipmentPolicies());
+		forsendelser.addAll(forsendelsesArkiv.retrieveSentToAltinnButNotPrinted(dispatchPolicy.getShipmentPolicies()));
 		final String dispatcherName = getClass().getName();
 		log.debug("Antall uleste forsendelser:" + forsendelser.size() + " hentet for " + dispatcherName);
 
