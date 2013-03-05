@@ -23,11 +23,11 @@ public class AltinnContext {
 	@Autowired
 	private AltinnAdministrationExternalSettings altinnAdministrationExternalSettings;
 
-	@Configuration(expression = "dispatchwindow.altinn.leadtime.apost")
+	@Configuration(expression = "dispatch.altinn.leadtime.apost")
 	private long leadTimeApost = 2;
-	@Configuration(expression = "dispatchwindow.altinn.leadtime.bpost")
+	@Configuration(expression = "dispatch.altinn.leadtime.bpost")
 	private long leadTimeBpost = 2;
-	@Configuration(expression = "dispatchwindow.altinn.leadtime.rekommandert")
+	@Configuration(expression = "dispatch.altinn.leadtime.rekommandert")
 	private long leadTimeRekommandert = 1;
 
 	@Autowired
