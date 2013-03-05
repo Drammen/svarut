@@ -456,12 +456,14 @@ public class ForsendelsesArkiv {
 	}
 
 	/**
-	 * MIDLERTIDIG: Vi printer alle forsendelser sendt til Altinn uansett inntil videre.
+	 * TODO PIA-1573 ta dette bort når man bestemmer seg for å ikke printe uansett.
+	 * MIDLERTIDIG: Vi printer alle forsendelser sendt til organisasjon i Altinn uansett inntil videre.
 	 * Return liste med forsendelses-ider sendt til Altinn, lest men ikke printet, for et sett shipment-policyer
 	 */
 	public List<String> retrieveSentToAltinnButNotPrinted(ShipmentPolicy[] shipmentPolicies) {
 		String sql = "SELECT ID FROM FORSENDELSESARKIV WHERE "
 				+ "ALTINN_SENDT IS NOT NULL AND "
+				+ "ORGNR IS NOT NULL AND "
 				+ "UTSKREVET IS NULL";
 
 		if (shipmentPolicies != null && shipmentPolicies.length > 0) {

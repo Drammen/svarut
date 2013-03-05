@@ -109,7 +109,7 @@ public abstract class AbstractDispatcher implements Dispatcher {
 	@Override
 	public void handleAllUnread() {
 		List<String> forsendelser = forsendelsesArkiv.retrieveYoungerThan(getDispatchPolicy().getPrintWindowAgeInDays(), dispatchPolicy.getShipmentPolicies());
-		forsendelser.addAll(forsendelsesArkiv.retrieveSentToAltinnButNotPrinted(dispatchPolicy.getShipmentPolicies()));
+		forsendelser.addAll(forsendelsesArkiv.retrieveSentToAltinnButNotPrinted(dispatchPolicy.getShipmentPolicies())); //TODO PIA-1573 Ta bort dette når vi ikke skal sende til print lenger
 		final String dispatcherName = getClass().getName();
 		log.debug("Antall uleste forsendelser:" + forsendelser.size() + " hentet for " + dispatcherName);
 

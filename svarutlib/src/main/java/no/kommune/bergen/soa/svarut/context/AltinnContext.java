@@ -1,12 +1,14 @@
 package no.kommune.bergen.soa.svarut.context;
 
+import javax.annotation.Resource;
+
 import no.kommune.bergen.soa.svarut.altinn.authorization.client.AltinnAdministrationExternalSettings;
 import no.kommune.bergen.soa.svarut.altinn.correspondence.CorrespondenceSettings;
 import no.kommune.bergen.soa.svarut.util.DispatchWindow;
+
+import org.constretto.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 
 /**
  * Benyttes som bærer av kofigurasjon for Altinn distribusjoner. Obs: LeadTime betyr her antall dager mottaker har på å lese et
@@ -21,7 +23,12 @@ public class AltinnContext {
 	@Autowired
 	private AltinnAdministrationExternalSettings altinnAdministrationExternalSettings;
 
-	private long leadTimeApost = 2, leadTimeBpost = 2, leadTimeRekommandert = 1;
+	@Configuration(expression = "dispatchwindow.altinn.leadtime.apost")
+	private long leadTimeApost = 2;
+	@Configuration(expression = "dispatchwindow.altinn.leadtime.bpost")
+	private long leadTimeBpost = 2;
+	@Configuration(expression = "dispatchwindow.altinn.leadtime.rekommandert")
+	private long leadTimeRekommandert = 1;
 
 	@Autowired
 	private MessageTemplateAssembly messageTemplateAssembly;
