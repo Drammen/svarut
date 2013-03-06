@@ -2,7 +2,7 @@ package no.kommune.bergen.soa.svarut.context;
 
 import javax.annotation.Resource;
 
-import no.kommune.bergen.soa.svarut.altinn.authorization.client.AltinnAdministrationExternalSettings;
+import no.kommune.bergen.soa.svarut.altinn.authorization.client.AltinnAuthorizationDesicionPointExternalSettings;
 import no.kommune.bergen.soa.svarut.altinn.correspondence.CorrespondenceSettings;
 import no.kommune.bergen.soa.svarut.util.DispatchWindow;
 
@@ -21,7 +21,7 @@ public class AltinnContext {
 	private CorrespondenceSettings correspondenceSettings;
 
 	@Autowired
-	private AltinnAdministrationExternalSettings altinnAdministrationExternalSettings;
+	private AltinnAuthorizationDesicionPointExternalSettings altinnAuthorizationDesicionPointExternalSettings;
 
 	@Configuration(expression = "dispatch.altinn.leadtime.apost")
 	private long leadTimeApost = 2;
@@ -54,12 +54,12 @@ public class AltinnContext {
 		this.correspondenceSettings = correspondenceSettings;
 	}
 
-	public AltinnAdministrationExternalSettings getAltinnAdministrationExternalSettings() {
-		return this.altinnAdministrationExternalSettings;
+	public AltinnAuthorizationDesicionPointExternalSettings getAltinnAuthorizationDesicionPointExternalSettings() {
+		return this.altinnAuthorizationDesicionPointExternalSettings;
 	}
 
-	public void setAltinnAdministrationExternalSettings( AltinnAdministrationExternalSettings settings ) {
-		this.altinnAdministrationExternalSettings = settings;
+	public void setAltinnAuthorizationDesicionPointExternalSettings( AltinnAuthorizationDesicionPointExternalSettings settings ) {
+		this.altinnAuthorizationDesicionPointExternalSettings = settings;
 	}
 
 	public long getLeadTimeApost() {

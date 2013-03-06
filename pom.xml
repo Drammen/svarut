@@ -7,6 +7,13 @@
 	<packaging>pom</packaging>
 	<version>7.0</version>
 	<name>SvarUt Parent</name>
+	
+	<repositories>
+    	<repository>
+			<id>JBoss repository</id>
+			<url>http://repository.jboss.org/nexus/content/groups/public/</url>
+    	</repository>
+    </repositories>
 
 	<build>
 		<plugins>

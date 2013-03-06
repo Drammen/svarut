@@ -1,10 +1,8 @@
 package no.kommune.bergen.soa.svarut;
 
-import java.util.List;
 import java.util.Map;
 
 import no.kommune.bergen.soa.common.util.TemplateEngine;
-import no.kommune.bergen.soa.svarut.altinn.authorization.Avgiver;
 import no.kommune.bergen.soa.svarut.altinn.authorization.client.AltinnAuthorization;
 import no.kommune.bergen.soa.svarut.altinn.correspondence.CorrespondenceClient;
 import no.kommune.bergen.soa.svarut.altinn.correspondence.CorrespondenceMessage;
@@ -45,16 +43,7 @@ public class AltinnFacade {
 	}
 
 	public boolean authorizeUserAgainstOrgNr(String fodselsNr, String orgNr) {
-		List<Avgiver> avgivere = altinnAuthorizationServiceClient.getOrganisasjonsAvgivere(fodselsNr);
-		if(avgivere.isEmpty() || orgNr == null)
-			return false;
-
-		for(Avgiver avgiver : avgivere) {
-			if(avgiver.getOrganizationNumber().equals(orgNr)) {
-				return true;
-			}
-		}
-		return false;
+		return altinnAuthorizationServiceClient.authorize(fodselsNr, orgNr);
 	}
 
 	CorrespondenceMessage createMessage( Forsendelse f ) {
