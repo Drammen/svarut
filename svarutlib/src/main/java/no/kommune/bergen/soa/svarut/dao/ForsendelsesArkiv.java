@@ -456,7 +456,7 @@ public class ForsendelsesArkiv {
 	}
 
 	/**
-	 * TODO PIA-1573 ta dette bort når man bestemmer seg for å ikke printe uansett.
+	 * TODO PIA-1573 ta dette eventuelt bort når man bestemmer seg for å ikke printe uansett.
 	 * MIDLERTIDIG: Vi printer alle forsendelser sendt til organisasjon i Altinn uansett inntil videre.
 	 * Return liste med forsendelses-ider sendt til Altinn, lest men ikke printet, for et sett shipment-policyer
 	 */

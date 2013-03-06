@@ -3,13 +3,11 @@ package no.kommune.bergen.soa.svarut.dispatchers;
 import no.kommune.bergen.soa.common.exception.UserException;
 import no.kommune.bergen.soa.svarut.AltinnFacade;
 import no.kommune.bergen.soa.svarut.DispatchPolicy;
-import no.kommune.bergen.soa.svarut.JuridiskEnhetFactory;
 import no.kommune.bergen.soa.svarut.PrintFacade;
 import no.kommune.bergen.soa.svarut.ServiceDelegate;
 import no.kommune.bergen.soa.svarut.altinn.AltinnException;
 import no.kommune.bergen.soa.svarut.dao.ForsendelsesArkiv;
 import no.kommune.bergen.soa.svarut.domain.Forsendelse;
-import no.kommune.bergen.soa.svarut.domain.Orgnr;
 import no.kommune.bergen.soa.svarut.domain.PrintReceipt;
 
 import org.slf4j.LoggerFactory;
@@ -45,13 +43,8 @@ public class AltinnOgPost extends AbstractDispatcher {
 	public void handleUnread( Forsendelse f ) {
 		long sent = f.getSendt().getTime();
 		long now = System.currentTimeMillis();
-		//TODO PIA-1573 ta bort testen på orgnr hvis vi ikke skal sende til print uansett når det er sendt til organisasjon i Altinn
-		if(f.getOrgnr() != null && JuridiskEnhetFactory.create(f.getOrgnr()) instanceof Orgnr) {
-			sendToPrint(f); // Sender til print uansett nå umiddelbart ved neste dispatchwindow
-		} else {
-			if (sent + getDispatchPolicy().getLeadTimeBeforePrintInMilliseconds(f) < now) {
-				sendToPrint(f);
-			}
+		if (sent + getDispatchPolicy().getLeadTimeBeforePrintInMilliseconds(f) < now) {
+			sendToPrint(f);
 		}
 	}
 
