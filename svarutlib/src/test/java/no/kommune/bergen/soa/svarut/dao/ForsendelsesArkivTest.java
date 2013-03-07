@@ -317,7 +317,8 @@ public class ForsendelsesArkivTest {
 		forsendelsesArkiv.updatePrinted( printed );
 		Forsendelse forsendelse = forsendelsesArkiv.retrieve( printed.getForsendelsesId() );
 		assertEquals( printed.getTidspunktPostlagt().getTime(), forsendelse.getTidspunktPostlagt().getTime() );
-		assertEquals( printed.getAntallSiderPostlagt(), forsendelse.getAntallSiderPostlagt() );
+		int antallSiderPostlagt = printed.getAntallSortHvitSider() + printed.getAntallFargeSider();
+		assertEquals( antallSiderPostlagt, forsendelse.getAntallSiderPostlagt() );
 	}
 
 	@Test
@@ -358,7 +359,8 @@ public class ForsendelsesArkivTest {
 	private Printed newPrinted( String forsendelsesId ) {
 		Printed printed = new Printed();
 		printed.setTidspunktPostlagt( new Date() );
-		printed.setAntallSiderPostlagt( 999 );
+		printed.setAntallSortHvitSider(999);
+		printed.setAntallFargeSider(0);
 		printed.setForsendelsesId( forsendelsesId );
 		return printed;
 	}

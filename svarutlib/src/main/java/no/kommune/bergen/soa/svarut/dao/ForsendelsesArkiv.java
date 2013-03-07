@@ -216,12 +216,21 @@ public class ForsendelsesArkiv {
 		f.setEmail((String) row.get("EPOST"));
 		f.setReplyTo((String) row.get("REPLY_TO"));
 		f.setPrintFarge(row.get("PRINT_FARGE").equals("1"));
-		f.setTidspunktPostlagt(toDate(row.get("TIDSPUNKTPOSTLAGT")));
 		f.setAntallSider(toInt(row.get("ANTALLSIDER")));
 		f.setAntallSiderPostlagt(toInt(row.get("ANTALLSIDERPOSTLAGT")));
 		f.setNesteForsok(toDate(row.get("NESTE_FORSOK")));
 		f.setAnsvarsSted((String) row.get("ANSVARSSTED"));
 		f.setKonteringkode((String) row.get("KONTERINGKODE"));
+		f.setTidspunktPostlagt(toDate(row.get("TIDSPUNKTPOSTLAGT")));
+		f.setAntallSortHvitSider(toInt(row.get("ANTALL_SORT_HVIT_SIDER")));
+		f.setAntallFargeSider(toInt(row.get("ANTALL_FARGE_SIDER")));
+		f.setAntallArkKonvoluttertAutomatisk(toInt(row.get("ANTALL_ARK_KONVOLUTTERT_AUTOMATISK")));
+		f.setAntallEkstraArkKonvoluttertAutomatisk(toInt(row.get("ANTALL_EKSTRA_ARK_KONVOLUTTERT_AUTOMATISK")));
+		f.setAntallArkKonvoluttertManuelt(toInt(row.get("ANTALL_ARK_KONVOLUTTERT_MANUELT")));
+		f.setAntallEkstraArkKonvoluttertManuelt(toInt(row.get("ANTALL_EKSTRA_ARK_KONVOLUTTERT_MANUELT")));
+		f.setVekt(toInt(row.get("VEKT")));
+		f.setProduksjonskostnader(toDouble(row.get("PRODUKSJONSKOSTNADER")));
+		f.setPorto(toDouble(row.get("PORTO")));
 		return f;
 	}
 
@@ -236,14 +245,18 @@ public class ForsendelsesArkiv {
 	}
 
 	private int toInt(Object object) {
-		if (object == null) return 0;
-		if (object instanceof Number) {
+		if (object != null && object instanceof Number) {
 			return ((Number) object).intValue();
-		} else {
-			return 0;
 		}
+		return 0;
 	}
 
+	private double toDouble(Object object){
+		if (object != null && object instanceof Number) {
+			return ((Number) object).doubleValue();
+		}
+		return 0;
+	}
 	/**
 	 * Finner forsendelser som ligger klar til utsendelse for et sett shipmentpolicies.
 	 * Returnerer bare uleste forsendelser (lest -> STOPPET=dato).
@@ -548,8 +561,31 @@ public class ForsendelsesArkiv {
 		if (forsendelsesId == null || forsendelsesId.length() == 0) {
 			throw new RuntimeException("Nonexisting forsendelse: " + forsendelsesId);
 		}
-		String sql = "UPDATE FORSENDELSESARKIV SET ANTALLSIDERPOSTLAGT=?, TIDSPUNKTPOSTLAGT=? WHERE ID=?";
-		int rowsUpdatedCount = jdbcTemplate.update(sql, printed.getAntallSiderPostlagt(), printed.getTidspunktPostlagt(), forsendelsesId);
+		String sql = "UPDATE FORSENDELSESARKIV SET ANTALLSIDERPOSTLAGT=?, "
+				+ "TIDSPUNKTPOSTLAGT=?, "
+				+ "ANTALL_SORT_HVIT_SIDER=?, "
+				+ "ANTALL_FARGE_SIDER=?, "
+				+ "ANTALL_ARK_KONVOLUTTERT_AUTOMATISK=?, "
+				+ "ANTALL_EKSTRA_ARK_KONVOLUTTERT_AUTOMATISK=?, "
+				+ "ANTALL_ARK_KONVOLUTTERT_MANUELT=?, "
+				+ "ANTALL_EKSTRA_ARK_KONVOLUTTERT_MANUELT=?, "
+				+ "VEKT=?, "
+				+ "PRODUKSJONSKOSTNADER=?, "
+				+ "PORTO=? "
+				+ "WHERE ID=?";
+		int antallSiderPostlagt = printed.getAntallSortHvitSider() + printed.getAntallFargeSider();
+		int rowsUpdatedCount = jdbcTemplate.update(sql, antallSiderPostlagt,
+				printed.getTidspunktPostlagt(),
+				printed.getAntallSortHvitSider(),
+				printed.getAntallFargeSider(),
+				printed.getAntallArkKonvoluttertAutomatisk(),
+				printed.getAntallEkstraArkKonvoluttertAutomatisk(),
+				printed.getAntallArkKonvoluttertManuelt(),
+				printed.getAntallEkstraArkKonvoluttertManuelt(),
+				printed.getVekt(),
+				printed.getProduksjonskostnader(),
+				printed.getPorto(),
+				forsendelsesId);
 		if (rowsUpdatedCount != 1) {
 			throw new RuntimeException("Nonexisting forsendelse: " + forsendelsesId);
 		}

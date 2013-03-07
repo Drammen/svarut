@@ -11,12 +11,22 @@ public class Forsendelse {
 	private String id, fnr, orgnr, navn, adresse1, adresse2, adresse3, postnr, poststed, land, avsenderNavn, avsenderAdresse1, avsenderAdresse2, avsenderAdresse3, avsenderPostnr, avsenderPoststed, tittel, meldingsTekst, appid, printId,
 			shipmentPolicy, email, replyTo, sms;
 	private File file;
-	private Date sendt, lest, norgedotno, altinn, utskrevet, tidspunktPostlagt;
+	private Date sendt, lest, norgedotno, altinn, utskrevet;
 	private boolean printFarge;
 	private int antallSider, antallSiderPostlagt;
-    private Date nesteForsok;
+	private Date nesteForsok;
 	private String ansvarsSted;
 	private String konteringkode;
+	private Date tidspunktPostlagt;
+	private int antallSortHvitSider;
+	private int antallFargeSider;
+	private int antallArkKonvoluttertAutomatisk;
+	private int antallEkstraArkKonvoluttertAutomatisk;
+	private int antallArkKonvoluttertManuelt;
+	private int antallEkstraArkKonvoluttertManuelt;
+	private int vekt;
+	private double produksjonskostnader;
+	private double porto;
 
 	public boolean isPrintFarge() {
 		return printFarge;
@@ -335,5 +345,80 @@ public class Forsendelse {
 
 	public String getKonteringkode() {
 		return konteringkode;
+	}
+
+	public int getAntallSortHvitSider() {
+		return antallSortHvitSider;
+	}
+
+	public void setAntallSortHvitSider(int antallSortHvitSider) {
+		this.antallSortHvitSider = antallSortHvitSider;
+	}
+
+	public int getAntallFargeSider() {
+		return antallFargeSider;
+	}
+
+	public void setAntallFargeSider(int antallFargeSider) {
+		this.antallFargeSider = antallFargeSider;
+	}
+
+	public int getAntallArkKonvoluttertAutomatisk() {
+		return antallArkKonvoluttertAutomatisk;
+	}
+
+	public void setAntallArkKonvoluttertAutomatisk(
+			int antallArkKonvoluttertAutomatisk) {
+		this.antallArkKonvoluttertAutomatisk = antallArkKonvoluttertAutomatisk;
+	}
+
+	public int getAntallEkstraArkKonvoluttertAutomatisk() {
+		return antallEkstraArkKonvoluttertAutomatisk;
+	}
+
+	public void setAntallEkstraArkKonvoluttertAutomatisk(
+			int antallEkstraArkKonvoluttertAutomatisk) {
+		this.antallEkstraArkKonvoluttertAutomatisk = antallEkstraArkKonvoluttertAutomatisk;
+	}
+
+	public int getAntallArkKonvoluttertManuelt() {
+		return antallArkKonvoluttertManuelt;
+	}
+
+	public void setAntallArkKonvoluttertManuelt(int antallArkKonvoluttertManuelt) {
+		this.antallArkKonvoluttertManuelt = antallArkKonvoluttertManuelt;
+	}
+
+	public int getAntallEkstraArkKonvoluttertManuelt() {
+		return antallEkstraArkKonvoluttertManuelt;
+	}
+
+	public void setAntallEkstraArkKonvoluttertManuelt(
+			int antallEkstraArkKonvoluttertManuelt) {
+		this.antallEkstraArkKonvoluttertManuelt = antallEkstraArkKonvoluttertManuelt;
+	}
+
+	public int getVekt() {
+		return vekt;
+	}
+
+	public void setVekt(int vekt) {
+		this.vekt = vekt;
+	}
+
+	public double getProduksjonskostnader() {
+		return produksjonskostnader;
+	}
+
+	public void setProduksjonskostnader(double produksjonskostnader) {
+		this.produksjonskostnader = produksjonskostnader;
+	}
+
+	public double getPorto() {
+		return porto;
+	}
+
+	public void setPorto(double porto) {
+		this.porto = porto;
 	}
 }

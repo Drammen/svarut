@@ -17,11 +17,20 @@ import javax.xml.datatype.XMLGregorianCalendar;
 		"sendtBrevpost",
 		"sendtNorgedotno",
 		"printId",
-		"tidspunktPostlagt",
 		"antallSider",
     	"antallSiderPostlagt",
     	"sendtAltinn",
-    	"konteringkode"
+    	"konteringkode",
+    	"tidspunktPostlagt",
+		"antallSortHvitSider",
+		"antallFargeSider",
+		"antallArkKonvoluttertAutomatisk",
+		"antallEkstraArkKonvoluttertAutomatisk",
+		"antallArkKonvoluttertManuelt",
+		"antallEkstraArkKonvoluttertManuelt",
+		"vekt",
+		"produksjonskostnader",
+		"porto"
 })
 public class ForsendelseStatus {
 
@@ -48,6 +57,15 @@ public class ForsendelseStatus {
 	protected int antallSider;
 	protected int antallSiderPostlagt;
 	protected String konteringkode;
+	protected int antallSortHvitSider;
+	protected int antallFargeSider;
+	protected int antallArkKonvoluttertAutomatisk;
+	protected int antallEkstraArkKonvoluttertAutomatisk;
+	protected int antallArkKonvoluttertManuelt;
+	protected int antallEkstraArkKonvoluttertManuelt;
+	protected int vekt;
+	protected double produksjonskostnader;
+	protected double porto;
 
 	/**
 	 * Gets the value of the id property.
@@ -273,4 +291,78 @@ public class ForsendelseStatus {
 		this.konteringkode = konteringkode;
 	}
 
+	public int getAntallSortHvitSider() {
+		return antallSortHvitSider;
+	}
+
+	public void setAntallSortHvitSider(int antallSortHvitSider) {
+		this.antallSortHvitSider = antallSortHvitSider;
+	}
+
+	public int getAntallFargeSider() {
+		return antallFargeSider;
+	}
+
+	public void setAntallFargeSider(int antallFargeSider) {
+		this.antallFargeSider = antallFargeSider;
+	}
+
+	public int getAntallArkKonvoluttertAutomatisk() {
+		return antallArkKonvoluttertAutomatisk;
+	}
+
+	public void setAntallArkKonvoluttertAutomatisk(
+			int antallArkKonvoluttertAutomatisk) {
+		this.antallArkKonvoluttertAutomatisk = antallArkKonvoluttertAutomatisk;
+	}
+
+	public int getAntallEkstraArkKonvoluttertAutomatisk() {
+		return antallEkstraArkKonvoluttertAutomatisk;
+	}
+
+	public void setAntallEkstraArkKonvoluttertAutomatisk(
+			int antallEkstraArkKonvoluttertAutomatisk) {
+		this.antallEkstraArkKonvoluttertAutomatisk = antallEkstraArkKonvoluttertAutomatisk;
+	}
+
+	public int getAntallArkKonvoluttertManuelt() {
+		return antallArkKonvoluttertManuelt;
+	}
+
+	public void setAntallArkKonvoluttertManuelt(int antallArkKonvoluttertManuelt) {
+		this.antallArkKonvoluttertManuelt = antallArkKonvoluttertManuelt;
+	}
+
+	public int getAntallEkstraArkKonvoluttertManuelt() {
+		return antallEkstraArkKonvoluttertManuelt;
+	}
+
+	public void setAntallEkstraArkKonvoluttertManuelt(
+			int antallEkstraArkKonvoluttertManuelt) {
+		this.antallEkstraArkKonvoluttertManuelt = antallEkstraArkKonvoluttertManuelt;
+	}
+
+	public int getVekt() {
+		return vekt;
+	}
+
+	public void setVekt(int vekt) {
+		this.vekt = vekt;
+	}
+
+	public double getProduksjonskostnader() {
+		return produksjonskostnader;
+	}
+
+	public void setProduksjonskostnader(double produksjonskostnader) {
+		this.produksjonskostnader = produksjonskostnader;
+	}
+
+	public double getPorto() {
+		return porto;
+	}
+
+	public void setPorto(double porto) {
+		this.porto = porto;
+	}
 }

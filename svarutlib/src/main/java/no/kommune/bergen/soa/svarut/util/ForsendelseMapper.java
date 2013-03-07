@@ -113,11 +113,20 @@ public class ForsendelseMapper {
 		status.setSendtBrevpost( XMLDatatypeUtil.toXMLGregorianCalendar( f.getUtskrevet() ) );
 		status.setSendtNorgedotno( XMLDatatypeUtil.toXMLGregorianCalendar( f.getNorgedotno() ) );
 		status.setPrintId( f.getPrintId() );
-		status.setTidspunktPostlagt( XMLDatatypeUtil.toXMLGregorianCalendar( f.getTidspunktPostlagt() ) );
 		status.setAntallSider( f.getAntallSider() );
 		status.setAntallSiderPostlagt( f.getAntallSiderPostlagt() );
 		status.setSendtAltinn(XMLDatatypeUtil.toXMLGregorianCalendar(f.getAltinn() ));
 		status.setKonteringkode(f.getKonteringkode());
+		status.setTidspunktPostlagt( XMLDatatypeUtil.toXMLGregorianCalendar( f.getTidspunktPostlagt() ) );
+		status.setAntallSortHvitSider(f.getAntallSortHvitSider());
+		status.setAntallFargeSider(f.getAntallFargeSider());
+		status.setAntallArkKonvoluttertAutomatisk(f.getAntallArkKonvoluttertAutomatisk());
+		status.setAntallEkstraArkKonvoluttertAutomatisk(f.getAntallEkstraArkKonvoluttertAutomatisk());
+		status.setAntallArkKonvoluttertManuelt(f.getAntallArkKonvoluttertManuelt());
+		status.setAntallEkstraArkKonvoluttertManuelt(f.getAntallEkstraArkKonvoluttertManuelt());
+		status.setVekt(f.getVekt());
+		status.setProduksjonskostnader(f.getProduksjonskostnader());
+		status.setPorto(f.getPorto());
 		return status;
 	}
 
