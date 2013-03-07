@@ -222,12 +222,12 @@ public class ForsendelsesArkiv {
 		f.setAnsvarsSted((String) row.get("ANSVARSSTED"));
 		f.setKonteringkode((String) row.get("KONTERINGKODE"));
 		f.setTidspunktPostlagt(toDate(row.get("TIDSPUNKTPOSTLAGT")));
-		f.setAntallSortHvitSider(toInt(row.get("ANTALL_SORT_HVIT_SIDER")));
-		f.setAntallFargeSider(toInt(row.get("ANTALL_FARGE_SIDER")));
-		f.setAntallArkKonvoluttertAutomatisk(toInt(row.get("ANTALL_ARK_KONVOLUTTERT_AUTOMATISK")));
-		f.setAntallEkstraArkKonvoluttertAutomatisk(toInt(row.get("ANTALL_EKSTRA_ARK_KONVOLUTTERT_AUTOMATISK")));
-		f.setAntallArkKonvoluttertManuelt(toInt(row.get("ANTALL_ARK_KONVOLUTTERT_MANUELT")));
-		f.setAntallEkstraArkKonvoluttertManuelt(toInt(row.get("ANTALL_EKSTRA_ARK_KONVOLUTTERT_MANUELT")));
+		f.setAntallSortHvitSider(toInt(row.get("ANT_SORT_HVIT_SIDER")));
+		f.setAntallFargeSider(toInt(row.get("ANT_FARGE_SIDER")));
+		f.setAntallArkKonvoluttertAutomatisk(toInt(row.get("ANT_ARK_KONVOLUTTERT_AUT")));
+		f.setAntallEkstraArkKonvoluttertAutomatisk(toInt(row.get("ANT_EKS_ARK_KONVOLUTTERT_AUT")));
+		f.setAntallArkKonvoluttertManuelt(toInt(row.get("ANT_ARK_KONVOLUTTERT_MAN")));
+		f.setAntallEkstraArkKonvoluttertManuelt(toInt(row.get("ANT_EKS_ARK_KONVOLUTTERT_MAN")));
 		f.setVekt(toInt(row.get("VEKT")));
 		f.setProduksjonskostnader(toDouble(row.get("PRODUKSJONSKOSTNADER")));
 		f.setPorto(toDouble(row.get("PORTO")));
@@ -563,12 +563,12 @@ public class ForsendelsesArkiv {
 		}
 		String sql = "UPDATE FORSENDELSESARKIV SET ANTALLSIDERPOSTLAGT=?, "
 				+ "TIDSPUNKTPOSTLAGT=?, "
-				+ "ANTALL_SORT_HVIT_SIDER=?, "
-				+ "ANTALL_FARGE_SIDER=?, "
-				+ "ANTALL_ARK_KONVOLUTTERT_AUTOMATISK=?, "
-				+ "ANTALL_EKSTRA_ARK_KONVOLUTTERT_AUTOMATISK=?, "
-				+ "ANTALL_ARK_KONVOLUTTERT_MANUELT=?, "
-				+ "ANTALL_EKSTRA_ARK_KONVOLUTTERT_MANUELT=?, "
+				+ "ANT_SORT_HVIT_SIDER=?, "
+				+ "ANT_FARGE_SIDER=?, "
+				+ "ANT_ARK_KONVOLUTTERT_AUT=?, "
+				+ "ANT_EKS_ARK_KONVOLUTTERT_AUT=?, "
+				+ "ANT_ARK_KONVOLUTTERT_MAN=?, "
+				+ "ANT_EKS_ARK_KONVOLUTTERT_MAN=?, "
 				+ "VEKT=?, "
 				+ "PRODUKSJONSKOSTNADER=?, "
 				+ "PORTO=? "
