@@ -319,6 +319,15 @@ public class ForsendelsesArkivTest {
 		assertEquals( printed.getTidspunktPostlagt().getTime(), forsendelse.getTidspunktPostlagt().getTime() );
 		int antallSiderPostlagt = printed.getAntallSortHvitSider() + printed.getAntallFargeSider();
 		assertEquals( antallSiderPostlagt, forsendelse.getAntallSiderPostlagt() );
+		assertEquals(1 , forsendelse.getAntallSortHvitSider() );
+		assertEquals(2 , forsendelse.getAntallFargeSider() );
+		assertEquals(3 , forsendelse.getAntallArkKonvoluttertAutomatisk() );
+		assertEquals(4 , forsendelse.getAntallEkstraArkKonvoluttertAutomatisk() );
+		assertEquals(5 , forsendelse.getAntallArkKonvoluttertManuelt() );
+		assertEquals(6 , forsendelse.getAntallEkstraArkKonvoluttertManuelt() );
+		assertEquals(20 , forsendelse.getVekt() );
+		assertEquals(5.55 , forsendelse.getProduksjonskostnader(), 0.01 );
+		assertEquals(10.10 , forsendelse.getPorto(), 0.01 );
 	}
 
 	@Test
@@ -362,6 +371,15 @@ public class ForsendelsesArkivTest {
 		printed.setAntallSortHvitSider(999);
 		printed.setAntallFargeSider(0);
 		printed.setForsendelsesId( forsendelsesId );
+		printed.setAntallSortHvitSider(1);
+		printed.setAntallFargeSider(2);
+		printed.setAntallArkKonvoluttertAutomatisk(3);
+		printed.setAntallEkstraArkKonvoluttertAutomatisk(4);
+		printed.setAntallArkKonvoluttertManuelt(5);
+		printed.setAntallEkstraArkKonvoluttertManuelt(6);
+		printed.setVekt(20);
+		printed.setProduksjonskostnader(5.55);
+		printed.setPorto(10.10);
 		return printed;
 	}
 
